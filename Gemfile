@@ -26,3 +26,8 @@ gem 'mysql2'
 
 # To use debugger
 # gem 'ruby-debug19', :require => 'ruby-debug'
+
+gem 'sucker_punch'
+gem 'figaro'
+gem 'devise_token_auth'
+gem 'active_model_serializers', '~> 0.10.0'
