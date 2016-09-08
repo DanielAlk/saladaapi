@@ -39,6 +39,18 @@ class DeviseTokenAuthCreateUsers < ActiveRecord::Migration
       t.string :image
       t.string :email
 
+      ## User Custom
+      t.integer :role
+      t.string :io_uid
+      t.string :id_type
+      t.string :id_number
+      t.integer :gender
+      t.date :birthday
+      t.string :phone_number
+      t.string :address
+      t.string :locality
+      t.text :metadata
+
       ## Tokens
       t.text :tokens
 

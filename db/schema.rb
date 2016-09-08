@@ -29,6 +29,16 @@ ActiveRecord::Schema.define(version: 20160907085050) do
     t.string   "nickname",               limit: 255
     t.string   "image",                  limit: 255
     t.string   "email",                  limit: 255
+    t.integer  "role",                   limit: 4
+    t.string   "io_uid",                 limit: 255
+    t.string   "id_type",                limit: 255
+    t.string   "id_number",              limit: 255
+    t.integer  "gender",                 limit: 4
+    t.date     "birthday"
+    t.string   "phone_number",           limit: 255
+    t.string   "address",                limit: 255
+    t.string   "locality",               limit: 255
+    t.text     "metadata",               limit: 65535
     t.text     "tokens",                 limit: 65535
     t.datetime "created_at"
     t.datetime "updated_at"
