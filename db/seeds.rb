@@ -5,3 +5,11 @@
 #
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
+Shed.create([
+	{ title: "Urkupiña" },
+	{ title: "Punta Mogote" },
+	{ title: "Los Coreanos" },
+	{ title: "Ocean" },
+	{ title: "Atlantida" },
+	{ title: "Galerias" }
+])

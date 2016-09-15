@@ -11,7 +11,48 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160907085050) do
+ActiveRecord::Schema.define(version: 20160915113457) do
+
+  create_table "categories", force: :cascade do |t|
+    t.string   "title",      limit: 255
+    t.string   "ancestry",   limit: 255
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
+
+  add_index "categories", ["ancestry"], name: "index_categories_on_ancestry", using: :btree
+
+  create_table "sheds", force: :cascade do |t|
+    t.string   "title",      limit: 255
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
+
+  create_table "shops", force: :cascade do |t|
+    t.integer  "user_id",            limit: 4
+    t.integer  "shed_id",            limit: 4
+    t.integer  "category_id",        limit: 4
+    t.integer  "location",           limit: 4
+    t.string   "location_detail",    limit: 255
+    t.string   "between_down",       limit: 255
+    t.string   "between_up",         limit: 255
+    t.integer  "number_id",          limit: 4
+    t.string   "letter_id",          limit: 255
+    t.boolean  "fixed"
+    t.string   "opens",              limit: 255
+    t.integer  "status",             limit: 4
+    t.integer  "rating",             limit: 4
+    t.string   "image_file_name",    limit: 255
+    t.string   "image_content_type", limit: 255
+    t.integer  "image_file_size",    limit: 4
+    t.datetime "image_updated_at"
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
+  end
+
+  add_index "shops", ["category_id"], name: "index_shops_on_category_id", using: :btree
+  add_index "shops", ["shed_id"], name: "index_shops_on_shed_id", using: :btree
+  add_index "shops", ["user_id"], name: "index_shops_on_user_id", using: :btree
 
   create_table "users", force: :cascade do |t|
     t.string   "provider",               limit: 255,   default: "email", null: false
@@ -48,4 +89,7 @@ ActiveRecord::Schema.define(version: 20160907085050) do
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
   add_index "users", ["uid", "provider"], name: "index_users_on_uid_and_provider", unique: true, using: :btree
 
+  add_foreign_key "shops", "categories"
+  add_foreign_key "shops", "sheds"
+  add_foreign_key "shops", "users"
 end
