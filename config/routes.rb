@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  get 'data/shop_locations'
+  get 'data/shop_statuses'
+
+  resources :images, except: [:new, :edit]
   resources :shops, except: [:new, :edit]
   resources :categories, except: [:new, :edit]
   resources :sheds, except: [:new, :edit]

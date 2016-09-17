@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160915113457) do
+ActiveRecord::Schema.define(version: 20160915114801) do
 
   create_table "categories", force: :cascade do |t|
     t.string   "title",      limit: 255
@@ -21,6 +21,21 @@ ActiveRecord::Schema.define(version: 20160915113457) do
   end
 
   add_index "categories", ["ancestry"], name: "index_categories_on_ancestry", using: :btree
+
+  create_table "images", force: :cascade do |t|
+    t.string   "title",             limit: 255
+    t.string   "item_file_name",    limit: 255
+    t.string   "item_content_type", limit: 255
+    t.integer  "item_file_size",    limit: 4
+    t.datetime "item_updated_at"
+    t.integer  "imageable_id",      limit: 4
+    t.string   "imageable_type",    limit: 255
+    t.integer  "position",          limit: 4
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
+  end
+
+  add_index "images", ["imageable_type", "imageable_id"], name: "index_images_on_imageable_type_and_imageable_id", using: :btree
 
   create_table "sheds", force: :cascade do |t|
     t.string   "title",      limit: 255
@@ -32,6 +47,7 @@ ActiveRecord::Schema.define(version: 20160915113457) do
     t.integer  "user_id",            limit: 4
     t.integer  "shed_id",            limit: 4
     t.integer  "category_id",        limit: 4
+    t.string   "description",        limit: 255
     t.integer  "location",           limit: 4
     t.string   "location_detail",    limit: 255
     t.string   "between_down",       limit: 255

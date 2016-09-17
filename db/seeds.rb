@@ -13,3 +13,12 @@ Shed.create([
 	{ title: "Atlantida" },
 	{ title: "Galerias" }
 ])
+
+Category.create([
+	{ title: "Ropa informal" },
+	{ title: "Calzado" },
+	{ title: "Accesorios" },
+	{ title: "Electrónica" },
+	{ title: "Articulos para el hogar" },
+	{ title: "Relojeria" }
+])

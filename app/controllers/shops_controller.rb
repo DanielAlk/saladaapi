@@ -19,6 +19,7 @@ class ShopsController < ApplicationController
   # POST /shops.json
   def create
     @shop = Shop.new(shop_params)
+    @shop.user = current_user
 
     if @shop.save
       render json: @shop, status: :created, location: @shop
@@ -54,6 +55,6 @@ class ShopsController < ApplicationController
     end
 
     def shop_params
-      params.require(:shop).permit(:user_id, :shed_id, :category_id, :location, :location_detail, :between_down, :between_up, :number_id, :letter_id, :fixed, :opens, :status, :image)
+      params.permit(:user_id, :shed_id, :category_id, :description, :location, :location_detail, :between_down, :between_up, :number_id, :letter_id, :fixed, :opens, :status, :rating, :image)
     end
 end

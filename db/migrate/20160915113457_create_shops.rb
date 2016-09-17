@@ -4,6 +4,7 @@ class CreateShops < ActiveRecord::Migration
       t.references :user, index: true, foreign_key: true
       t.references :shed, index: true, foreign_key: true
       t.references :category, index: true, foreign_key: true
+      t.string :description
       t.integer :location
       t.string :location_detail
       t.string :between_down
