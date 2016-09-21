@@ -7,6 +7,8 @@ class User < ActiveRecord::Base
 	       :recoverable, :rememberable, :trackable, :validatable
   include DeviseTokenAuth::Concerns::User
 
+  has_many :shops
+
   serialize :metadata
 
   enum role: [ :client, :seller ]
