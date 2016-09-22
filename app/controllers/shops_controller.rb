@@ -1,11 +1,13 @@
 class ShopsController < ApplicationController
+  include Filterize
+  filterize order: :created_at_desc, param: :f
+  before_action :filterize, only: :index
+  before_filter :authenticate_user!, except: [:index, :show]
   before_action :set_shop, only: [:show, :update, :destroy]
 
   # GET /shops
   # GET /shops.json
   def index
-    @shops = Shop.all
-
     render json: @shops
   end
 
@@ -32,8 +34,7 @@ class ShopsController < ApplicationController
   # PATCH/PUT /shops/1.json
   def update
     @shop = Shop.find(params[:id])
-
-    if @shop.update(shop_params)
+    if @shop.user == current_user && @shop.update(shop_params)
       head :no_content
     else
       render json: @shop.errors, status: :unprocessable_entity
@@ -43,7 +44,7 @@ class ShopsController < ApplicationController
   # DELETE /shops/1
   # DELETE /shops/1.json
   def destroy
-    @shop.destroy
+    @shop.destroy if @shop.user == current_user
 
     head :no_content
   end
