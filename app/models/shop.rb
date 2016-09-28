@@ -1,6 +1,6 @@
 class Shop < ActiveRecord::Base
 	include Filterable
-	has_attached_file :image, styles: { medium: "640x300#", small: "297x257#", thumb: "127x127#" }
+	has_attached_file :image, styles: { medium: "640x300#", small: "297x257#", thumb: "127x127#" }, default_url: '/assets/missing.png'
 	validates_attachment :image, content_type: { content_type: /\Aimage\/.*\Z/ }
   belongs_to :user
   belongs_to :shed
@@ -20,5 +20,13 @@ class Shop < ActiveRecord::Base
 
   enum location: [ :aisle, :line, :side, :other ]
   enum status: [ :occupied, :empty, :repairs ]
+
+  def cover
+    ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.image.url(:medium)
+  end
+
+  def cover_small
+    ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.image.url(:small)
+  end
 
 end
