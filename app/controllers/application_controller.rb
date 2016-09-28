@@ -8,7 +8,7 @@ class ApplicationController < ActionController::API
   protected
 
   	def configure_permitted_parameters
-  		key_array = [:name, :nickname, :image, :role, :io_uid, :id_type, :id_number, :gender, :birthday, :phone_number, :address, :locality, :metadata]
+  		key_array = [:name, :nickname, :image, :role, :io_uid, :id_type, :id_number, :gender, :birthday, :phone_number, :address, :locality, :metadata, :avatar]
   		devise_parameter_sanitizer.permit(:sign_up, keys: key_array)
   		devise_parameter_sanitizer.permit(:account_update, keys: key_array)
   	end
