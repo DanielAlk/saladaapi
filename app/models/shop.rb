@@ -18,8 +18,8 @@ class Shop < ActiveRecord::Base
     }
   }
 
-  enum location: [ :aisle, :line, :side, :other ]
-  enum status: [ :occupied, :empty, :repairs ]
+  enum location: [ :pasillo, :fila, :lateral, :otro ]
+  enum status: [ :ocupado, :vacío, :reparación ]
 
   def cover
     ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.image.url(:medium)
