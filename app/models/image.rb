@@ -4,4 +4,12 @@ class Image < ActiveRecord::Base
 	validates_attachment :item, presence: true, content_type: { content_type: /\Aimage\/.*\Z/ }
 	belongs_to :imageable, polymorphic: true
 	acts_as_list scope: :imageable
+
+	def url
+		{
+			thumb: ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.item.url(:thumb),
+			small: ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.item.url(:small),
+			medium: ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.item.url(:medium),
+		}
+	end
 end

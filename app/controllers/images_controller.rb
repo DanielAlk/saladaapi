@@ -1,4 +1,5 @@
 class ImagesController < ApplicationController
+  before_filter :authenticate_user!, except: [:index, :show]
   before_action :set_image, only: [:show, :update, :destroy]
 
   # GET /images
@@ -54,6 +55,6 @@ class ImagesController < ApplicationController
     end
 
     def image_params
-      params.require(:image).permit(:title, :item, :imageable_id, :imageable_type, :position)
+      params.permit(:title, :item, :imageable_id, :imageable_type, :position)
     end
 end

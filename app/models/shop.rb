@@ -5,6 +5,7 @@ class Shop < ActiveRecord::Base
   belongs_to :user
   belongs_to :shed
   belongs_to :category
+  has_many :products
 
   filterable scopes: [ :status ]
   filterable search: [ :description ]
@@ -22,11 +23,15 @@ class Shop < ActiveRecord::Base
   enum status: [ :ocupado, :vacío, :reparación ]
 
   def cover
-    ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.image.url(:medium)
+    {
+      thumb: ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.image.url(:thumb),
+      small: ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.image.url(:small),
+      medium: ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.image.url(:medium)
+    }
   end
 
-  def cover_small
-    ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.image.url(:small)
+  def shed_title
+    self.shed.title
   end
 
 end

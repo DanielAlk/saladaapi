@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :products, except: [:new, :edit]
   get 'data/shop_locations'
   get 'data/shop_statuses'
 
