@@ -5,7 +5,7 @@ class Shop < ActiveRecord::Base
   belongs_to :user
   belongs_to :shed
   belongs_to :category
-  has_many :products
+  has_many :products, dependent: :destroy
 
   filterable scopes: [ :status ]
   filterable search: [ :description ]
