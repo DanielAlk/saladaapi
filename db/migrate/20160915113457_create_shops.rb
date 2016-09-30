@@ -13,9 +13,10 @@ class CreateShops < ActiveRecord::Migration
       t.string :letter_id
       t.boolean :fixed
       t.string :opens
-      t.integer :status
+      t.integer :condition
       t.integer :rating
       t.attachment :image
+      t.integer :status, default: 0
 
       t.timestamps null: false
     end

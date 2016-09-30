@@ -50,6 +50,7 @@ class DeviseTokenAuthCreateUsers < ActiveRecord::Migration
       t.string :address
       t.string :locality
       t.text :metadata
+      t.attachment :avatar
 
       ## Tokens
       t.text :tokens

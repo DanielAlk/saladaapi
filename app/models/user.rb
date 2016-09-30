@@ -13,8 +13,6 @@ class User < ActiveRecord::Base
   has_many :shops
   serialize :metadata
 
-  before_update :save_avatar_url
-
   enum role: [ :client, :seller ]
   enum gender: [ :male, :female ]
 
@@ -26,11 +24,11 @@ class User < ActiveRecord::Base
   	end
   end
 
-  protected
-    def save_avatar_url
-      if self.avatar_file_name_changed?
-        image_url = ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.avatar.url(:medium)
-        self.image = image_url
-      end
+  def image
+    if self.avatar.present?
+      ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.avatar.url(:medium)
+    else
+      self[:image]
     end
+  end
 end

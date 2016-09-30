@@ -15,12 +15,13 @@ class Shop < ActiveRecord::Base
       status: 'status', category: 'categoría', shed: 'galpón'
     },
     scopes: {
-      status: { occupied: 'ocupado', empty: 'vacío', repairs: 'en reparación' }
+      condition: { occupied: 'ocupado', empty: 'vacío', repairs: 'en reparación' }
     }
   }
 
-  enum location: [ :pasillo, :fila, :lateral, :otro ]
-  enum status: [ :ocupado, :vacío, :reparación ]
+  enum status: [ :draft, :published, :paused ]
+  enum location: [ :aisle, :line, :side, :other ]
+  enum condition: [ :occupied, :empty, :repairs ]
 
   def cover
     {

@@ -56,6 +56,6 @@ class ShopsController < ApplicationController
     end
 
     def shop_params
-      params.permit(:user_id, :shed_id, :category_id, :description, :location, :location_detail, :between_down, :between_up, :number_id, :letter_id, :fixed, :opens, :status, :rating, :image)
+      params.permit(:user_id, :shed_id, :category_id, :description, :location, :location_detail, :between_down, :between_up, :number_id, :letter_id, :fixed, :opens, :condition, :status, :rating, :image)
     end
 end

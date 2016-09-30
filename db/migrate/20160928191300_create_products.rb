@@ -8,6 +8,8 @@ class CreateProducts < ActiveRecord::Migration
       t.integer :stock
       t.decimal :price, precision: 8, scale: 2
       t.text :description
+      t.integer :special, default: 0
+      t.integer :status, default: 0
 
       t.timestamps null: false
     end

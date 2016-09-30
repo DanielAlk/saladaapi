@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160930004734) do
+ActiveRecord::Schema.define(version: 20160928191300) do
 
   create_table "categories", force: :cascade do |t|
     t.string   "title",      limit: 255
@@ -45,10 +45,10 @@ ActiveRecord::Schema.define(version: 20160930004734) do
     t.integer  "stock",       limit: 4
     t.decimal  "price",                     precision: 8, scale: 2
     t.text     "description", limit: 65535
+    t.integer  "special",     limit: 4,                             default: 0
+    t.integer  "status",      limit: 4,                             default: 0
     t.datetime "created_at",                                                    null: false
     t.datetime "updated_at",                                                    null: false
-    t.integer  "status",      limit: 4,                             default: 0
-    t.integer  "special",     limit: 4,                             default: 0
   end
 
   add_index "products", ["category_id"], name: "index_products_on_category_id", using: :btree
@@ -74,14 +74,15 @@ ActiveRecord::Schema.define(version: 20160930004734) do
     t.string   "letter_id",          limit: 255
     t.boolean  "fixed"
     t.string   "opens",              limit: 255
-    t.integer  "status",             limit: 4
+    t.integer  "condition",          limit: 4
     t.integer  "rating",             limit: 4
     t.string   "image_file_name",    limit: 255
     t.string   "image_content_type", limit: 255
     t.integer  "image_file_size",    limit: 4
     t.datetime "image_updated_at"
-    t.datetime "created_at",                     null: false
-    t.datetime "updated_at",                     null: false
+    t.integer  "status",             limit: 4,   default: 0
+    t.datetime "created_at",                                 null: false
+    t.datetime "updated_at",                                 null: false
   end
 
   add_index "shops", ["category_id"], name: "index_shops_on_category_id", using: :btree
@@ -114,13 +115,13 @@ ActiveRecord::Schema.define(version: 20160930004734) do
     t.string   "address",                limit: 255
     t.string   "locality",               limit: 255
     t.text     "metadata",               limit: 65535
-    t.text     "tokens",                 limit: 65535
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.string   "avatar_file_name",       limit: 255
     t.string   "avatar_content_type",    limit: 255
     t.integer  "avatar_file_size",       limit: 4
     t.datetime "avatar_updated_at"
+    t.text     "tokens",                 limit: 65535
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree
