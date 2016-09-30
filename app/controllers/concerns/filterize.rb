@@ -25,7 +25,11 @@ module Filterize
 				@filterable[:scopes].keys.each do |key|
 					if (scope = @filterable[:scopes][key]).present?
 						if object.respond_to? key.to_s.pluralize #is enum
-							collection = collection.send(object.send(key.to_s.pluralize).key(scope.to_i))
+							if (scope.try(:length) > 1 rescue false)
+								collection = collection.send(scope.to_s)
+							else
+								collection = collection.send(object.send(key.to_s.pluralize).key(scope.to_i))
+							end
 						elsif object.column_names.include?(key.to_s + '_id')
 							collection = collection.where(key.to_s + '_id' => scope)
 						else
