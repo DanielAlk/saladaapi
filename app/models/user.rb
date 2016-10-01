@@ -3,9 +3,10 @@ class User < ActiveRecord::Base
   # devise :database_authenticatable, :registerable,
   #         :recoverable, :rememberable, :trackable, :validatable,
   #         :confirmable, :omniauthable
-	devise :database_authenticatable, :registerable,
-	       :recoverable, :rememberable, :trackable, :validatable
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :trackable, :validatable
   include DeviseTokenAuth::Concerns::User
+  include IonicApi
 
   has_attached_file :avatar, styles: { medium: "300x300#", small: "140x140#", thumb: "80x80#" }
   validates_attachment :avatar, content_type: { content_type: /\Aimage\/.*\Z/ }
@@ -15,6 +16,8 @@ class User < ActiveRecord::Base
 
   enum role: [ :client, :seller ]
   enum gender: [ :male, :female ]
+
+  before_create :ionic_create
 
   def metadata=(metadata)
   	if metadata.respond_to?(:each)
@@ -31,4 +34,12 @@ class User < ActiveRecord::Base
       self[:image]
     end
   end
+
+  private
+    def ionic_create
+      if (response = ionic_api :users, :post, { app_id: ionic_app_id, name: self.name, email: self.email, password: self.password }).present?
+        self.io_uid = response['data']['uuid']
+        self.image = response['data']['details']['image']
+      end
+    end
 end
