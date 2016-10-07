@@ -35,11 +35,16 @@ class User < ActiveRecord::Base
     end
   end
 
-  private
-    def ionic_create
-      if (response = ionic_api :users, :post, { app_id: ionic_app_id, name: self.name, email: self.email, password: self.password }).present?
-        self.io_uid = response['data']['uuid']
-        self.image = response['data']['details']['image']
-      end
+  def ionic_create(password = nil)
+    password = password || self.password
+    if self.image?
+      user_data = { app_id: ionic_app_id, name: self.name, email: self.email, password: password, image: self.image }
+    else
+      user_data = { app_id: ionic_app_id, name: self.name, email: self.email, password: password }
     end
+    if (response = ionic_api :users, :post, user_data).present?
+      self.io_uid = response['data']['uuid']
+      self.image = response['data']['details']['image'] unless self.image?
+    end
+  end
 end

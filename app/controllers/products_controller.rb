@@ -8,6 +8,8 @@ class ProductsController < ApplicationController
   # GET /products
   # GET /products.json
   def index
+    response.headers['X-Total-Count'] = @products.count.to_s
+    @products = @products.page(params[:page]) if params[:page].present?
     render json: @products
   end
 
