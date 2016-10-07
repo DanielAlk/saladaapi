@@ -19,12 +19,27 @@ class ImagesController < ApplicationController
   # POST /images
   # POST /images.json
   def create
-    @image = Image.new(image_params)
-
-    if @image.save
-      render json: @image, status: :created, location: @image
+    if params[:images].present?
+      images_params = params[:images].map { |k,i| { item: i[:item], imageable_id: i[:imageable_id], imageable_type: i[:imageable_type] } }
+      images = Image.create(images_params)
+      @invalid = []
+      @images = []
+      images.each do |image|
+        if image.errors.count > 0
+          @invalid << image.errors
+        else
+          @images << ActiveModelSerializers::SerializableResource.new(image)
+        end
+      end
+      render json: { images: @images, invalid: @invalid }, status: :created
     else
-      render json: @image.errors, status: :unprocessable_entity
+      @image = Image.new(image_params)
+
+      if @image.save
+        render json: @image, status: :created, location: @image
+      else
+        render json: @image.errors, status: :unprocessable_entity
+      end
     end
   end
 
