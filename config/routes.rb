@@ -2,6 +2,11 @@ Rails.application.routes.draw do
   get 'data/shop_locations'
   get 'data/shop_conditions'
 
+  resources :comments, except: [:new, :edit] do
+    collection do
+      put '/', action: :update_many
+    end
+  end
   resources :users, except: [:new, :edit]
   resources :products, except: [:new, :edit]
   resources :images, except: [:new, :edit]
