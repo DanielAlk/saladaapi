@@ -1,5 +1,6 @@
 class Comment < ActiveRecord::Base
 	include Filterable
+  include IonicApi
   belongs_to :commentable, polymorphic: true
   belongs_to :user
   has_one :comment, as: :commentable, dependent: :destroy
@@ -8,6 +9,7 @@ class Comment < ActiveRecord::Base
   enum status: [:unanswered, :answered]
 
   before_create :mark_as_answer, if: :is_response?
+  after_create :push_notificate
 
   def next
   	Comment.where('(created_at < ?) AND (commentable_id = ?) AND (commentable_type = ?)', self.created_at, self.commentable_id, self.commentable_type).order(created_at: :desc).first
@@ -51,6 +53,27 @@ class Comment < ActiveRecord::Base
   end
 
   private
+    def push_notificate
+      request_body = {
+        emails: [self.commentable.user.email],
+        profile: :dani_alk,
+        notification: {
+          title: root_commentable.title,
+          message: is_root? ? self.user.name + ' hizo una pregunta.' : 'Te han contestado tu pregunta.',
+          payload: {
+            product_id: root_commentable.id
+          },
+          android: {
+            sound: :default
+          },
+          ios: {
+            sound: :default
+          }
+        }
+      }
+      ionic_api :push, :post, request_body, :notifications
+    end
+
   	def mark_as_answer
   		self.role = :answer
   		self.commentable.answered!
