@@ -10,6 +10,7 @@ class Image < ActiveRecord::Base
 			thumb: ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.item.url(:thumb),
 			small: ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.item.url(:small),
 			medium: ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.item.url(:medium),
+			original: ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.item.url(:original),
 		}
 	end
 end
