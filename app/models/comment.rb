@@ -67,7 +67,9 @@ class Comment < ActiveRecord::Base
             sound: :default
           },
           ios: {
-            sound: :default
+            badge: self.commentable.user.unanswered_comments_count,
+            sound: :default,
+            #content_available: 1
           }
         }
       }

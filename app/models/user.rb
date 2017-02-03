@@ -12,6 +12,7 @@ class User < ActiveRecord::Base
   validates_attachment :avatar, content_type: { content_type: /\Aimage\/.*\Z/ }
 
   has_many :shops
+  has_many :products
   serialize :metadata
 
   enum role: [ :client, :seller ]
@@ -33,6 +34,10 @@ class User < ActiveRecord::Base
     else
       self[:image]
     end
+  end
+
+  def unanswered_comments_count
+    self.products.inject(0){|sum,p| sum + p.unanswered_comments_count}
   end
 
   def ionic_create(password = nil)
