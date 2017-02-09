@@ -13,6 +13,7 @@ class User < ActiveRecord::Base
 
   has_many :shops
   has_many :products
+  has_many :comments
   serialize :metadata
 
   enum role: [ :client, :seller ]
@@ -38,6 +39,10 @@ class User < ActiveRecord::Base
 
   def unanswered_comments_count
     self.products.inject(0){|sum,p| sum + p.unanswered_comments_count}
+  end
+
+  def unread_responses_count
+    self.comments.question.answered.inject(0){|sum,c| sum + (c.response.read ? 0 : 1)}
   end
 
   def ionic_create(password = nil)
