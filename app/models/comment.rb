@@ -62,7 +62,8 @@ class Comment < ActiveRecord::Base
           title: root_commentable.title,
           message: is_root? ? self.user.name + ' hizo una pregunta.' : 'Te han contestado tu pregunta.',
           payload: {
-            product_id: root_commentable.id
+            product_id: root_commentable.id,
+            state: is_root? ? 'app.thread' : 'app.comment'
           },
           android: {
             sound: :default
