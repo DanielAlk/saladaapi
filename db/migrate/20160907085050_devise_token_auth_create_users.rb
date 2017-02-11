@@ -51,6 +51,7 @@ class DeviseTokenAuthCreateUsers < ActiveRecord::Migration
       t.string :locality
       t.text :metadata
       t.attachment :avatar
+      t.integer :badge_number, default: 0
 
       ## Tokens
       t.text :tokens

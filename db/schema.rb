@@ -135,6 +135,7 @@ ActiveRecord::Schema.define(version: 20161212070632) do
     t.string   "avatar_content_type",    limit: 255
     t.integer  "avatar_file_size",       limit: 4
     t.datetime "avatar_updated_at"
+    t.integer  "badge_number",           limit: 4,     default: 0
     t.text     "tokens",                 limit: 65535
     t.datetime "created_at"
     t.datetime "updated_at"

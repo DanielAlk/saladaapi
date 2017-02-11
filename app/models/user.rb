@@ -44,6 +44,10 @@ class User < ActiveRecord::Base
   def unread_responses_count
     self.comments.question.answered.inject(0){|sum,c| sum + (c.response.read ? 0 : 1)}
   end
+  
+  def token_validation_response
+    UserSerializer.new( self, root: false )
+  end
 
   def ionic_create(password = nil)
     password = password || self.password

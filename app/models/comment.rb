@@ -54,6 +54,7 @@ class Comment < ActiveRecord::Base
 
   private
     def push_notificate
+      self.commentable.user.increment!(:badge_number)
       request_body = {
         emails: [self.commentable.user.email],
         profile: :dani_alk,
@@ -67,7 +68,7 @@ class Comment < ActiveRecord::Base
             sound: :default
           },
           ios: {
-            badge: self.commentable.user.unanswered_comments_count,
+            badge: self.commentable.user.badge_number,
             sound: :default,
             content_available: 1
           }
