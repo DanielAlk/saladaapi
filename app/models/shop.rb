@@ -25,6 +25,7 @@ class Shop < ActiveRecord::Base
 
   def cover
     {
+      blank: self.image.blank?,
       thumb: ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.image.url(:thumb),
       small: ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.image.url(:small),
       medium: ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.image.url(:medium)
