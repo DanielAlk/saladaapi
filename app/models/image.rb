@@ -5,6 +5,8 @@ class Image < ActiveRecord::Base
 	belongs_to :imageable, polymorphic: true
 	acts_as_list scope: :imageable
 
+	before_destroy :check_product_images
+
 	def url
 		{
 			thumb: ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.item.url(:thumb),
@@ -13,4 +15,11 @@ class Image < ActiveRecord::Base
 			original: ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.item.url(:original),
 		}
 	end
+
+	private
+		def check_product_images
+			if self.imageable_type == 'Product' && self.imageable.images.count == 1
+				self.imageable.draft!
+			end
+		end
 end
