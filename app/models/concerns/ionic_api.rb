@@ -25,4 +25,8 @@ module IonicApi
 	def ionic_app_id
 		ENV['ionic_app_id']
 	end
+
+	def ionic_push_profile
+		ENV['ionic_push_profile']
+	end
 end

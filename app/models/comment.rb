@@ -57,7 +57,7 @@ class Comment < ActiveRecord::Base
       self.commentable.user.increment!(:badge_number)
       request_body = {
         emails: [self.commentable.user.email],
-        profile: :dani_alk,
+        profile: ionic_push_profile,
         notification: {
           title: root_commentable.title,
           message: is_root? ? self.user.name + ' hizo una pregunta.' : 'Te han contestado tu pregunta.',
