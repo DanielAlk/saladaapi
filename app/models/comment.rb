@@ -1,6 +1,5 @@
 class Comment < ActiveRecord::Base
 	include Filterable
-  include IonicApi
   belongs_to :commentable, polymorphic: true
   belongs_to :user
   belongs_to :receiver, class_name: :User
@@ -51,7 +50,6 @@ class Comment < ActiveRecord::Base
       self.commentable.user.increment!(:badge_number)
       request_body = {
         emails: [self.commentable.user.email],
-        profile: ionic_push_profile,
         notification: {
           title: root_commentable.title,
           message: is_root? ? self.user.name + ' hizo una pregunta.' : 'Te han contestado tu pregunta.',
@@ -69,7 +67,7 @@ class Comment < ActiveRecord::Base
           }
         }
       }
-      ionic_api :push, :post, request_body, :notifications
+      PushJob.perform_async(request_body)
     end
 
   	def mark_as_answer
