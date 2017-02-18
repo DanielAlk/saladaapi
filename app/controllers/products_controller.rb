@@ -10,7 +10,7 @@ class ProductsController < ApplicationController
   # GET /products
   # GET /products.json
   def index
-    response.headers['X-Total-Count'] = @products.count.to_s
+    response.headers['X-Total-Count'] = @products.map.count.to_s
     @products = @products.page(params[:page]) if params[:page].present?
     @products = @products.per(params[:per]) if params[:per].present?
     render json: @products, interaction: serializer_interaction
@@ -80,7 +80,7 @@ class ProductsController < ApplicationController
         where_clause = 'interactions.owner_id'
         user_id = interaction_params[:owner]
       end
-      @products = Product.distinct.joins(:interactions).where(where_clause => user_id).order('interactions.last_comment_created_at DESC')
+      @products = Product.distinct.select('products.*, MAX(interactions.updated_at) as updated_at').joins(:interactions).where(where_clause => user_id).group(:product_id).order('updated_at DESC')
     end
 
     def set_product
