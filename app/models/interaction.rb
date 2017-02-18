@@ -6,7 +6,6 @@ class Interaction < ActiveRecord::Base
   has_many :comments, dependent: :destroy
 
   before_create :save_inherited_values
-  before_update :save_last_comment_created_at
 
   def unread_answers_count
   	self.comments.answer.where(read: false).count
@@ -19,10 +18,5 @@ class Interaction < ActiveRecord::Base
   private
   	def save_inherited_values
   		self.owner = self.product.user
-  		self.last_comment_created_at = self.last_comment.created_at if self.last_comment.present?
-  	end
-
-  	def save_last_comment_created_at
-  		self.last_comment_created_at = self.last_comment.created_at rescue nil
   	end
 end

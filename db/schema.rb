@@ -58,13 +58,12 @@ ActiveRecord::Schema.define(version: 20170218122923) do
   add_index "images", ["imageable_type", "imageable_id"], name: "index_images_on_imageable_type_and_imageable_id", using: :btree
 
   create_table "interactions", force: :cascade do |t|
-    t.integer  "product_id",              limit: 4
-    t.integer  "user_id",                 limit: 4
-    t.datetime "created_at",                        null: false
-    t.datetime "updated_at",                        null: false
-    t.integer  "owner_id",                limit: 4
-    t.integer  "last_comment_id",         limit: 4
-    t.datetime "last_comment_created_at"
+    t.integer  "product_id",      limit: 4
+    t.integer  "user_id",         limit: 4
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+    t.integer  "owner_id",        limit: 4
+    t.integer  "last_comment_id", limit: 4
   end
 
   add_index "interactions", ["last_comment_id"], name: "index_interactions_on_last_comment_id", using: :btree
