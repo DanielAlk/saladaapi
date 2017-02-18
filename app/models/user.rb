@@ -11,15 +11,19 @@ class User < ActiveRecord::Base
   has_attached_file :avatar, styles: { medium: "300x300#", small: "140x140#", thumb: "80x80#" }
   validates_attachment :avatar, content_type: { content_type: /\Aimage\/.*\Z/ }
 
-  has_many :shops
+  has_many :shops, dependent: :destroy
   has_many :products
   has_many :comments
+  has_many :incoming_comments, foreign_key: :receiver_id, class_name: :Comment, dependent: :destroy
+  has_many :incoming_interactions, foreign_key: :owner_id, class_name: :Interaction, dependent: :destroy
+  has_many :outgoing_interactions, class_name: :Interaction, dependent: :destroy
   serialize :metadata
 
   enum role: [ :client, :seller ]
   enum gender: [ :male, :female ]
 
   before_create :ionic_create
+  before_destroy :ionic_destroy
 
   def metadata=(metadata)
   	if metadata.respond_to?(:each)
@@ -37,12 +41,12 @@ class User < ActiveRecord::Base
     end
   end
 
-  def unanswered_comments_count
-    self.products.inject(0){|sum,p| sum + p.unanswered_comments_count}
+  def unanswered_questions_count
+    self.incoming_comments.question.unanswered.count
   end
 
-  def unread_responses_count
-    self.comments.question.answered.inject(0){|sum,c| sum + (c.response.read ? 0 : 1)}
+  def unread_answers_count
+    self.incoming_comments.answer.where(read: false).count
   end
   
   def token_validation_response
@@ -61,4 +65,14 @@ class User < ActiveRecord::Base
       self.image = response['data']['details']['image'] unless self.image?
     end
   end
+
+  def ionic_check
+    ionic_api(:users, :get, {}, self.io_uid).present?
+  end
+
+  private
+    def ionic_destroy
+      ionic_api :users, :delete, {}, self.io_uid
+      true #delete regardless of ionic response
+    end
 end

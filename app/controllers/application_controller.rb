@@ -19,7 +19,7 @@ class ApplicationController < ActionController::API
   	end
 
   	def create_ionic_user_if_not_created
-      if !!current_user && current_user.valid_password?(params[:password])
+      if user_signed_in? && current_user.valid_password?(params[:password])
   		  unless current_user.io_uid?
   		  	if (user = User.find_by(email: params[:email])).present?
   		  		unless user.io_uid?

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161212070632) do
+ActiveRecord::Schema.define(version: 20170218122923) do
 
   create_table "categories", force: :cascade do |t|
     t.string   "title",      limit: 255
@@ -33,9 +33,13 @@ ActiveRecord::Schema.define(version: 20161212070632) do
     t.boolean  "read",                           default: false
     t.datetime "created_at",                                     null: false
     t.datetime "updated_at",                                     null: false
+    t.integer  "interaction_id",   limit: 4
+    t.integer  "receiver_id",      limit: 4
   end
 
   add_index "comments", ["commentable_type", "commentable_id"], name: "index_comments_on_commentable_type_and_commentable_id", using: :btree
+  add_index "comments", ["interaction_id"], name: "index_comments_on_interaction_id", using: :btree
+  add_index "comments", ["receiver_id"], name: "index_comments_on_receiver_id", using: :btree
   add_index "comments", ["user_id"], name: "index_comments_on_user_id", using: :btree
 
   create_table "images", force: :cascade do |t|
@@ -52,6 +56,21 @@ ActiveRecord::Schema.define(version: 20161212070632) do
   end
 
   add_index "images", ["imageable_type", "imageable_id"], name: "index_images_on_imageable_type_and_imageable_id", using: :btree
+
+  create_table "interactions", force: :cascade do |t|
+    t.integer  "product_id",              limit: 4
+    t.integer  "user_id",                 limit: 4
+    t.datetime "created_at",                        null: false
+    t.datetime "updated_at",                        null: false
+    t.integer  "owner_id",                limit: 4
+    t.integer  "last_comment_id",         limit: 4
+    t.datetime "last_comment_created_at"
+  end
+
+  add_index "interactions", ["last_comment_id"], name: "index_interactions_on_last_comment_id", using: :btree
+  add_index "interactions", ["owner_id"], name: "index_interactions_on_owner_id", using: :btree
+  add_index "interactions", ["product_id"], name: "index_interactions_on_product_id", using: :btree
+  add_index "interactions", ["user_id"], name: "index_interactions_on_user_id", using: :btree
 
   create_table "products", force: :cascade do |t|
     t.integer  "user_id",     limit: 4
@@ -145,7 +164,13 @@ ActiveRecord::Schema.define(version: 20161212070632) do
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
   add_index "users", ["uid", "provider"], name: "index_users_on_uid_and_provider", unique: true, using: :btree
 
+  add_foreign_key "comments", "interactions"
   add_foreign_key "comments", "users"
+  add_foreign_key "comments", "users", column: "receiver_id"
+  add_foreign_key "interactions", "comments", column: "last_comment_id"
+  add_foreign_key "interactions", "products"
+  add_foreign_key "interactions", "users"
+  add_foreign_key "interactions", "users", column: "owner_id"
   add_foreign_key "products", "categories"
   add_foreign_key "products", "shops"
   add_foreign_key "products", "users"

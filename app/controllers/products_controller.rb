@@ -1,8 +1,10 @@
 class ProductsController < ApplicationController
   include Filterize
   filterize order: :created_at_desc, param: :f
-  before_action :filterize, only: :index
   before_filter :authenticate_user!, except: [:index, :show]
+  before_filter :authenticate_user!, only: :index, if: -> { params[:interaction].present? }
+  before_action :filterize, only: :index, unless: -> { params[:interaction].present? }
+  before_action :set_interaction_products, only: :index, if: -> { params[:interaction].present? }
   before_action :set_product, only: [:show, :update, :destroy]
 
   # GET /products
@@ -10,13 +12,14 @@ class ProductsController < ApplicationController
   def index
     response.headers['X-Total-Count'] = @products.count.to_s
     @products = @products.page(params[:page]) if params[:page].present?
-    render json: @products
+    @products = @products.per(params[:per]) if params[:per].present?
+    render json: @products, interaction: serializer_interaction
   end
 
   # GET /products/1
   # GET /products/1.json
   def show
-    render json: @product
+    render json: @product, complete: true
   end
 
   # POST /products
@@ -53,6 +56,32 @@ class ProductsController < ApplicationController
   end
 
   private
+
+    def interaction_params
+      JSON.parse(params[:interaction]).try(:symbolize_keys)
+    end
+
+    def serializer_interaction
+      if params[:interaction].present?
+        if interaction_params[:user].present?
+          :user
+        elsif interaction_params[:owner].present?
+          :owner
+        end
+      end
+    end
+
+    def set_interaction_products
+      if interaction_params[:user].present?
+        where_clause = 'interactions.user_id'
+        user_id = interaction_params[:user]
+      end
+      if interaction_params[:owner].present?
+        where_clause = 'interactions.owner_id'
+        user_id = interaction_params[:owner]
+      end
+      @products = Product.distinct.joins(:interactions).where(where_clause => user_id).order('interactions.last_comment_created_at DESC')
+    end
 
     def set_product
       @product = Product.find(params[:id])

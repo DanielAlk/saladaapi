@@ -3,13 +3,19 @@ class Comment < ActiveRecord::Base
   include IonicApi
   belongs_to :commentable, polymorphic: true
   belongs_to :user
-  has_one :comment, as: :commentable, dependent: :destroy
+  belongs_to :receiver, class_name: :User
+  belongs_to :interaction, autosave: true
+  has_one :answer, as: :commentable, class_name: :Comment, dependent: :destroy
 
   enum role: [:question, :answer]
   enum status: [:unanswered, :answered]
 
-  before_create :mark_as_answer, if: :is_response?
+  before_create :mark_as_answer, if: :is_answer?
+  before_create :save_receiver
+  after_create :handle_interaction
   after_create :push_notificate
+  before_destroy :assign_new_last_comment_to_interaction, if: -> { self.interaction.last_comment == self }
+  after_destroy :destroy_interaction_if_empty, if: -> { self.interaction.last_comment.blank? }
 
   def next
   	Comment.where('(created_at < ?) AND (commentable_id = ?) AND (commentable_type = ?)', self.created_at, self.commentable_id, self.commentable_type).order(created_at: :desc).first
@@ -19,7 +25,7 @@ class Comment < ActiveRecord::Base
   	Comment.where('(created_at > ?) AND (commentable_id = ?) AND (commentable_type = ?)', self.created_at, self.commentable_id, self.commentable_type).order(created_at: :desc).first
   end
 
-  def is_response?
+  def is_answer?
   	commentable_type == 'Comment'
   end
 
@@ -27,23 +33,11 @@ class Comment < ActiveRecord::Base
     commentable_type != 'Comment'
   end
 
-  def response
-  	self.comment
-  end
-
   def root_commentable
     if is_root?
       commentable
     else
       commentable.try(:commentable)
-    end
-  end
-
-  def new_response(user)
-    if is_root?
-      self.comment = Comment.new(user: user)
-    else
-      self.commentable.comment = Comment.new(user: user)
     end
   end
 
@@ -82,4 +76,28 @@ class Comment < ActiveRecord::Base
   		self.role = :answer
   		self.commentable.answered!
   	end
+
+    def save_receiver
+      self.receiver = self.commentable.user
+    end
+
+    def assign_new_last_comment_to_interaction
+      self.interaction.last_comment = self.interaction.comments.order(created_at: :desc).second
+      self.interaction.save
+    end
+
+    def destroy_interaction_if_empty
+      self.interaction.destroy
+    end
+
+    def handle_interaction
+      self.interaction = Interaction.find_by(product: self.root_commentable, user: self.user) if self.is_root?
+      self.interaction = Interaction.find_by(product: self.root_commentable, user: self.commentable.user) if self.is_answer?
+      unless self.interaction.present?
+        self.interaction = Interaction.new(product: self.root_commentable, user: self.user)
+      end
+      self.interaction.last_comment = self
+      self.save
+    end
+
 end

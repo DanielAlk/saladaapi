@@ -1,5 +1,6 @@
 class CommentsController < ApplicationController
   include Filterize
+  before_filter :authenticate_user!, except: [:index, :show]
   filterize order: :created_at_desc, param: :f
   before_action :filterize, only: :index
   before_action :set_comment, only: [:show, :update, :destroy]

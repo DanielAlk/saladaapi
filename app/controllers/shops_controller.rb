@@ -16,7 +16,7 @@ class ShopsController < ApplicationController
   # GET /shops/1
   # GET /shops/1.json
   def show
-    render json: @shop
+    render json: @shop, complete: true
   end
 
   # POST /shops

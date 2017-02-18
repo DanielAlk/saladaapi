@@ -1,7 +1,7 @@
 module IonicApi
 	extend ActiveSupport::Concern
 
-	def ionic_api(resource, method, data, path_params = false)
+	def ionic_api(resource, method, data = {}, path_params = false)
 		begin
 			uri = URI.parse(ENV['ionic_api_url'])
 			path = path_params.present? ? "/#{resource.to_s}/#{path_params.to_s}" : "/#{resource.to_s}"

@@ -5,6 +5,7 @@ class Product < ActiveRecord::Base
   belongs_to :shop
   has_many :images, -> { order(position: :asc) }, as: :imageable, dependent: :destroy
   has_many :comments, as: :commentable, dependent: :destroy
+  has_many :interactions, dependent: :destroy
 
   filterable scopes: [ :status, :special ]
   filterable search: [ :title, :price, :description ]
@@ -20,10 +21,6 @@ class Product < ActiveRecord::Base
 
   def comments_count
     self.comments.count
-  end
-
-  def unanswered_comments_count
-    self.comments.unanswered.count
   end
 
   def cover
