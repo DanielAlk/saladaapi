@@ -2,7 +2,7 @@ class ProductSerializer < ActiveModel::Serializer
   attributes :id, :user_id, :title, :stock, :price, :description, :cover, :status, :special
   attribute :unanswered_questions_count, if: -> { instance_options[:interaction] == :owner }
   attribute :unread_answers_count, if: -> { instance_options[:interaction] == :user }
-  attribute :updated_at, if: -> { instance_options[:interaction].present? }
+  attribute :interaction_updated_at, if: -> { instance_options[:interaction].present? }
   attribute :comments_count, if: -> { instance_options[:complete] }
   has_one :user, if: -> { instance_options[:complete] }
   has_one :category, if: -> { instance_options[:complete] }
