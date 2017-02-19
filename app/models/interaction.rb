@@ -7,8 +7,8 @@ class Interaction < ActiveRecord::Base
 
   before_create :save_inherited_values
 
-  def unread_answers_count
-  	self.comments.answer.where(read: false).count
+  def unread_answers_count(receiver)
+  	self.comments.answer.where(read: false, receiver: receiver).count
   end
 
   def unanswered_questions_count

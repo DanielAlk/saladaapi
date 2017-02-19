@@ -80,7 +80,7 @@ class ProductsController < ApplicationController
         where_clause = 'interactions.owner_id'
         user_id = interaction_params[:owner]
       end
-      @products = Product.distinct.select('products.*, MAX(interactions.updated_at) as interaction_updated_at, interactions.id as interaction_id').joins(:interactions).where(where_clause => user_id).group(:product_id).order('interaction_updated_at DESC')
+      @products = Product.distinct.select('products.*, MAX(interactions.updated_at) as interaction_updated_at').joins(:interactions).where(where_clause => user_id).group(:product_id).order('interaction_updated_at DESC')
     end
 
     def set_product

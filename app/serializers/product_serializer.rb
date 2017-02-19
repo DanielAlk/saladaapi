@@ -10,18 +10,10 @@ class ProductSerializer < ActiveModel::Serializer
   has_many :images, if: -> { instance_options[:complete] }
 
   def unanswered_questions_count
-    Interaction.find(object.interaction_id).unanswered_questions_count
+  	object.interactions.select(:id).inject(0){|sum,p| sum + p.unanswered_questions_count}
   end
 
   def unread_answers_count
-    Interaction.find(object.interaction_id).unread_answers_count
+  	object.interactions.select(:id).inject(0){|sum,p| sum + p.unread_answers_count(current_user)}
   end
-
-  #def unanswered_questions_count
-  #	object.interactions.select(:id).inject(0){|sum,p| sum + p.unanswered_questions_count}
-  #end
-
-  #def unread_answers_count
-  #	object.interactions.select(:id).inject(0){|sum,p| sum + p.unread_answers_count}
-  #end
 end
