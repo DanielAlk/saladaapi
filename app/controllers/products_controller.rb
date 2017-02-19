@@ -63,24 +63,18 @@ class ProductsController < ApplicationController
 
     def serializer_interaction
       if params[:interaction].present?
-        if interaction_params[:user].present?
+        if interaction_params[:user]
           :user
-        elsif interaction_params[:owner].present?
+        elsif interaction_params[:owner]
           :owner
         end
       end
     end
 
     def set_interaction_products
-      if interaction_params[:user].present?
-        where_clause = 'interactions.user_id'
-        user_id = interaction_params[:user]
-      end
-      if interaction_params[:owner].present?
-        where_clause = 'interactions.owner_id'
-        user_id = interaction_params[:owner]
-      end
-      @products = Product.distinct.select('products.*, MAX(interactions.updated_at) as interaction_updated_at').joins(:interactions).where(where_clause => user_id).group(:product_id).order('interaction_updated_at DESC')
+      where_clause = 'interactions.user_id' if interaction_params[:user]
+      where_clause = 'interactions.owner_id' if interaction_params[:owner]
+      @products = Product.distinct.select('products.*, MAX(interactions.updated_at) as interaction_updated_at').joins(:interactions).where(where_clause => current_user).group(:product_id).order('interaction_updated_at DESC')
     end
 
     def set_product
