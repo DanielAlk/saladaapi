@@ -3,6 +3,7 @@ class ApplicationController < ActionController::API
   
   before_action :configure_permitted_parameters, if: :devise_controller?
   after_action :create_ionic_user_if_not_created, if: :login_action?
+  before_action -> { sleep 0 }, if: "Rails.env.development?"
 
   respond_to :json
 

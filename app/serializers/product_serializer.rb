@@ -4,10 +4,11 @@ class ProductSerializer < ActiveModel::Serializer
   attribute :unread_answers_count, if: -> { instance_options[:interaction] == :user }
   attribute :interaction_updated_at, if: -> { instance_options[:interaction].present? }
   attribute :comments_count, if: -> { instance_options[:complete] }
+  attribute :last_comment, if: -> { instance_options[:complete] && object.comments.present? }
+  has_many :images
+  has_one :shop
   has_one :user, if: -> { instance_options[:complete] }
   has_one :category, if: -> { instance_options[:complete] }
-  has_one :shop, if: -> { instance_options[:complete] }
-  has_many :images, if: -> { instance_options[:complete] }
 
   def unanswered_questions_count
   	object.interactions.select(:id).inject(0){|sum,p| sum + p.unanswered_questions_count}
@@ -15,5 +16,11 @@ class ProductSerializer < ActiveModel::Serializer
 
   def unread_answers_count
   	object.interactions.select(:id).inject(0){|sum,p| sum + p.unread_answers_count(current_user)}
+  end
+
+  def last_comment
+    serializer = CommentSerializer.new(object.comments.last, {scope: current_user})
+    def serializer.current_user() scope end
+    serializer
   end
 end
