@@ -16,7 +16,11 @@ class ShopsController < ApplicationController
   # GET /shops/1
   # GET /shops/1.json
   def show
-    render json: @shop, complete: true
+    if user_signed_in? && current_user == @shop.user
+      render json: @shop, owner: true
+    else
+      render json: @shop, complete: true
+    end
   end
 
   # POST /shops
@@ -36,7 +40,9 @@ class ShopsController < ApplicationController
   # PATCH/PUT /shops/1.json
   def update
     @shop = Shop.find(params[:id])
-    if @shop.user == current_user && @shop.update(shop_params)
+    if @shop.user != current_user
+      render json: ['Unable to update shop'], status: :unauthorized
+    elsif @shop.update(shop_params)
       head :no_content
     else
       render json: @shop.errors, status: :unprocessable_entity
@@ -46,9 +52,12 @@ class ShopsController < ApplicationController
   # DELETE /shops/1
   # DELETE /shops/1.json
   def destroy
-    @shop.destroy if @shop.user == current_user
-
-    head :no_content
+    if @shop.user == current_user
+      @shop.destroy
+      head :no_content
+    else
+      render json: ['Unable to delete shop'], status: :unauthorized
+    end
   end
 
   private

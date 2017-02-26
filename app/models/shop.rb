@@ -7,6 +7,9 @@ class Shop < ActiveRecord::Base
   belongs_to :category
   has_many :products, dependent: :destroy
 
+  validates :description, presence: true, length: { minimum: 4, maximum: 25 }
+  validates :user, :shed, :category, :location, :location_detail, :between_down, :between_up, :number_id, :letter_id, :fixed, :opens, :condition, presence: true
+
   filterable scopes: [ :status ]
   filterable search: [ :description ]
   filterable order: [ :category, :shed, :user ]

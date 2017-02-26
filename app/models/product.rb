@@ -7,6 +7,10 @@ class Product < ActiveRecord::Base
   has_many :comments, as: :commentable, dependent: :destroy
   has_many :interactions, dependent: :destroy
 
+  validates :title, presence: true, length: { minimum: 4, maximum: 50 }
+  validates :description, presence: true, length: { minimum: 6, maximum: 140 }
+  validates :user, :category, :shop, :stock, :price, presence: true
+
   filterable scopes: [ :status, :special ]
   filterable search: [ :title, :price, :description ]
   filterable order: [ :category, :price, :user, :shop ]

@@ -19,6 +19,8 @@ class User < ActiveRecord::Base
   has_many :outgoing_interactions, class_name: :Interaction, dependent: :destroy
   serialize :metadata
 
+  validates :name, :email, :gender, :birthday, :id_type, :id_number, :locality, :address, :phone_number, :role, presence: true
+
   enum role: [ :client, :seller ]
   enum gender: [ :male, :female ]
 
@@ -47,6 +49,12 @@ class User < ActiveRecord::Base
 
   def unread_answers_count
     self.incoming_comments.answer.where(read: false).count
+  end
+
+  def interacted_products_as(interact_as)
+    where_clause = 'interactions.user_id' if interact_as == :user
+    where_clause = 'interactions.owner_id' if interact_as == :owner
+    Product.distinct.select('products.*, MAX(interactions.updated_at) as interaction_updated_at').joins(:interactions).where(where_clause => self).group(:product_id).order('interaction_updated_at DESC')
   end
   
   def token_validation_response

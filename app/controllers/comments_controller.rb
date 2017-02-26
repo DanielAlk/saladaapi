@@ -17,13 +17,14 @@ class CommentsController < ApplicationController
   # GET /comments/1
   # GET /comments/1.json
   def show
-    render json: @comment
+    render json: @comment, complete: true
   end
 
   # POST /comments
   # POST /comments.json
   def create
     @comment = Comment.new(comment_params)
+    @comment.user = current_user
 
     if @comment.save
       render json: @comment, status: :created, location: @comment
@@ -57,9 +58,12 @@ class CommentsController < ApplicationController
   # DELETE /comments/1
   # DELETE /comments/1.json
   def destroy
-    @comment.destroy
-
-    head :no_content
+    if @comment.commentable.user == current_user
+      @comment.destroy
+      head :no_content
+    else
+      render json: ['Unable to delete comment'], status: :unauthorized
+    end
   end
 
   private
@@ -69,6 +73,6 @@ class CommentsController < ApplicationController
     end
 
     def comment_params
-      params.permit(:title, :text, :commentable_id, :commentable_type, :user_id, :role, :read)
+      params.permit(:title, :text, :commentable_id, :commentable_type, :read)
     end
 end

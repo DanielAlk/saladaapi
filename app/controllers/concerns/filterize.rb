@@ -16,7 +16,7 @@ module Filterize
 
 	def filterize
 		filterize_options = self.class.filterize_options
-		@filterable = JSON.parse(params[filterize_options[:param] || :filterable]).try(:symbolize_keys) rescue false
+		@filterable = JSON.parse(params[filterize_options[:param] || :filterable]).try(:deep_symbolize_keys) rescue false
 		object = filterize_options[:object].to_s.titlecase.constantize rescue false
 		object = object || self.class.name.sub('Controller', '').singularize.constantize
 		collection = object.where(nil)
@@ -49,13 +49,13 @@ module Filterize
 			end
 		end
 		if (defaults = filterize_options).present?
-			if (order = defaults[:order]).present?
+			if (order = defaults[:order]).present? && (defaults[:order_if].blank? || (defaults[:order_if].call(@filterable) rescue false) || (self.send(defaults[:order_if], @filterable) rescue false))
 				collection = collection.forder order
 			end
-			if (scope = defaults[:scope]).present?
+			if (scope = defaults[:scope]).present? && (defaults[:scope_if].blank? || (defaults[:scope_if].call(@filterable) rescue false) || (self.send(defaults[:scope_if], @filterable) rescue false))
 				collection = collection.send(scope.to_s)
 			end
-			if (exclude = defaults[:exclude]).present? && (defaults[:exclude_if].blank? || defaults[:exclude_if].call(@filterable))
+			if (exclude = defaults[:exclude]).present? && (defaults[:exclude_if].blank? || (defaults[:exclude_if].call(@filterable) rescue false) || (self.send(defaults[:exclude_if], @filterable) rescue false))
 				collection = collection.where.not(exclude)
 			end
 		end

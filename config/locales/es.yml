@@ -21,6 +21,14 @@
 
 es:
   activerecord:
+    models:
+      comment:
+        one: El comentario
+        other: Los comentarios
+    attributes:
+      comment:
+        text: El comentario
+        commentable: El producto
     errors:
       messages:
         record_invalid: "La validación falló: %{errors}"
@@ -145,38 +153,38 @@ es:
       second: Segundos
       year: Año
   errors:
-    format: "%{attribute} %{message}"
+    #format: "%{attribute} %{message}"
     messages:
-      accepted: debe ser aceptado
-      blank: no puede estar en blanco
-      present: debe estar en blanco
-      confirmation: no coincide
-      empty: no puede estar vacío
-      equal_to: debe ser igual a %{count}
-      even: debe ser un número par
-      exclusion: está reservado
-      greater_than: debe ser mayor que %{count}
-      greater_than_or_equal_to: debe ser mayor o igual que %{count}
-      inclusion: no está incluido en la lista
-      invalid: es inválido
-      less_than: debe ser menor que %{count}
-      less_than_or_equal_to: debe ser menor o igual que %{count}
-      model_invalid: "La validación falló: %{errors}"
-      not_a_number: no es un número
-      not_an_integer: debe ser un entero
-      odd: debe ser un número non
-      required: debe existir
-      taken: ya existe
+      accepted: "%{attribute} debe ser aceptado"
+      blank: "%{attribute} no puede estar en blanco"
+      present: "%{attribute} debe estar en blanco"
+      confirmation: "%{attribute} no coincide"
+      empty: "%{attribute} no puede estar vacío"
+      equal_to: "%{attribute} debe ser igual a %{count}"
+      even: "%{attribute} debe ser un número par"
+      exclusion: "%{attribute} está reservado"
+      greater_than: "%{attribute} debe ser mayor que %{count}"
+      greater_than_or_equal_to: "%{attribute} debe ser mayor o igual que %{count}"
+      inclusion: "%{attribute} no está incluido en la lista"
+      invalid: "%{attribute} es inválido"
+      less_than: "%{attribute} debe ser menor que %{count}"
+      less_than_or_equal_to: "%{attribute} debe ser menor o igual que %{count}"
+      model_invalid: "%{attribute} La validación falló: %{errors}"
+      not_a_number: "%{attribute} no es un número"
+      not_an_integer: "%{attribute} debe ser un entero"
+      odd: "%{attribute} debe ser un número non"
+      required: "%{attribute} debe existir"
+      taken: "%{attribute} ya existe"
       too_long:
-        one: es demasiado largo (máximo 1 caracter)
-        other: es demasiado largo (máximo %{count} caracteres)
+        one: "%{attribute} es demasiado largo (máximo 1 caracter)"
+        other: "%{attribute} es demasiado largo (máximo %{count} caracteres)"
       too_short:
-        one: es demasiado corto (mínimo 1 caracter)
-        other: es demasiado corto (mínimo %{count} caracteres)
+        one: "%{attribute} es demasiado corto (mínimo 1 caracter)"
+        other: "%{attribute} es demasiado corto (mínimo %{count} caracteres)"
       wrong_length:
-        one: longitud errónea (debe ser de 1 caracter)
-        other: longitud errónea (debe ser de %{count} caracteres)
-      other_than: debe ser distinto de %{count}
+        one: "%{attribute} longitud errónea (debe ser de 1 caracter)"
+        other: "%{attribute} longitud errónea (debe ser de %{count} caracteres)"
+      other_than: "%{attribute} debe ser distinto de %{count}"
     template:
       body: 'Revise que los siguientes campos sean válidos:'
       header:

@@ -1,6 +1,6 @@
 class ProductsController < ApplicationController
   include Filterize
-  filterize order: :created_at_desc, param: :f
+  filterize order: :created_at_desc, param: :f, scope: :published, scope_if: :not_current_user_scope
   before_filter :authenticate_user!, except: [:index, :show]
   before_filter :authenticate_user!, only: :index, if: -> { params[:interaction].present? }
   before_action :filterize, only: :index, unless: -> { params[:interaction].present? }
@@ -19,7 +19,11 @@ class ProductsController < ApplicationController
   # GET /products/1
   # GET /products/1.json
   def show
-    render json: @product, complete: true
+    if @product.published? || user_signed_in? && @product.user == current_user
+      render json: @product, complete: true
+    else
+      render json: ['Product not found'], status: :not_found
+    end
   end
 
   # POST /products
@@ -40,7 +44,9 @@ class ProductsController < ApplicationController
   def update
     @product = Product.find(params[:id])
 
-    if @product.update(product_params)
+    if @product.user != current_user
+      render json: ['Unable to update product'], status: :unauthorized
+    elsif @product.update(product_params)
       head :no_content
     else
       render json: @product.errors, status: :unprocessable_entity
@@ -50,12 +56,19 @@ class ProductsController < ApplicationController
   # DELETE /products/1
   # DELETE /products/1.json
   def destroy
-    @product.destroy
-
-    head :no_content
+    if @product.user == current_user
+      @product.destroy
+      head :no_content
+    else
+      render json: ['Unable to delete product'], status: :unauthorized
+    end
   end
 
   private
+
+    def not_current_user_scope(f)
+      current_user.id != f[:scopes][:user].to_i rescue true
+    end
 
     def interaction_params
       JSON.parse(params[:interaction]).try(:symbolize_keys)
@@ -72,9 +85,11 @@ class ProductsController < ApplicationController
     end
 
     def set_interaction_products
-      where_clause = 'interactions.user_id' if interaction_params[:user]
-      where_clause = 'interactions.owner_id' if interaction_params[:owner]
-      @products = Product.distinct.select('products.*, MAX(interactions.updated_at) as interaction_updated_at').joins(:interactions).where(where_clause => current_user).group(:product_id).order('interaction_updated_at DESC')
+      if interaction_params[:owner]
+        @products = current_user.interacted_products_as(:owner)
+      elsif interaction_params[:user]
+        @products = current_user.interacted_products_as(:user)
+      end
     end
 
     def set_product
