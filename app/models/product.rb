@@ -9,7 +9,9 @@ class Product < ActiveRecord::Base
 
   validates :title, presence: true, length: { minimum: 4, maximum: 50 }
   validates :description, presence: true, length: { minimum: 6, maximum: 140 }
-  validates :user, :category, :shop, :stock, :price, presence: true
+  validates :user, :category, :shop, presence: true
+  validates :stock, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 99999 }
+  validates :price, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 999999.99 }
 
   filterable scopes: [ :status, :special ]
   filterable search: [ :title, :price, :description ]

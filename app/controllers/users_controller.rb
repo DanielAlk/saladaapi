@@ -32,8 +32,9 @@ class UsersController < ApplicationController
   # PATCH/PUT /users/1.json
   def update
     @user = User.find(params[:id])
-
-    if @user.update(user_params)
+    if @user != current_user
+      render json: ['Not authorized for that action'], status: :unauthorized
+    elsif @user.update(user_params)
       head :no_content
     else
       render json: @user.errors, status: :unprocessable_entity
@@ -43,9 +44,12 @@ class UsersController < ApplicationController
   # DELETE /users/1
   # DELETE /users/1.json
   def destroy
-    @user.destroy
-
-    head :no_content
+    if @user != current_user
+      render json: ['Not authorized for that action'], status: :unauthorized
+    else
+      @user.destroy
+      head :no_content
+    end
   end
 
   private

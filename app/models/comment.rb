@@ -15,7 +15,7 @@ class Comment < ActiveRecord::Base
   before_create :save_receiver
   before_create :mark_as_answer, if: :is_answer?
   after_create :handle_interaction
-  #after_create :push_notificate
+  after_create :push_notificate
   before_destroy :assign_new_last_comment_to_interaction, if: -> { self.interaction.last_comment == self }
   after_destroy :destroy_interaction_if_empty, if: -> { self.interaction.last_comment.blank? }
 

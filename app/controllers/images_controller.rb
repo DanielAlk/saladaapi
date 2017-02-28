@@ -20,7 +20,14 @@ class ImagesController < ApplicationController
   # POST /images.json
   def create
     if params[:images].present?
-      images_params = params[:images].map { |k,i| { item: i[:item], imageable_id: i[:imageable_id], imageable_type: i[:imageable_type] } }
+      first_image = params[:images].first[1]
+      if first_image[:imageable_type] == 'Product'
+        imageable = Product.find(first_image[:imageable_id])
+      end
+      if imageable.blank? || imageable.user != current_user
+        return render json: ['You have no authorization for that action'], status: :unauthorized
+      end
+      images_params = params[:images].map { |k,i| { item: i[:item], imageable: imageable } }
       images = Image.create(images_params)
       @invalid = []
       @images = []
@@ -33,6 +40,12 @@ class ImagesController < ApplicationController
       end
       render json: { images: @images, invalid: @invalid }, status: :created
     else
+      if image_params[:imageable_type] == 'Product'
+        imageable = Product.find(image_params[:imageable_id])
+      end
+      if imageable.blank? || imageable.user != current_user
+        return render json: ['You have no authorization for that action'], status: :unauthorized
+      end
       @image = Image.new(image_params)
 
       if @image.save
@@ -47,8 +60,9 @@ class ImagesController < ApplicationController
   # PATCH/PUT /images/1.json
   def update
     @image = Image.find(params[:id])
-
-    if @image.update(image_params)
+    if @image.imageable.user != current_user
+      render json: ['You have no authorization for that action'], status: :unauthorized
+    elsif @image.update(image_params)
       head :no_content
     else
       render json: @image.errors, status: :unprocessable_entity
@@ -58,9 +72,12 @@ class ImagesController < ApplicationController
   # DELETE /images/1
   # DELETE /images/1.json
   def destroy
-    @image.destroy
-
-    head :no_content
+    if @image.imageable.user != current_user
+      render json: ['You have no authorization for that action'], status: :unauthorized
+    else
+      @image.destroy
+      head :no_content
+    end
   end
 
   private

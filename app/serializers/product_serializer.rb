@@ -8,7 +8,7 @@ class ProductSerializer < ActiveModel::Serializer
   has_many :images
   has_one :shop
   has_one :user, if: -> { instance_options[:complete] }
-  has_one :category, if: -> { instance_options[:complete] }
+  has_one :category
 
   def unanswered_questions_count
   	object.interactions.select(:id).inject(0){|sum,p| sum + p.unanswered_questions_count}

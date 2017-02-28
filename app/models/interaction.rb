@@ -5,8 +5,6 @@ class Interaction < ActiveRecord::Base
   belongs_to :last_comment, class_name: :Comment
   has_many :comments, dependent: :destroy
 
-  validates :owner, :user, :product, presence: true
-
   before_create :save_inherited_values
 
   def unread_answers_count(receiver)

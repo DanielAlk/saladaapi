@@ -1,6 +1,5 @@
 Rails.application.routes.draw do
-  get 'data/shop_locations'
-  get 'data/shop_conditions'
+  get 'data/shop'
 
   resources :comments, except: [:new, :edit] do
     collection do

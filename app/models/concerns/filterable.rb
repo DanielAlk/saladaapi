@@ -7,9 +7,10 @@ module Filterable
     def fsearch(search_string)
     	options = filterable_options[:search]
   		return nil if options.blank?
+      table_name = self.name.pluralize.downcase
   		sql = ''
   		options.each do |o|
-  			sql += o.to_s + ' LIKE :search_string OR '
+  			sql += table_name + '.' + o.to_s + ' LIKE :search_string OR '
   		end
 			self.where(sql[0...-4], search_string: '%' + search_string + '%')
   	end

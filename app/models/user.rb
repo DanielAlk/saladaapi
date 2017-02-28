@@ -54,7 +54,7 @@ class User < ActiveRecord::Base
   def interacted_products_as(interact_as)
     where_clause = 'interactions.user_id' if interact_as == :user
     where_clause = 'interactions.owner_id' if interact_as == :owner
-    Product.distinct.select('products.*, MAX(interactions.updated_at) as interaction_updated_at').joins(:interactions).where(where_clause => self).group(:product_id).order('interaction_updated_at DESC')
+    Product.published.distinct.select('products.*, MAX(interactions.updated_at) as interaction_updated_at').joins(:interactions).where(where_clause => self).group(:product_id).order('interaction_updated_at DESC')
   end
   
   def token_validation_response

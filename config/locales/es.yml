@@ -29,6 +29,15 @@ es:
       comment:
         text: El comentario
         commentable: El producto
+    attributes:
+      product:
+        user: El usuario
+        category: La categoría
+        shop: El puesto
+        title: El título
+        stock: El stock
+        price: El precio
+        description: La descripción
     errors:
       messages:
         record_invalid: "La validación falló: %{errors}"
