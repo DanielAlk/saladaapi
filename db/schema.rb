@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170218122923) do
+ActiveRecord::Schema.define(version: 20170301082659) do
 
   create_table "categories", force: :cascade do |t|
     t.string   "title",      limit: 255
@@ -71,6 +71,26 @@ ActiveRecord::Schema.define(version: 20170218122923) do
   add_index "interactions", ["product_id"], name: "index_interactions_on_product_id", using: :btree
   add_index "interactions", ["user_id"], name: "index_interactions_on_user_id", using: :btree
 
+  create_table "payments", force: :cascade do |t|
+    t.integer  "user_id",                  limit: 4
+    t.integer  "payable_id",               limit: 4
+    t.string   "payable_type",             limit: 255
+    t.decimal  "transaction_amount",                     precision: 8, scale: 2
+    t.text     "mercadopago_preference",   limit: 65535
+    t.text     "payment_info",             limit: 65535
+    t.string   "init_point",               limit: 255
+    t.integer  "collection_id",            limit: 8
+    t.string   "collection_status",        limit: 255
+    t.string   "collection_status_detail", limit: 255
+    t.string   "preference_id",            limit: 255
+    t.string   "payment_type",             limit: 255
+    t.datetime "created_at",                                                     null: false
+    t.datetime "updated_at",                                                     null: false
+  end
+
+  add_index "payments", ["payable_type", "payable_id"], name: "index_payments_on_payable_type_and_payable_id", using: :btree
+  add_index "payments", ["user_id"], name: "index_payments_on_user_id", using: :btree
+
   create_table "products", force: :cascade do |t|
     t.integer  "user_id",     limit: 4
     t.integer  "category_id", limit: 4
@@ -88,6 +108,17 @@ ActiveRecord::Schema.define(version: 20170218122923) do
   add_index "products", ["category_id"], name: "index_products_on_category_id", using: :btree
   add_index "products", ["shop_id"], name: "index_products_on_shop_id", using: :btree
   add_index "products", ["user_id"], name: "index_products_on_user_id", using: :btree
+
+  create_table "promotions", force: :cascade do |t|
+    t.string   "name",          limit: 255
+    t.string   "title",         limit: 255
+    t.text     "description",   limit: 65535
+    t.decimal  "price",                       precision: 8, scale: 2
+    t.integer  "duration",      limit: 4
+    t.integer  "duration_type", limit: 4,                             default: 0
+    t.datetime "created_at",                                                      null: false
+    t.datetime "updated_at",                                                      null: false
+  end
 
   create_table "sheds", force: :cascade do |t|
     t.string   "title",      limit: 255
@@ -170,6 +201,7 @@ ActiveRecord::Schema.define(version: 20170218122923) do
   add_foreign_key "interactions", "products"
   add_foreign_key "interactions", "users"
   add_foreign_key "interactions", "users", column: "owner_id"
+  add_foreign_key "payments", "users"
   add_foreign_key "products", "categories"
   add_foreign_key "products", "shops"
   add_foreign_key "products", "users"

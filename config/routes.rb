@@ -6,6 +6,12 @@ Rails.application.routes.draw do
       put '/', action: :update_many
     end
   end
+  resources :payments, except: [:new, :edit] do
+    collection do
+      post 'notifications', action: :notifications
+    end
+  end
+  resources :promotions, except: [:new, :edit]
   resources :users, except: [:new, :edit]
   resources :products, except: [:new, :edit]
   resources :images, except: [:new, :edit]
