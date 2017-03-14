@@ -9,6 +9,7 @@ class Shop < ActiveRecord::Base
 
   validates :description, presence: true, length: { minimum: 4, maximum: 25 }
   validates :user, :shed, :category, :location, :location_detail, :between_down, :between_up, :number_id, :letter_id, :fixed, :opens, :condition, presence: true
+  validate :user_limit
 
   filterable scopes: [ :status ]
   filterable search: [ :description ]
@@ -43,4 +44,8 @@ class Shop < ActiveRecord::Base
     ActionController::Base.helpers.asset_url("missing.png", :digest => false)
   end
 
+  private
+    def user_limit
+      errors.add(:user_limit, "Not allowed") if self.new_record? && self.user.shop_limit != :unlimited && self.user.shops.count >= self.user.shop_limit
+    end
 end

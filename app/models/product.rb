@@ -12,6 +12,7 @@ class Product < ActiveRecord::Base
   validates :user, :category, :shop, presence: true
   validates :stock, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 99999 }
   validates :price, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 999999.99 }
+  validate :user_limit
 
   filterable scopes: [ :status, :special ]
   filterable search: [ :title, :price, :description ]
@@ -32,4 +33,9 @@ class Product < ActiveRecord::Base
   def cover
   	self.images.try(:first).try(:url)
   end
+
+  private
+    def user_limit
+      errors.add(:user_limit, "Not allowed") if self.new_record? && self.user.product_limit != :unlimited && self.user.products.count >= self.user.product_limit
+    end
 end

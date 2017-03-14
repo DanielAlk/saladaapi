@@ -22,6 +22,7 @@ class User < ActiveRecord::Base
   validates :name, :email, :gender, :birthday, :id_type, :id_number, :locality, :address, :phone_number, :role, presence: true
 
   enum role: [ :client, :seller ]
+  enum special: [ :free, :premium ]
   enum gender: [ :male, :female ]
 
   before_create :ionic_create
@@ -49,6 +50,30 @@ class User < ActiveRecord::Base
 
   def unread_answers_count
     self.incoming_comments.answer.where(read: false).count
+  end
+
+  def product_limit
+    if self.free?
+      5
+    elsif self.premium?
+      :unlimited
+    end
+  end
+
+  def product_image_limit
+    if self.free?
+      1
+    elsif self.premium?
+      5
+    end
+  end
+
+  def shop_limit
+    if self.free?
+      1
+    elsif self.premium?
+      :unlimited
+    end
   end
 
   def interacted_products_as(interact_as)

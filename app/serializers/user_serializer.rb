@@ -1,3 +1,3 @@
 class UserSerializer < ActiveModel::Serializer
-  attributes :id, :badge_number, :address, :avatar_content_type, :avatar_file_name, :avatar_file_size, :avatar_updated_at, :birthday, :email, :gender, :id_number, :id_type, :image, :io_uid, :locality, :metadata, :name, :nickname, :phone_number, :provider, :role, :uid, :unanswered_questions_count, :unread_answers_count
+  attributes :id, :badge_number, :address, :avatar_content_type, :avatar_file_name, :avatar_file_size, :avatar_updated_at, :birthday, :email, :gender, :id_number, :id_type, :image, :io_uid, :locality, :metadata, :name, :nickname, :phone_number, :provider, :role, :special, :uid, :product_limit, :product_image_limit, :shop_limit, :unanswered_questions_count, :unread_answers_count
 end
