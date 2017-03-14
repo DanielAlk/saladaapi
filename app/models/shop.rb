@@ -8,7 +8,7 @@ class Shop < ActiveRecord::Base
   has_many :products, dependent: :destroy
 
   validates :description, presence: true, length: { minimum: 4, maximum: 25 }
-  validates :user, :shed, :category, :location, :location_detail, :between_down, :between_up, :number_id, :letter_id, :fixed, :opens, :condition, presence: true
+  validates :user, :shed, :category, :number_id, :letter_id, :fixed, :opens, :condition, presence: true
   validate :user_limit
 
   filterable scopes: [ :status ]
@@ -24,7 +24,7 @@ class Shop < ActiveRecord::Base
   }
 
   enum status: [ :draft, :published, :paused ]
-  enum location: [ :aisle, :line, :side, :other ]
+  enum location: [ :aisle, :side ]
   enum condition: [ :occupied, :empty, :repairs ]
 
   def cover

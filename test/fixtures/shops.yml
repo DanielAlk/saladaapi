@@ -6,8 +6,9 @@ one:
   category_id: 
   location: 1
   location_detail: MyString
-  between_down: MyString
-  between_up: MyString
+  location_row: 1
+  location_floor: 1
+  gallery_name: MyString
   number_id: 1
   letter_id: MyString
   fixed: false
@@ -21,8 +22,9 @@ two:
   category_id: 
   location: 1
   location_detail: MyString
-  between_down: MyString
-  between_up: MyString
+  location_row: 1
+  location_floor: 1
+  gallery_name: MyString
   number_id: 1
   letter_id: MyString
   fixed: false

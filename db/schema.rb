@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170314072530) do
+ActiveRecord::Schema.define(version: 20170314172228) do
 
   create_table "categories", force: :cascade do |t|
     t.string   "title",      limit: 255
@@ -133,8 +133,6 @@ ActiveRecord::Schema.define(version: 20170314072530) do
     t.string   "description",        limit: 255
     t.integer  "location",           limit: 4
     t.string   "location_detail",    limit: 255
-    t.string   "between_down",       limit: 255
-    t.string   "between_up",         limit: 255
     t.integer  "number_id",          limit: 4
     t.string   "letter_id",          limit: 255
     t.boolean  "fixed"
@@ -148,6 +146,9 @@ ActiveRecord::Schema.define(version: 20170314072530) do
     t.integer  "status",             limit: 4,   default: 0
     t.datetime "created_at",                                 null: false
     t.datetime "updated_at",                                 null: false
+    t.integer  "location_floor",     limit: 4
+    t.integer  "location_row",       limit: 4
+    t.string   "gallery_name",       limit: 255
   end
 
   add_index "shops", ["category_id"], name: "index_shops_on_category_id", using: :btree
@@ -170,6 +171,7 @@ ActiveRecord::Schema.define(version: 20170314072530) do
     t.string   "nickname",               limit: 255
     t.string   "image",                  limit: 255
     t.string   "email",                  limit: 255
+    t.integer  "special",                limit: 4,     default: 0
     t.integer  "role",                   limit: 4
     t.string   "io_uid",                 limit: 255
     t.string   "id_type",                limit: 255
@@ -188,7 +190,6 @@ ActiveRecord::Schema.define(version: 20170314072530) do
     t.text     "tokens",                 limit: 65535
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "special",                limit: 4,     default: 0
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree
