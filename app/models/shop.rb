@@ -8,7 +8,7 @@ class Shop < ActiveRecord::Base
   has_many :products, dependent: :destroy
 
   validates :description, presence: true, length: { minimum: 4, maximum: 25 }
-  validates :user, :shed, :category, :number_id, :letter_id, :fixed, :opens, :condition, presence: true
+  validates :user, :shed, :category, :number_id, :fixed, :opens, :condition, presence: true
   validate :user_limit
 
   filterable scopes: [ :status ]
