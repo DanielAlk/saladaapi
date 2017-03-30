@@ -1,5 +1,5 @@
 class ShopSerializer < ActiveModel::Serializer
-  attributes :id, :description, :location, :location_detail, :location_floor, :location_row, :gallery_name, :number_id, :letter_id, :fixed, :opens, :condition, :status, :rating, :image, :cover, :shed_title, :user_id
+  attributes :id, :description, :location, :location_detail, :location_floor, :location_row, :gallery_name, :number_id, :letter_id, :fixed, :opens, :condition, :status, :rating, :image, :cover, :shed_title, :user_id, :shed_id, :category_id, :user_name
   has_one :user, if: -> { instance_options[:complete] || instance_options[:owner] }
   has_one :shed
   has_one :category
@@ -8,5 +8,9 @@ class ShopSerializer < ActiveModel::Serializer
   end
   has_many :products, if: -> { instance_options[:complete] && !instance_options[:owner] } do
   	object.products.published
+  end
+
+  def user_name
+    object.user.name
   end
 end

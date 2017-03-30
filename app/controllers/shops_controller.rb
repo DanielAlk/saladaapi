@@ -2,7 +2,7 @@ class ShopsController < ApplicationController
   include Filterize
   filterize order: :created_at_desc, param: :f
   before_action :filterize, only: :index
-  before_filter :authenticate_user!, except: [:index, :show]
+  #before_filter :authenticate_user!, except: [:index, :show]
   before_action :set_shop, only: [:show, :update, :destroy]
 
   # GET /shops
@@ -27,7 +27,7 @@ class ShopsController < ApplicationController
   # POST /shops.json
   def create
     @shop = Shop.new(shop_params)
-    @shop.user = current_user
+    #@shop.user = current_user
 
     if @shop.save
       render json: @shop, status: :created, location: @shop
@@ -40,9 +40,9 @@ class ShopsController < ApplicationController
   # PATCH/PUT /shops/1.json
   def update
     @shop = Shop.find(params[:id])
-    if @shop.user != current_user
-      render json: ['Unable to update shop'], status: :unauthorized
-    elsif @shop.update(shop_params)
+    #if @shop.user != current_user
+    #  render json: ['Unable to update shop'], status: :unauthorized
+    if @shop.update(shop_params)
       head :no_content
     else
       render json: @shop.errors, status: :unprocessable_entity
@@ -52,12 +52,12 @@ class ShopsController < ApplicationController
   # DELETE /shops/1
   # DELETE /shops/1.json
   def destroy
-    if @shop.user == current_user
+    #if @shop.user == current_user
       @shop.destroy
       head :no_content
-    else
-      render json: ['Unable to delete shop'], status: :unauthorized
-    end
+    #else
+    #  render json: ['Unable to delete shop'], status: :unauthorized
+    #end
   end
 
   private
@@ -67,6 +67,10 @@ class ShopsController < ApplicationController
     end
 
     def shop_params
-      params.permit(:user_id, :shed_id, :category_id, :description, :location, :location_detail, :location_floor, :location_row, :gallery_name, :number_id, :letter_id, :fixed, :opens, :condition, :status, :rating, :image)
+      if (params[:image].to_s.start_with?('/system') rescue false) || (params[:image].to_s.start_with?('/assets') rescue false)
+        params.permit(:user_id, :shed_id, :category_id, :description, :location, :location_detail, :location_floor, :location_row, :gallery_name, :number_id, :letter_id, :fixed, :opens, :condition, :status, :rating)
+      else
+        params.permit(:user_id, :shed_id, :category_id, :description, :location, :location_detail, :location_floor, :location_row, :gallery_name, :number_id, :letter_id, :fixed, :opens, :condition, :status, :rating, :image, :image_file_name)
+      end
     end
 end
