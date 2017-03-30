@@ -6,19 +6,23 @@
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 Shed.create([
-	{ title: "Urkupiña" },
-	{ title: "Punta Mogote" },
-	{ title: "Los Coreanos" },
-	{ title: "Ocean" },
-	{ title: "Atlantida" },
-	{ title: "Galerias" }
+	{ title: 'Urkupiña' },
+	{ title: 'Punta Mogote' },
+	{ title: 'Los Coreanos' },
+	{ title: 'Ocean' },
+	{ title: 'Atlantida' },
+	{ title: 'Galerias' }
 ])
 
 Category.create([
-	{ title: "Ropa informal" },
-	{ title: "Calzado" },
-	{ title: "Accesorios" },
-	{ title: "Electrónica" },
-	{ title: "Articulos para el hogar" },
-	{ title: "Relojeria" }
+	{ title: 'Ropa informal' },
+	{ title: 'Calzado' },
+	{ title: 'Accesorios' },
+	{ title: 'Electrónica' },
+	{ title: 'Articulos para el hogar' },
+	{ title: 'Relojeria' }
+])
+
+Promotion.create([
+	{ name: 'Towering', title: 'Vende más, anuncia en destacado', description: 'Recibe presencia en la página principal de Salada App, paga <b>$200.-</b>  por única vez, y obten una mejor ubicación en listados de producto.', price: 200.00, duration: 30 }
 ])
