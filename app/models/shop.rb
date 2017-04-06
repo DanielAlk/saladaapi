@@ -7,7 +7,7 @@ class Shop < ActiveRecord::Base
   belongs_to :category
   has_many :products, dependent: :destroy
 
-  validates :description, presence: true, length: { minimum: 4, maximum: 25 }
+  validates :description, presence: true, length: { minimum: 4, maximum: 50 }
   validates :user, :shed, :category, :number_id, :fixed, :opens, :condition, presence: true
   validate :user_limit
 
