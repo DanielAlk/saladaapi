@@ -6,6 +6,10 @@ class UsersController < ApplicationController
   # GET /users.json
   def index
     @users = User.all
+    if params[:f].present? && params[:f][:scopes].present? && params[:f][:scopes][:role].present? && [:seller, :client].include?(params[:f][:scopes][:role].to_sym)
+      @users = @users.seller if params[:f][:scopes][:role].to_sym == :seller
+      @users = @users.client if params[:f][:scopes][:role].to_sym == :client
+    end
 
     render json: @users
   end

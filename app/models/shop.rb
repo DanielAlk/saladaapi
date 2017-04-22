@@ -12,7 +12,7 @@ class Shop < ActiveRecord::Base
   validate :user_limit
 
   filterable scopes: [ :status ]
-  filterable search: [ :description ]
+  filterable search: [ :description, :number_id ]
   filterable order: [ :category, :shed, :user ]
   filterable labels: {
     order: {

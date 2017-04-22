@@ -10,6 +10,11 @@ class ShopsController < ApplicationController
   def index
     response.headers['X-Total-Count'] = @shops.count.to_s
     @shops = @shops.page(params[:page]) if params[:page].present?
+    if params[:page].present?
+      response.headers["X-total"] = @shops.total_count.to_s
+      response.headers["X-offset"] = @shops.offset_value.to_s
+      response.headers["X-limit"] = @shops.limit_value.to_s
+    end
     render json: @shops
   end
 
