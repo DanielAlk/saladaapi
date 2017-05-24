@@ -25,11 +25,16 @@ es:
       comment:
         one: El comentario
         other: Los comentarios
+      shed:
+        one: El galpón
+        other: Los galpones
+      category:
+        one: La categoría
+        other: Las categorías
     attributes:
       comment:
         text: El comentario
         commentable: El producto
-    attributes:
       product:
         user: El usuario
         category: La categoría
@@ -38,6 +43,20 @@ es:
         stock: El stock
         price: El precio
         description: La descripción
+      shop:
+        description: La descripción
+        shed: El galpón
+        category: La categoría
+        number_id: El número de puesto
+        fixed: Puesto fijo
+        opens: Días abierto
+        condition: Estado
+      contact:
+        name: El nombre
+        email: El email
+        tel: El teléfono
+        role: El tipo de usuario
+        message: El mensaje
     errors:
       messages:
         record_invalid: "La validación falló: %{errors}"
