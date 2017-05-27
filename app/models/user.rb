@@ -7,6 +7,7 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable
   include DeviseTokenAuth::Concerns::User
   include IonicApi
+  include Filterable
 
   has_attached_file :avatar, styles: { medium: "300x300#", small: "140x140#", thumb: "80x80#" }
   validates_attachment :avatar, content_type: { content_type: /\Aimage\/.*\Z/ }
@@ -20,6 +21,8 @@ class User < ActiveRecord::Base
   serialize :metadata
 
   validates :name, :email, :gender, :birthday, :id_type, :id_number, :locality, :address, :phone_number, :role, presence: true
+
+  filterable search: [:name, :email]
 
   enum role: [ :client, :seller ]
   enum special: [ :free, :premium ]

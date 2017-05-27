@@ -1,17 +1,28 @@
 class UsersController < ApplicationController
+  include Filterize
+  filterize param: :f
   before_filter :authenticate_user!, except: [:index, :show]
   before_action :set_user, only: [:show, :update, :destroy]
+  before_action :filterize, only: :index
 
   # GET /users
   # GET /users.json
   def index
-    @users = User.all
-    if params[:f].present? && params[:f][:scopes].present? && params[:f][:scopes][:role].present? && [:seller, :client].include?(params[:f][:scopes][:role].to_sym)
-      @users = @users.seller if params[:f][:scopes][:role].to_sym == :seller
-      @users = @users.client if params[:f][:scopes][:role].to_sym == :client
+    if params[:page].present?
+      @users = @users.page(params[:page])
+      @users = @users.per(params[:per]) if params[:per].present?
+      response.headers["X-total"] = @users.total_count.to_s
+      response.headers["X-offset"] = @users.offset_value.to_s
+      response.headers["X-limit"] = @users.limit_value.to_s
     end
 
-    render json: @users
+    if (JSON.parse(params[:f]).symbolize_keys[:select] == ['id', 'name'] rescue false)
+      render json: @users, minimal: true
+    elsif (JSON.parse(params[:f]).symbolize_keys[:select] == ['id', 'name', 'email', 'role'] rescue false)
+      render json: @users, medium: true
+    else
+      render json: @users
+    end
   end
 
   # GET /users/1
