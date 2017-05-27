@@ -21,6 +21,7 @@ module Filterize
 		object = object || self.class.name.sub('Controller', '').singularize.constantize
 		collection = object.where(nil)
 		if @filterable.present?
+			collection = collection.where(id: @filterable[:select]) if @filterable[:select].present?
 			if @filterable[:scopes].present?
 				@filterable[:scopes].keys.each do |key|
 					if (scope = @filterable[:scopes][key]).present?
