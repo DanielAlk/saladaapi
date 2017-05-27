@@ -48,7 +48,7 @@ class ShopsController < ApplicationController
   def update
     @shop = Shop.find(params[:id])
     if @shop.user != current_user
-      render json: ['Unable to update shop'], status: :unauthorized
+      render json: ['Unable to update shop'], status: :forbidden
     elsif @shop.update(shop_params)
       head :no_content
     else
@@ -63,7 +63,7 @@ class ShopsController < ApplicationController
       @shop.destroy
       head :no_content
     else
-      render json: ['Unable to delete shop'], status: :unauthorized
+      render json: ['Unable to delete shop'], status: :forbidden
     end
   end
   

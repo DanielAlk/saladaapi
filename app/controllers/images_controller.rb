@@ -25,7 +25,7 @@ class ImagesController < ApplicationController
         imageable = Product.find(first_image[:imageable_id])
       end
       if imageable.blank? || imageable.user != current_user
-        return render json: ['You have no authorization for that action'], status: :unauthorized
+        return render json: ['You have no authorization for that action'], status: :forbidden
       end
       images_params = params[:images].map { |k,i| { item: i[:item], imageable: imageable } }
       images = Image.create(images_params)
@@ -44,7 +44,7 @@ class ImagesController < ApplicationController
         imageable = Product.find(image_params[:imageable_id])
       end
       if imageable.blank? || imageable.user != current_user
-        return render json: ['You have no authorization for that action'], status: :unauthorized
+        return render json: ['You have no authorization for that action'], status: :forbidden
       end
       @image = Image.new(image_params)
 
@@ -61,7 +61,7 @@ class ImagesController < ApplicationController
   def update
     @image = Image.find(params[:id])
     if @image.imageable.user != current_user
-      render json: ['You have no authorization for that action'], status: :unauthorized
+      render json: ['You have no authorization for that action'], status: :forbidden
     elsif @image.update(image_params)
       head :no_content
     else
@@ -73,7 +73,7 @@ class ImagesController < ApplicationController
   # DELETE /images/1.json
   def destroy
     if @image.imageable.user != current_user
-      render json: ['You have no authorization for that action'], status: :unauthorized
+      render json: ['You have no authorization for that action'], status: :forbidden
     else
       @image.destroy
       head :no_content

@@ -62,7 +62,7 @@ class CommentsController < ApplicationController
       @comment.destroy
       head :no_content
     else
-      render json: ['Unable to delete comment'], status: :unauthorized
+      render json: ['Unable to delete comment'], status: :forbidden
     end
   end
 

@@ -45,7 +45,7 @@ class ProductsController < ApplicationController
     @product = Product.find(params[:id])
 
     if @product.user != current_user
-      render json: ['Unable to update product'], status: :unauthorized
+      render json: ['Unable to update product'], status: :forbidden
     elsif @product.update(product_params)
       head :no_content
     else
@@ -60,7 +60,7 @@ class ProductsController < ApplicationController
       @product.destroy
       head :no_content
     else
-      render json: ['Unable to delete product'], status: :unauthorized
+      render json: ['Unable to delete product'], status: :forbidden
     end
   end
 

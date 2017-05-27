@@ -48,7 +48,7 @@ class UsersController < ApplicationController
   def update
     @user = User.find(params[:id])
     if @user != current_user
-      render json: ['Not authorized for that action'], status: :unauthorized
+      render json: ['Not authorized for that action'], status: :forbidden
     elsif @user.update(user_params)
       head :no_content
     else
@@ -60,7 +60,7 @@ class UsersController < ApplicationController
   # DELETE /users/1.json
   def destroy
     if @user != current_user
-      render json: ['Not authorized for that action'], status: :unauthorized
+      render json: ['Not authorized for that action'], status: :forbidden
     else
       @user.destroy
       head :no_content
