@@ -45,11 +45,11 @@ class User < ActiveRecord::Base
   end
 
   def unanswered_questions_count
-    #self.incoming_comments.question.unanswered.count
+    self.incoming_comments.question.unanswered.count
   end
 
   def unread_answers_count
-    #self.incoming_comments.answer.where(read: false).count
+    self.incoming_comments.answer.where(read: false).count
   end
 
   def product_limit
