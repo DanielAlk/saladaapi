@@ -8,6 +8,14 @@ class CategoriesController < ApplicationController
   # GET /categories
   # GET /categories.json
   def index
+    response.headers['X-Total-Count'] = @categories.count.to_s
+    if params[:page].present?
+      @categories = @categories.page(params[:page])
+      @categories = @categories.per(params[:per]) if params[:per].present?
+      response.headers["X-total"] = @categories.total_count.to_s
+      response.headers["X-offset"] = @categories.offset_value.to_s
+      response.headers["X-limit"] = @categories.limit_value.to_s
+    end
     render json: @categories
   end
 
