@@ -3,6 +3,7 @@ class ContactsController < ApplicationController
   filterize order: :created_at_desc, param: :f
   before_action :filterize, only: :index
   before_action :set_contact, only: [:show, :update, :destroy]
+  before_action :set_contacts, only: [:update_many, :destroy_many]
 
   # GET /contacts
   # GET /contacts.json
@@ -54,11 +55,34 @@ class ContactsController < ApplicationController
 
     head :no_content
   end
+  
+  # PATCH/PUT /contacts
+  # PATCH/PUT /contacts.json
+  def update_many
+    if @contacts.update_all(contact_params)
+      render json: @contacts, status: :ok, location: contacts_url
+    else
+      render json: @contacts.errors, status: :unprocessable_entity
+    end
+  end
+
+  # DELETE /contacts.json
+  def destroy_many
+    if (@contacts.destroy_all rescue false)
+      head :no_content
+    else
+      render json: @contacts.errors, status: :unprocessable_entity
+    end
+  end
 
   private
 
     def set_contact
       @contact = Contact.find(params[:id])
+    end
+
+    def set_contacts
+      @contacts = Contact.where(id: params[:ids])
     end
 
     def contact_params

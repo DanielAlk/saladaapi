@@ -4,13 +4,15 @@ class ShopsController < ApplicationController
   before_action :filterize, only: :index
   before_filter :authenticate_user!, except: [:index, :show]
   before_action :set_shop, only: [:show, :update, :destroy]
+  before_action :set_shops, only: [:update_many, :destroy_many]
 
   # GET /shops
   # GET /shops.json
   def index
     response.headers['X-Total-Count'] = @shops.count.to_s
-    @shops = @shops.page(params[:page]) if params[:page].present?
     if params[:page].present?
+      @shops = @shops.page(params[:page])
+      @shops = @shops.per(params[:per]) if params[:per].present?
       response.headers["X-total"] = @shops.total_count.to_s
       response.headers["X-offset"] = @shops.offset_value.to_s
       response.headers["X-limit"] = @shops.limit_value.to_s
@@ -64,11 +66,34 @@ class ShopsController < ApplicationController
       render json: ['Unable to delete shop'], status: :unauthorized
     end
   end
+  
+  # PATCH/PUT /shops
+  # PATCH/PUT /shops.json
+  def update_many
+    if @shops.update_all(shop_params)
+      render json: @shops, status: :ok, location: shops_url
+    else
+      render json: @shops.errors, status: :unprocessable_entity
+    end
+  end
+
+  # DELETE /shops.json
+  def destroy_many
+    if (@shops.destroy_all rescue false)
+      head :no_content
+    else
+      render json: @shops.errors, status: :unprocessable_entity
+    end
+  end
 
   private
 
     def set_shop
       @shop = Shop.find(params[:id])
+    end
+
+    def set_shops
+      @shops = Shop.where(id: params[:ids])
     end
 
     def shop_params
