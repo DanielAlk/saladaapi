@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170524020653) do
+ActiveRecord::Schema.define(version: 20171126025726) do
 
   create_table "categories", force: :cascade do |t|
     t.string   "title",      limit: 255
@@ -167,6 +167,27 @@ ActiveRecord::Schema.define(version: 20170524020653) do
   add_index "shops", ["shed_id"], name: "index_shops_on_shed_id", using: :btree
   add_index "shops", ["user_id"], name: "index_shops_on_user_id", using: :btree
 
+  create_table "subscription_plans", force: :cascade do |t|
+    t.string   "name",            limit: 255
+    t.string   "title",           limit: 255
+    t.integer  "kind",            limit: 4,                           default: 0
+    t.decimal  "price",                       precision: 8, scale: 2
+    t.integer  "subscription_id", limit: 4
+    t.datetime "created_at",                                                      null: false
+    t.datetime "updated_at",                                                      null: false
+  end
+
+  add_index "subscription_plans", ["subscription_id"], name: "index_subscription_plans_on_subscription_id", using: :btree
+
+  create_table "subscriptions", force: :cascade do |t|
+    t.string   "name",           limit: 255
+    t.string   "title",          limit: 255
+    t.text     "description",    limit: 65535
+    t.decimal  "starting_price",               precision: 8, scale: 2
+    t.datetime "created_at",                                           null: false
+    t.datetime "updated_at",                                           null: false
+  end
+
   create_table "users", force: :cascade do |t|
     t.string   "provider",               limit: 255,   default: "email", null: false
     t.string   "uid",                    limit: 255,   default: "",      null: false
@@ -222,4 +243,5 @@ ActiveRecord::Schema.define(version: 20170524020653) do
   add_foreign_key "shops", "categories"
   add_foreign_key "shops", "sheds"
   add_foreign_key "shops", "users"
+  add_foreign_key "subscription_plans", "subscriptions"
 end
