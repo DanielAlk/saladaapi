@@ -32,7 +32,8 @@ class Shop < ActiveRecord::Base
       blank: self.image.blank?,
       thumb: ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.image.url(:thumb),
       small: ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.image.url(:small),
-      medium: ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.image.url(:medium)
+      medium: ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.image.url(:medium),
+      original: ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.image.url(:original)
     }
   end
 
