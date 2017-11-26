@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
   get 'data/shop'
+  get 'data/texts'
+  get 'data/terms_and_conditions'
 
   resources :comments, except: [:new, :edit] do
     collection do
