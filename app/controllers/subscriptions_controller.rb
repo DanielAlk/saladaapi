@@ -1,10 +1,11 @@
 class SubscriptionsController < ApplicationController
+  before_filter :authenticate_user!
   before_action :set_subscription, only: [:show, :update, :destroy]
 
   # GET /subscriptions
   # GET /subscriptions.json
   def index
-    @subscriptions = Subscription.all
+    @subscriptions = Subscription.where(subscriptable_role: User.roles[current_user.role])
 
     render json: @subscriptions
   end

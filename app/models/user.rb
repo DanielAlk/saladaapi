@@ -39,6 +39,48 @@ class User < ActiveRecord::Base
   	end
   end
 
+  def first_name
+    name.split.first(name.split.size-1)
+  end
+
+  def last_name
+    name.split.last
+  end
+
+  def card=(token)
+    $mp.post("/v1/customers/#{customer_id}/cards", { token: token })
+  end
+
+  def delete_card(card_id)
+    $mp.delete("/v1/customers/#{customer_id}/cards/#{card_id}")
+  end
+
+  def cards
+    request = $mp.get("/v1/customers/#{customer_id}/cards")
+    if request["status"] == "200"
+      request["response"]
+    end
+  end
+
+  def create_mercadopago_user
+    unless self.customer_id.present?
+      customer = $mp.post("/v1/customers", { email: email })
+      self.customer_id = customer['response']['id']
+      if self.customer_id.blank?
+        customer = $mp.get("/v1/customers/search", { email: email })
+        self.customer_id = customer['response']['results'][0]['id']
+      end
+      self.save
+    end
+  end
+
+  def approved_payment(payment)
+    self.card = payment.token if payment.save_card && payment.token
+    if payment.payable_type.try(:to_sym) == :SubscriptionPlan
+      self.premium!
+    end
+  end
+
   def image
     if self.avatar.present?
       ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.avatar.url(:medium)
@@ -77,6 +119,10 @@ class User < ActiveRecord::Base
     elsif self.premium?
       :unlimited
     end
+  end
+
+  def has_subscriptions_available?
+    self.free? && Subscription.where(subscriptable_role: User.roles[self.role]).count > 0
   end
 
   def interacted_products_as(interact_as)

@@ -84,20 +84,23 @@ ActiveRecord::Schema.define(version: 20171126025726) do
   add_index "interactions", ["user_id"], name: "index_interactions_on_user_id", using: :btree
 
   create_table "payments", force: :cascade do |t|
-    t.integer  "user_id",                  limit: 4
-    t.integer  "payable_id",               limit: 4
-    t.string   "payable_type",             limit: 255
-    t.decimal  "transaction_amount",                     precision: 8, scale: 2
-    t.text     "mercadopago_preference",   limit: 65535
-    t.text     "payment_info",             limit: 65535
-    t.string   "init_point",               limit: 255
-    t.integer  "collection_id",            limit: 8
-    t.string   "collection_status",        limit: 255
-    t.string   "collection_status_detail", limit: 255
-    t.string   "preference_id",            limit: 255
-    t.string   "payment_type",             limit: 255
-    t.datetime "created_at",                                                     null: false
-    t.datetime "updated_at",                                                     null: false
+    t.integer  "user_id",                limit: 4
+    t.integer  "payable_id",             limit: 4
+    t.string   "payable_type",           limit: 255
+    t.decimal  "transaction_amount",                   precision: 8, scale: 2
+    t.integer  "installments",           limit: 4,                             default: 1
+    t.decimal  "shipment_cost",                        precision: 8, scale: 2
+    t.string   "payment_method_id",      limit: 255
+    t.string   "token",                  limit: 255
+    t.text     "additional_info",        limit: 65535
+    t.text     "mercadopago_payment",    limit: 65535
+    t.integer  "mercadopago_payment_id", limit: 8
+    t.string   "status",                 limit: 255
+    t.string   "status_detail",          limit: 255
+    t.boolean  "save_address",                                                 default: false
+    t.boolean  "save_card",                                                    default: false
+    t.datetime "created_at",                                                                   null: false
+    t.datetime "updated_at",                                                                   null: false
   end
 
   add_index "payments", ["payable_type", "payable_id"], name: "index_payments_on_payable_type_and_payable_id", using: :btree
@@ -145,9 +148,6 @@ ActiveRecord::Schema.define(version: 20171126025726) do
     t.string   "description",        limit: 255
     t.integer  "location",           limit: 4
     t.string   "location_detail",    limit: 255
-    t.integer  "location_floor",     limit: 4
-    t.integer  "location_row",       limit: 4
-    t.string   "gallery_name",       limit: 255
     t.integer  "number_id",          limit: 4
     t.string   "letter_id",          limit: 255
     t.boolean  "fixed"
@@ -161,6 +161,9 @@ ActiveRecord::Schema.define(version: 20171126025726) do
     t.integer  "status",             limit: 4,   default: 0
     t.datetime "created_at",                                 null: false
     t.datetime "updated_at",                                 null: false
+    t.integer  "location_floor",     limit: 4
+    t.integer  "location_row",       limit: 4
+    t.string   "gallery_name",       limit: 255
   end
 
   add_index "shops", ["category_id"], name: "index_shops_on_category_id", using: :btree
@@ -180,12 +183,13 @@ ActiveRecord::Schema.define(version: 20171126025726) do
   add_index "subscription_plans", ["subscription_id"], name: "index_subscription_plans_on_subscription_id", using: :btree
 
   create_table "subscriptions", force: :cascade do |t|
-    t.string   "name",           limit: 255
-    t.string   "title",          limit: 255
-    t.text     "description",    limit: 65535
-    t.decimal  "starting_price",               precision: 8, scale: 2
-    t.datetime "created_at",                                           null: false
-    t.datetime "updated_at",                                           null: false
+    t.string   "name",               limit: 255
+    t.string   "title",              limit: 255
+    t.text     "description",        limit: 65535
+    t.integer  "subscriptable_role", limit: 4,                             default: 0
+    t.decimal  "starting_price",                   precision: 8, scale: 2
+    t.datetime "created_at",                                                           null: false
+    t.datetime "updated_at",                                                           null: false
   end
 
   create_table "users", force: :cascade do |t|
@@ -204,7 +208,6 @@ ActiveRecord::Schema.define(version: 20171126025726) do
     t.string   "nickname",               limit: 255
     t.string   "image",                  limit: 255
     t.string   "email",                  limit: 255
-    t.integer  "special",                limit: 4,     default: 0
     t.integer  "role",                   limit: 4
     t.string   "io_uid",                 limit: 255
     t.string   "id_type",                limit: 255
@@ -220,9 +223,11 @@ ActiveRecord::Schema.define(version: 20171126025726) do
     t.integer  "avatar_file_size",       limit: 4
     t.datetime "avatar_updated_at"
     t.integer  "badge_number",           limit: 4,     default: 0
+    t.string   "customer_id",            limit: 255
     t.text     "tokens",                 limit: 65535
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "special",                limit: 4,     default: 0
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree

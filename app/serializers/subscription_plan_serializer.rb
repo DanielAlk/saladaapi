@@ -1,3 +1,3 @@
 class SubscriptionPlanSerializer < ActiveModel::Serializer
-  attributes :id, :name, :title, :type, :price
+  attributes :id, :name, :title, :kind, :price
 end

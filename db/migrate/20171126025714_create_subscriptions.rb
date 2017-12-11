@@ -4,6 +4,7 @@ class CreateSubscriptions < ActiveRecord::Migration
       t.string :name
       t.string :title
       t.text :description
+      t.integer :subscriptable_role, default: 0
       t.decimal :starting_price, precision: 8, scale: 2
 
       t.timestamps null: false
