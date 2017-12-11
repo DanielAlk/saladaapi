@@ -13,7 +13,6 @@ Rails.application.routes.draw do
       post 'notifications', action: :notifications
     end
   end
-  resources :subscriptions, except: [:new, :edit]
   resources :promotions, except: [:new, :edit]
   resources :users, except: [:new, :edit]
   resources :products, except: [:new, :edit]

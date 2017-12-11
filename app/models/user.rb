@@ -76,9 +76,6 @@ class User < ActiveRecord::Base
 
   def approved_payment(payment)
     self.card = payment.token if payment.save_card && payment.token
-    if payment.payable_type.try(:to_sym) == :SubscriptionPlan
-      self.premium!
-    end
   end
 
   def image
@@ -119,10 +116,6 @@ class User < ActiveRecord::Base
     elsif self.premium?
       :unlimited
     end
-  end
-
-  def has_subscriptions_available?
-    self.free? && Subscription.where(subscriptable_role: User.roles[self.role]).count > 0
   end
 
   def interacted_products_as(interact_as)
