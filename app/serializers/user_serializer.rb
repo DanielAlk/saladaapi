@@ -26,6 +26,11 @@ class UserSerializer < ActiveModel::Serializer
   attribute :shop_limit, if: :complete
   attribute :unanswered_questions_count, if: :complete
   attribute :unread_answers_count, if: :complete
+  attribute :has_plan_groups_available, if: :complete
+
+  def has_plan_groups_available
+    object.has_plan_groups_available?
+  end
 
   def medium
   	instance_options[:minimal] != true

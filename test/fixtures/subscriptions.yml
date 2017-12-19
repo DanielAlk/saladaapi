@@ -1,0 +1,33 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  mercadopago_subscription_id: MyString
+  mercadopago_plan_id: MyString
+  plan: 
+  user: 
+  payer: MyText
+  application_fee: 1.5
+  status: MyString
+  description: MyString
+  start_date: 2017-12-10 23:25:33
+  end_date: 2017-12-10 23:25:33
+  metadata: MyText
+  charges_detail: MyText
+  setup_fee: 1.5
+  mercadopago_subscription: MyText
+
+two:
+  mercadopago_subscription_id: MyString
+  mercadopago_plan_id: MyString
+  plan: 
+  user: 
+  payer: MyText
+  application_fee: 1.5
+  status: MyString
+  description: MyString
+  start_date: 2017-12-10 23:25:33
+  end_date: 2017-12-10 23:25:33
+  metadata: MyText
+  charges_detail: MyText
+  setup_fee: 1.5
+  mercadopago_subscription: MyText

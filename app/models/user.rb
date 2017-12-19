@@ -18,6 +18,8 @@ class User < ActiveRecord::Base
   has_many :incoming_comments, foreign_key: :receiver_id, class_name: :Comment, dependent: :destroy
   has_many :incoming_interactions, foreign_key: :owner_id, class_name: :Interaction, dependent: :destroy
   has_many :outgoing_interactions, class_name: :Interaction, dependent: :destroy
+  has_many :invoices
+  has_many :subscriptions
   serialize :metadata
 
   validates :name, :email, :gender, :birthday, :id_type, :id_number, :locality, :address, :phone_number, :role, presence: true
@@ -51,6 +53,14 @@ class User < ActiveRecord::Base
     $mp.post("/v1/customers/#{customer_id}/cards", { token: token })
   end
 
+  def default_card=(token)
+    request = $mp.post("/v1/customers/#{customer_id}/cards", { token: token })
+    if request['status'].try(:to_i) == 200 || request['status'].try(:to_i) == 201
+      card = request['response'].deep_symbolize_keys
+      $mp.put("/v1/customers/#{customer_id}", { default_card: card[:id] })
+    end      
+  end
+
   def delete_card(card_id)
     $mp.delete("/v1/customers/#{customer_id}/cards/#{card_id}")
   end
@@ -76,6 +86,28 @@ class User < ActiveRecord::Base
 
   def approved_payment(payment)
     self.card = payment.token if payment.save_card && payment.token
+  end
+
+  def handle_subscription(subscription)
+    self.premium! if subscription.authorized?
+    self.free! if subscription.cancelled? || subscription.finished?
+  end
+
+  def available_plan_groups
+    user_role = User.roles[self.role]
+    if self.seller?
+      if self.shops.present?
+        PlanGroup.where(subscriptable_role: user_role)
+      else
+        PlanGroup.where(subscriptable_role: user_role, kind: PlanGroup.kinds[:automatic_debit])
+      end
+    else
+      PlanGroup.where(subscriptable_role: user_role)
+    end
+  end
+
+  def has_plan_groups_available?
+    self.free? && self.subscriptions.cash.paused.count == 0 && PlanGroup.where(subscriptable_role: User.roles[self.role]).count > 0
   end
 
   def image

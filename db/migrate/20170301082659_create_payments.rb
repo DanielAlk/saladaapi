@@ -3,6 +3,8 @@ class CreatePayments < ActiveRecord::Migration
     create_table :payments do |t|
       t.references :user, index: true, foreign_key: true
       t.references :payable, polymorphic: true, index: true
+      t.references :promotionable, polymorphic: true, index: true
+      t.integer :kind, default: 0
       t.decimal :transaction_amount, precision: 8, scale: 2
       t.integer :installments, default: 1
       t.decimal :shipment_cost, precision: 8, scale: 2

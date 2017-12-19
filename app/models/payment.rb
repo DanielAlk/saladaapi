@@ -1,16 +1,24 @@
 class Payment < ActiveRecord::Base
   include Rails.application.routes.url_helpers
+  include MercadoPagoConcern
   belongs_to :user
   belongs_to :payable, polymorphic: true
+  belongs_to :promotionable, polymorphic: true
+
   validates :user, presence: true, if: :new_record?
   validates :payable, presence: true
   validates :transaction_amount, presence: true
 
-  after_create :create_mercadopago_user
-  after_create :create_mercadopago_payment
+  before_create :inherit_kind
+  before_create :create_mercadopago_user, if: :debit?
+  before_create :create_mercadopago_payment, if: :debit?
+  before_create :create_cash_payment, if: :cash?
+  after_save :promotionable_handle_payment, if: :is_new_or_status_changed?
 
   serialize :mercadopago_payment
   serialize :additional_info
+
+  enum kind: [ :debit, :cash ]
   
 	def self.find_mp(mercadopago_payment_id)
     mp_payment = $mp.get("/v1/payments/"+mercadopago_payment_id)
@@ -83,7 +91,6 @@ class Payment < ActiveRecord::Base
     elsif self.status == '400' && self.mercadopago_payment['cause'][0]['code'] == 2002 #customer_not_found
       user.update_attribute(:customer_id, nil)
     end
-    save
   end
 
   def friendly_status
@@ -93,4 +100,21 @@ class Payment < ActiveRecord::Base
     end
     friendly
   end
+
+  private
+    def inherit_kind
+      self.kind = self.payable.kind
+    end
+
+    def create_cash_payment
+      self.status = :pending
+    end
+
+    def promotionable_handle_payment
+      self.promotionable.handle_payment(self)
+    end
+
+    def is_new_or_status_changed?
+      new_record? || status_changed?
+    end
 end

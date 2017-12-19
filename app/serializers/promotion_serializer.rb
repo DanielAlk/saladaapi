@@ -1,5 +1,5 @@
 class PromotionSerializer < ActiveModel::Serializer
-  attributes :id, :name, :title, :description, :price, :duration, :duration_type, :payment_url
+  attributes :id, :name, :title, :kind, :description, :price, :duration, :duration_type, :payment_url
 
   def payment_url
   	if current_user.present?

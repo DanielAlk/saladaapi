@@ -4,7 +4,11 @@ class PromotionsController < ApplicationController
   # GET /promotions
   # GET /promotions.json
   def index
-    @promotions = Promotion.all
+    if params[:product_id]
+      @promotions = Product.find(params[:product_id]).promotions
+    else
+      @promotions = Promotion.all
+    end
 
     render json: @promotions
   end
@@ -54,6 +58,6 @@ class PromotionsController < ApplicationController
     end
 
     def promotion_params
-      params.permit(:name, :title, :description, :price, :duration, :duration_type)
+      params.permit(:name, :title, :kind, :description, :price, :duration, :duration_type)
     end
 end

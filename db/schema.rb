@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171126025726) do
+ActiveRecord::Schema.define(version: 20171211023224) do
 
   create_table "categories", force: :cascade do |t|
     t.string   "title",      limit: 255
@@ -83,10 +83,35 @@ ActiveRecord::Schema.define(version: 20171126025726) do
   add_index "interactions", ["product_id"], name: "index_interactions_on_product_id", using: :btree
   add_index "interactions", ["user_id"], name: "index_interactions_on_user_id", using: :btree
 
+  create_table "invoices", force: :cascade do |t|
+    t.string   "mercadopago_invoice_id",      limit: 255
+    t.string   "mercadopago_subscription_id", limit: 255
+    t.string   "mercadopago_plan_id",         limit: 255
+    t.integer  "subscription_id",             limit: 4
+    t.integer  "plan_id",                     limit: 4
+    t.integer  "user_id",                     limit: 4
+    t.text     "payer",                       limit: 65535
+    t.float    "application_fee",             limit: 24
+    t.integer  "status",                      limit: 4
+    t.string   "description",                 limit: 255
+    t.text     "metadata",                    limit: 65535
+    t.text     "payments",                    limit: 65535
+    t.datetime "debit_date"
+    t.datetime "next_payment_attempt"
+    t.text     "mercadopago_invoice",         limit: 65535
+    t.datetime "created_at",                                null: false
+    t.datetime "updated_at",                                null: false
+  end
+
+  add_index "invoices", ["mercadopago_invoice_id"], name: "index_invoices_on_mercadopago_invoice_id", using: :btree
+
   create_table "payments", force: :cascade do |t|
     t.integer  "user_id",                limit: 4
     t.integer  "payable_id",             limit: 4
     t.string   "payable_type",           limit: 255
+    t.integer  "promotionable_id",       limit: 4
+    t.string   "promotionable_type",     limit: 255
+    t.integer  "kind",                   limit: 4,                             default: 0
     t.decimal  "transaction_amount",                   precision: 8, scale: 2
     t.integer  "installments",           limit: 4,                             default: 1
     t.decimal  "shipment_cost",                        precision: 8, scale: 2
@@ -104,7 +129,40 @@ ActiveRecord::Schema.define(version: 20171126025726) do
   end
 
   add_index "payments", ["payable_type", "payable_id"], name: "index_payments_on_payable_type_and_payable_id", using: :btree
+  add_index "payments", ["promotionable_type", "promotionable_id"], name: "index_payments_on_promotionable_type_and_promotionable_id", using: :btree
   add_index "payments", ["user_id"], name: "index_payments_on_user_id", using: :btree
+
+  create_table "plan_groups", force: :cascade do |t|
+    t.string   "name",               limit: 255
+    t.string   "title",              limit: 255
+    t.text     "description",        limit: 65535
+    t.integer  "kind",               limit: 4,                             default: 0
+    t.integer  "subscriptable_role", limit: 4
+    t.decimal  "starting_price",                   precision: 8, scale: 2
+    t.datetime "created_at",                                                           null: false
+    t.datetime "updated_at",                                                           null: false
+  end
+
+  create_table "plans", force: :cascade do |t|
+    t.string   "mercadopago_plan_id", limit: 255
+    t.integer  "plan_group_id",       limit: 4
+    t.string   "name",                limit: 255
+    t.string   "title",               limit: 255
+    t.integer  "kind",                limit: 4,                             default: 0
+    t.decimal  "price",                             precision: 8, scale: 2
+    t.integer  "frequency",           limit: 4
+    t.integer  "frequency_type",      limit: 4,                             default: 0
+    t.float    "application_fee",     limit: 24
+    t.integer  "status",              limit: 4
+    t.string   "description",         limit: 255
+    t.text     "auto_recurring",      limit: 65535
+    t.text     "metadata",            limit: 65535
+    t.text     "mercadopago_plan",    limit: 65535
+    t.datetime "created_at",                                                            null: false
+    t.datetime "updated_at",                                                            null: false
+  end
+
+  add_index "plans", ["mercadopago_plan_id"], name: "index_plans_on_mercadopago_plan_id", using: :btree
 
   create_table "products", force: :cascade do |t|
     t.integer  "user_id",     limit: 4
@@ -127,6 +185,7 @@ ActiveRecord::Schema.define(version: 20171126025726) do
   create_table "promotions", force: :cascade do |t|
     t.string   "name",          limit: 255
     t.string   "title",         limit: 255
+    t.integer  "kind",          limit: 4,                             default: 0
     t.text     "description",   limit: 65535
     t.decimal  "price",                       precision: 8, scale: 2
     t.integer  "duration",      limit: 4
@@ -170,27 +229,30 @@ ActiveRecord::Schema.define(version: 20171126025726) do
   add_index "shops", ["shed_id"], name: "index_shops_on_shed_id", using: :btree
   add_index "shops", ["user_id"], name: "index_shops_on_user_id", using: :btree
 
-  create_table "subscription_plans", force: :cascade do |t|
-    t.string   "name",            limit: 255
-    t.string   "title",           limit: 255
-    t.integer  "kind",            limit: 4,                           default: 0
-    t.decimal  "price",                       precision: 8, scale: 2
-    t.integer  "subscription_id", limit: 4
-    t.datetime "created_at",                                                      null: false
-    t.datetime "updated_at",                                                      null: false
-  end
-
-  add_index "subscription_plans", ["subscription_id"], name: "index_subscription_plans_on_subscription_id", using: :btree
-
   create_table "subscriptions", force: :cascade do |t|
-    t.string   "name",               limit: 255
-    t.string   "title",              limit: 255
-    t.text     "description",        limit: 65535
-    t.integer  "subscriptable_role", limit: 4,                             default: 0
-    t.decimal  "starting_price",                   precision: 8, scale: 2
-    t.datetime "created_at",                                                           null: false
-    t.datetime "updated_at",                                                           null: false
+    t.string   "mercadopago_subscription_id", limit: 255
+    t.string   "mercadopago_plan_id",         limit: 255
+    t.integer  "plan_id",                     limit: 4
+    t.integer  "user_id",                     limit: 4
+    t.integer  "kind",                        limit: 4
+    t.text     "payer",                       limit: 65535
+    t.string   "payment_method_id",           limit: 255
+    t.string   "token",                       limit: 255
+    t.float    "application_fee",             limit: 24
+    t.integer  "status",                      limit: 4
+    t.string   "description",                 limit: 255
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.datetime "next_payment_date"
+    t.text     "metadata",                    limit: 65535
+    t.text     "charges_detail",              limit: 65535
+    t.float    "setup_fee",                   limit: 24
+    t.text     "mercadopago_subscription",    limit: 65535
+    t.datetime "created_at",                                null: false
+    t.datetime "updated_at",                                null: false
   end
+
+  add_index "subscriptions", ["mercadopago_subscription_id"], name: "index_subscriptions_on_mercadopago_subscription_id", using: :btree
 
   create_table "users", force: :cascade do |t|
     t.string   "provider",               limit: 255,   default: "email", null: false
@@ -248,5 +310,4 @@ ActiveRecord::Schema.define(version: 20171126025726) do
   add_foreign_key "shops", "categories"
   add_foreign_key "shops", "sheds"
   add_foreign_key "shops", "users"
-  add_foreign_key "subscription_plans", "subscriptions"
 end

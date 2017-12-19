@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :plan_groups, except: [:new, :edit]
   get 'data/shop'
   get 'data/texts'
   get 'data/terms_and_conditions'
@@ -13,9 +14,19 @@ Rails.application.routes.draw do
       post 'notifications', action: :notifications
     end
   end
+  resources :users, except: [:new, :edit] do
+    resources :subscriptions, only: [:index, :destroy]
+    member do
+      get 'cards', action: :cards
+    end
+  end
+  resources :invoices, except: [:new, :edit]
+  resources :subscriptions, except: [:new, :edit]
+  resources :plans, except: [:new, :edit]
   resources :promotions, except: [:new, :edit]
-  resources :users, except: [:new, :edit]
-  resources :products, except: [:new, :edit]
+  resources :products, except: [:new, :edit] do
+    resources :promotions, only: [:index, :destroy]
+  end
   resources :images, except: [:new, :edit]
   resources :sheds, except: [:new, :edit]
   resources :shops, except: [:new, :edit] do

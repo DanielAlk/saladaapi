@@ -2,7 +2,7 @@ class UsersController < ApplicationController
   include Filterize
   filterize param: :f
   before_filter :authenticate_user!, except: [:index, :show]
-  before_action :set_user, only: [:show, :update, :destroy]
+  before_action :set_user, only: [:show, :cards, :update, :destroy]
   before_action :filterize, only: :index
 
   # GET /users
@@ -29,6 +29,11 @@ class UsersController < ApplicationController
   # GET /users/1.json
   def show
     render json: @user
+  end
+
+  # GET /users/1/cards
+  def cards
+    render json: @user.cards
   end
 
   # POST /users

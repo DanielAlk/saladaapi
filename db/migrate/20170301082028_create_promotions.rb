@@ -3,6 +3,7 @@ class CreatePromotions < ActiveRecord::Migration
     create_table :promotions do |t|
       t.string :name
       t.string :title
+      t.integer :kind, default: 0
       t.text :description
       t.decimal :price, precision: 8, scale: 2
       t.integer :duration

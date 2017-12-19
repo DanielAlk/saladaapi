@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  title: MyString
+  description: MyText
+  subscriptable_role: 1
+  starting_price: 9.99
+
+two:
+  name: MyString
+  title: MyString
+  description: MyText
+  subscriptable_role: 1
+  starting_price: 9.99

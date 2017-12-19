@@ -1,5 +1,4 @@
 class PaymentsController < ApplicationController
-  include MercadoPagoHelper
   skip_before_action :verify_authenticity_token, only: :notifications
   before_action :authenticate_user!, except: :notifications
   before_action :set_payment, only: [:show, :edit, :update, :destroy]
@@ -78,6 +77,6 @@ class PaymentsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def payment_params
-      params.permit(:user_id, :payable_id, :payable_type, :transaction_amount, :installments, :payment_method_id, :token, :mercadopago_payment, :mercadopago_payment_id, :status, :status_detail, :save_address, :save_card)
+      params.permit(:user_id, :payable_id, :payable_type, :promotionable_id, :promotionable_type, :kind, :transaction_amount, :installments, :payment_method_id, :token, :mercadopago_payment, :mercadopago_payment_id, :status, :status_detail, :save_address, :save_card)
     end
 end

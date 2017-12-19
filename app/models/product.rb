@@ -6,13 +6,17 @@ class Product < ActiveRecord::Base
   has_many :images, -> { order(position: :asc) }, as: :imageable, dependent: :destroy
   has_many :comments, as: :commentable, dependent: :destroy
   has_many :interactions, dependent: :destroy
+  has_many :payments, as: :promotionable
 
   validates :title, presence: true, length: { minimum: 4, maximum: 50 }
-  validates :description, presence: true, length: { minimum: 6, maximum: 140 }
+  validates :description, presence: true, length: { minimum: 6, maximum: 280 }
   validates :user, :category, :shop, presence: true
   validates :stock, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 99999 }
   validates :price, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 999999.99 }
   validate :user_limit
+
+  after_destroy :disassociate_payments
+  before_save :disassociate_not_matching_payments, if: :special_changed?
 
   filterable scopes: [ :status, :special ]
   filterable search: [ :title, :price, :description ]
@@ -34,7 +38,34 @@ class Product < ActiveRecord::Base
   	self.images.try(:first).try(:url)
   end
 
+  def handle_payment(payment)
+    if payment.status.try(:to_sym) == :approved
+      self.special = payment.payable.name
+      self.save
+    end
+  end
+
+  def promotions
+    payments.where(status: [:in_mediation, :in_process, :authorized, :approved, :pending]).map{ |payment| payment.payable }.uniq
+  end
+
   private
+    def disassociate_not_matching_payments
+      payments.each do |payment|
+        if payment.payable.name.try(:to_sym) != self.special.try(:to_sym)
+          payment.promotionable = nil
+          payment.save
+        end
+      end
+    end
+
+    def disassociate_payments
+      payments.each do |payment|
+        payment.promotionable = nil
+        payment.save
+      end
+    end
+
     def user_limit
       errors.add(:user_limit, "Not allowed") if self.new_record? && self.user.product_limit != :unlimited && self.user.products.count >= self.user.product_limit
     end
