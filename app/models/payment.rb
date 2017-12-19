@@ -19,10 +19,7 @@ class Payment < ActiveRecord::Base
   serialize :additional_info
 
   enum kind: [ :debit, :cash ]
-
-  def self.statuses
-    [ :pending, :approved, :authorized, :in_process, :in_mediation, :rejected, :cancelled, :refunded, :charged_back ]
-  end
+  enum status: [ :pending, :approved, :authorized, :in_process, :in_mediation, :rejected, :cancelled, :refunded, :charged_back, :failed ]
   
 	def self.find_mp(mercadopago_payment_id)
     request = $mp.get("/v1/payments/"+mercadopago_payment_id)
@@ -44,6 +41,14 @@ class Payment < ActiveRecord::Base
       end
     end
     return false
+  end
+
+  def status=(s)
+    if self.class.statuses[s].present?
+      self[:status] = self.class.statuses[s]
+    else
+      self[:status] = self.class.statuses[:failed]
+    end
   end
 
   def create_mercadopago_user
@@ -74,7 +79,6 @@ class Payment < ActiveRecord::Base
 			},
 			external_reference: id,
 			statement_descriptor: "Compra en SaladaApi",
-			notification_url: notifications_mercadopago_url(protocol: 'https', host: 'saladaapi.vxct1412.avnam.net'),
 			additional_info: additional_info
   	}
   	if Rails.env.production? #mercadopago sandbox fails if localhost:3000 is in the notification_url
@@ -87,7 +91,7 @@ class Payment < ActiveRecord::Base
     
     user.handle_payment(self)
 
-    if self.status.try(:to_i) == 400 && self.mercadopago_payment[:cause][0][:code].try(:to_i) == 2002 #customer_not_found
+    if self.failed? && self.mercadopago_payment[:status].try(:to_i) == 400 && self.mercadopago_payment[:cause][0][:code].try(:to_i) == 2002 #customer_not_found
       user.update_attribute(:customer_id, nil)
     end
 
@@ -95,11 +99,7 @@ class Payment < ActiveRecord::Base
   end
 
   def friendly_status
-    friendly = { pending: 'Pendiente', approved: 'Aprobado', authorized: 'Autorizado', in_process: 'En proceso', in_mediation: 'En mediación', rejected: 'Rechazado', cancelled: 'Cancelado', refunded: 'Devuelto', charged_back: 'Contracargado' }[status.try(:to_sym)]
-    if friendly.blank?
-      friendly = 'No procesado'
-    end
-    friendly
+    { pending: 'Pendiente', approved: 'Aprobado', authorized: 'Autorizado', in_process: 'En proceso', in_mediation: 'En mediación', rejected: 'Rechazado', cancelled: 'Cancelado', refunded: 'Devuelto', charged_back: 'Contracargado', failed: 'No procesado' }[status.try(:to_sym)]
   end
 
   private

@@ -3,7 +3,7 @@ class Invoice < ActiveRecord::Base
 	belongs_to :plan
 	belongs_to :user
 
-	enum status: [ :pending, :dunning, :paid, :unpaid, :cancelled ]
+	enum status: [ :pending, :dunning, :paid, :unpaid, :cancelled, :failed ]
 
 	serialize :payer
 	serialize :metadata
@@ -24,6 +24,14 @@ class Invoice < ActiveRecord::Base
 			end
 		end
 		return false
+	end
+
+	def status=(s)
+	  if self.class.statuses[s].present?
+	    self[:status] = self.class.statuses[s]
+	  else
+	    self[:status] = self.class.statuses[:failed]
+	  end
 	end
 
 	def update_from_mercadopago(invoice)

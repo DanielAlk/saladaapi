@@ -39,14 +39,18 @@ class Product < ActiveRecord::Base
   end
 
   def handle_payment(payment)
-    if payment.status.try(:to_sym) == :approved
+    if payment.approved?
       self.special = payment.payable.name
       self.save
     end
   end
 
   def promotions
-    payments.where(status: [:in_mediation, :in_process, :authorized, :approved, :pending]).map{ |payment| payment.payable }.uniq
+    statuses = Payment.statuses.select do |s|
+      [:in_mediation, :in_process, :authorized, :approved, :pending].include?(s.try(:to_sym))
+    end.map{ |s,i| i }
+
+    payments.where(status: statuses).map{ |payment| payment.payable }.uniq
   end
 
   private

@@ -115,13 +115,13 @@ ActiveRecord::Schema.define(version: 20171211023224) do
     t.decimal  "transaction_amount",                   precision: 8, scale: 2
     t.integer  "installments",           limit: 4,                             default: 1
     t.decimal  "shipment_cost",                        precision: 8, scale: 2
+    t.integer  "status",                 limit: 4
+    t.string   "status_detail",          limit: 255
     t.string   "payment_method_id",      limit: 255
     t.string   "token",                  limit: 255
     t.text     "additional_info",        limit: 65535
     t.text     "mercadopago_payment",    limit: 65535
     t.integer  "mercadopago_payment_id", limit: 8
-    t.string   "status",                 limit: 255
-    t.string   "status_detail",          limit: 255
     t.boolean  "save_address",                                                 default: false
     t.boolean  "save_card",                                                    default: false
     t.datetime "created_at",                                                                   null: false

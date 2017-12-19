@@ -2,15 +2,15 @@ module MercadoPagoConcern
 	extend ActiveSupport::Concern
 
 	def mercadopago_message
-		if mercadopago_errors.keys.include? self.status.to_i
-			message = mercadopago_errors[self.status.to_i]
+		if self.failed? && self.mercadopago_payment.present? && mercadopago_errors.keys.include?(self.mercadopago_payment[:status].try(:to_i))
+			message = mercadopago_errors[self.mercadopago_payment[:status].try(:to_i)]
 		elsif self.status.present? && self.status_detail.present?
 			message = mercadopago_messages[self.status.to_sym][self.status_detail.to_sym]
 		else
 			message = 'Ocurrió un error al procesar tu pago, por favor intenta nuevamente en unos minutos.'
 		end
 		message.gsub(/\{\{\w+\}\}/) do |match|
-			self.mercadopago_payment[match.gsub(/[{}]/, '')].to_s
+			self.mercadopago_payment[match.gsub(/[{}]/, '').try(:to_sym)].to_s
 		end
 	end
 

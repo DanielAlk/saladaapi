@@ -3,7 +3,7 @@ class Subscription < ActiveRecord::Base
 	belongs_to :user
 	has_many :invoices, dependent: :destroy
 
-	enum status: [ :authorized, :paused, :finished, :cancelled ]
+	enum status: [ :authorized, :paused, :finished, :cancelled, :failed ]
 	enum kind: [ :automatic_debit, :cash ]
 
 	serialize :payer
@@ -30,6 +30,14 @@ class Subscription < ActiveRecord::Base
 			end
 		end
 		return false
+	end
+
+	def status=(s)
+	  if self.class.statuses[s].present?
+	    self[:status] = self.class.statuses[s]
+	  else
+	    self[:status] = self.class.statuses[:failed]
+	  end
 	end
 
 	def get_from_mercadopago

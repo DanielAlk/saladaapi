@@ -85,7 +85,7 @@ class User < ActiveRecord::Base
   end
 
   def handle_payment(payment)
-    self.card = payment.token if payment.status.try(:to_sym) == :approved && payment.save_card && payment.token
+    self.card = payment.token if payment.approved? && payment.save_card && payment.token
   end
 
   def handle_subscription(subscription)

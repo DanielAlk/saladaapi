@@ -4,7 +4,7 @@ class Plan < ActiveRecord::Base
 	has_many :invoices, dependent: :destroy
 
 	enum kind: [ :automatic_debit, :cash ]
-	enum status: [ :active, :inactive, :cancelled ]
+	enum status: [ :active, :inactive, :cancelled, :failed ]
 	enum frequency_type: [ :days, :months ]
 
 	serialize :auto_recurring
@@ -15,6 +15,14 @@ class Plan < ActiveRecord::Base
 		self.all.each do |plan|
 			plan.create_mercadopago_plan
 		end
+	end
+
+	def status=(s)
+	  if self.class.statuses[s].present?
+	    self[:status] = self.class.statuses[s]
+	  else
+	    self[:status] = self.class.statuses[:failed]
+	  end
 	end
 
 	def create_mercadopago_plan
