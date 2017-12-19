@@ -22,9 +22,10 @@ class Subscription < ActiveRecord::Base
 		request = $mp.get('/v1/subscriptions/' + mercadopago_subscription_id)
 		if request['status'].try(:to_i) == 200
 			mp_subscription = request['response'].deep_symbolize_keys
-			subscription = self.find(mp_subscription[:external_reference])
+			subscription = self.find_by(mercadopago_subscription_id: mercadopago_subscription_id)
 			if subscription.present?
 				subscription.update_from_mercadopago(mp_subscription)
+				subscription.save
 				return subscription
 			end
 		end
@@ -80,7 +81,7 @@ class Subscription < ActiveRecord::Base
 			if request['status'].try(:to_i) == 200
 				mp_invoice = request['response'].deep_symbolize_keys
 				invoice = self.invoices.find_by(mercadopago_invoice_id: mp_id) || self.invoices.new
-				invoice.update_from_mercadopago(mp_invoice, :dont_save)
+				invoice.update_from_mercadopago(mp_invoice)
 			end
 		end
 	end

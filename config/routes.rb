@@ -1,19 +1,18 @@
 Rails.application.routes.draw do
+
   resources :plan_groups, except: [:new, :edit]
   get 'data/shop'
   get 'data/texts'
   get 'data/terms_and_conditions'
+  
+  post 'notifications/mercadopago'
 
   resources :comments, except: [:new, :edit] do
     collection do
       put '/', action: :update_many
     end
   end
-  resources :payments, except: [:new, :edit] do
-    collection do
-      post 'notifications', action: :notifications
-    end
-  end
+  resources :payments, except: [:new, :edit]
   resources :users, except: [:new, :edit] do
     resources :subscriptions, only: [:index, :destroy]
     member do

@@ -12,7 +12,21 @@ class Invoice < ActiveRecord::Base
 
 	before_create :referenciate, if: :subscription
 
-	def update_from_mercadopago(invoice, flag)
+	def self.find_mp(mercadopago_invoice_id)
+		request = $mp.get('/v1/invoices/' + mercadopago_invoice_id)
+		if request['status'].try(:to_i) == 200
+			mp_inovice = request['response'].deep_symbolize_keys
+			invoice = self.find_by(mercadopago_invoice_id: mercadopago_invoice_id)
+			if invoice.present?
+				invoice.update_from_mercadopago(mp_inovice)
+				invoice.save
+				return invoice
+			end
+		end
+		return false
+	end
+
+	def update_from_mercadopago(invoice)
 		self.mercadopago_invoice = invoice
 		self.mercadopago_invoice_id = invoice[:id]
 		self.mercadopago_subscription_id = invoice[:subscription_id]
@@ -25,8 +39,6 @@ class Invoice < ActiveRecord::Base
 		self.payments = invoice[:payments]
 		self.debit_date = invoice[:debit_date]
 		self.next_payment_attempt = invoice[:next_payment_attempt]
-		
-		self.save unless flag == :dont_save
 	end
 
 	private

@@ -1,15 +1,11 @@
 class PaymentsController < ApplicationController
-  skip_before_action :verify_authenticity_token, only: :notifications
-  before_action :authenticate_user!, except: :notifications
+  before_action :authenticate_user!
   before_action :set_payment, only: [:show, :edit, :update, :destroy]
 
   # GET /payments.json
   def index
-    # if admin_signed_in?
-    #   @payments = @payments.paginate(:page => params[:page], :per_page => 12)
-    # else
-      @payments = current_user.payments.order(updated_at: :desc).paginate(:page => params[:page], :per_page => 12)
-    # end
+    @payments = current_user.payments.order(updated_at: :desc).paginate(:page => params[:page], :per_page => 12)
+
     render json: @payments
   end
 
@@ -51,22 +47,6 @@ class PaymentsController < ApplicationController
     @payment.destroy
 
     head :no_content
-  end
-
-  # POST /payments/notifications/
-  def notifications
-    topic = params[:type] || params[:topic]
-    if topic.try(:to_sym) == :payment
-      id = params['data.id'] || params[:id]
-      @payment = Payment.find_mp(id)
-    end
-    if @payment.present?
-      # Notifier.notify_admin(@payment, 'mercadopago_notification').deliver_later
-      # Notifier.notify_user(@payment, 'mercadopago_notification').deliver_later
-      render json: @payment, status: :ok
-    else
-      head :no_content
-    end
   end
 
   private
