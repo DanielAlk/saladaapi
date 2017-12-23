@@ -33,6 +33,10 @@ Rails.application.routes.draw do
       put '/many', action: :update_many
       delete '/many', action: :destroy_many
     end
+    member do
+      post '/claim', action: :claim
+      delete '/claim/:shop_claim_id', action: :destroy_claim
+    end
   end
   resources :categories, except: [:new, :edit] do
     collection do

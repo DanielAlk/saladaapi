@@ -56,6 +56,30 @@ class ShopsController < ApplicationController
     end
   end
 
+  # POST /shops/1/claim.json
+  def claim
+    @shop = Shop.find(params[:id])
+    @shop.claimant_id = current_user.id
+    if @shop.user == current_user
+      render json: ['You can\'t claim a shop you already own'], status: :forbidden
+    elsif @shop.save
+      head :no_content
+    else
+      render json: @shop.errors, status: :unprocessable_entity
+    end
+  end
+
+  # DELETE /shops/1/claim/1.json
+  def destroy_claim
+    @shop = Shop.find(params[:id])
+    @shop_claim = @shop.shop_claims.find(params[:shop_claim_id])
+    if @shop_claim.user == current_user && @shop_claim.destroy
+      head :no_content
+    else
+      render json: @shop_claim.errors, status: :forbidden
+    end
+  end
+
   # DELETE /shops/1
   # DELETE /shops/1.json
   def destroy

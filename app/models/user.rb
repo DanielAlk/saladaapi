@@ -13,6 +13,7 @@ class User < ActiveRecord::Base
   validates_attachment :avatar, content_type: { content_type: /\Aimage\/.*\Z/ }
 
   has_many :shops, dependent: :destroy
+  has_many :shop_claims, -> { order(created_at: :desc) }, dependent: :destroy
   has_many :products
   has_many :comments
   has_many :incoming_comments, foreign_key: :receiver_id, class_name: :Comment, dependent: :destroy
@@ -26,7 +27,7 @@ class User < ActiveRecord::Base
 
   filterable search: [:name, :email]
 
-  enum role: [ :client, :seller ]
+  enum role: [ :client, :seller, :admin ]
   enum special: [ :free, :premium ]
   enum gender: [ :male, :female ]
 

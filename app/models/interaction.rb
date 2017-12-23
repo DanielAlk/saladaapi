@@ -6,6 +6,7 @@ class Interaction < ActiveRecord::Base
   has_many :comments, dependent: :destroy
 
   before_create :save_inherited_values
+  before_update :change_owner, if: :owner_id_changed?
 
   def unread_answers_count(receiver)
   	self.comments.answer.where(read: false, receiver: receiver).count
@@ -16,7 +17,14 @@ class Interaction < ActiveRecord::Base
   end
 
   private
-  	def save_inherited_values
-  		self.owner = self.product.user
-  	end
+    def save_inherited_values
+      self.owner = self.product.user
+    end
+
+    def change_owner
+      save_inherited_values
+      comments.answer.update_all(user_id: owner_id)
+      comments.question.update_all(receiver_id: owner_id)
+    end
+
 end

@@ -27,9 +27,14 @@ class UserSerializer < ActiveModel::Serializer
   attribute :unanswered_questions_count, if: :complete
   attribute :unread_answers_count, if: :complete
   attribute :has_plan_groups_available, if: :complete
+  has_many :shop_claims, if: :complete
 
   def has_plan_groups_available
     object.has_plan_groups_available?
+  end
+
+  def role
+    object.admin? ? :seller : object.role
   end
 
   def medium

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171211023224) do
+ActiveRecord::Schema.define(version: 20171221064430) do
 
   create_table "categories", force: :cascade do |t|
     t.string   "title",      limit: 255
@@ -200,6 +200,17 @@ ActiveRecord::Schema.define(version: 20171211023224) do
     t.datetime "updated_at",             null: false
   end
 
+  create_table "shop_claims", force: :cascade do |t|
+    t.integer  "status",     limit: 4, default: 0
+    t.integer  "user_id",    limit: 4
+    t.integer  "shop_id",    limit: 4
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
+  end
+
+  add_index "shop_claims", ["shop_id"], name: "index_shop_claims_on_shop_id", using: :btree
+  add_index "shop_claims", ["user_id"], name: "index_shop_claims_on_user_id", using: :btree
+
   create_table "shops", force: :cascade do |t|
     t.integer  "user_id",            limit: 4
     t.integer  "shed_id",            limit: 4
@@ -307,6 +318,8 @@ ActiveRecord::Schema.define(version: 20171211023224) do
   add_foreign_key "products", "categories"
   add_foreign_key "products", "shops"
   add_foreign_key "products", "users"
+  add_foreign_key "shop_claims", "shops"
+  add_foreign_key "shop_claims", "users"
   add_foreign_key "shops", "categories"
   add_foreign_key "shops", "sheds"
   add_foreign_key "shops", "users"

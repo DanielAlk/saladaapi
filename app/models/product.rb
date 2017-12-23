@@ -16,6 +16,7 @@ class Product < ActiveRecord::Base
   validate :user_limit
 
   after_destroy :disassociate_payments
+  before_update :assign_interactions_to_user, if: :user_id_changed?
   before_save :disassociate_not_matching_payments, if: :special_changed?
 
   filterable scopes: [ :status, :special ]
@@ -67,6 +68,12 @@ class Product < ActiveRecord::Base
       payments.each do |payment|
         payment.promotionable = nil
         payment.save
+      end
+    end
+
+    def assign_interactions_to_user
+      self.interactions.find_each do |interaction|
+        interaction.update(owner_id: self.user_id)
       end
     end
 

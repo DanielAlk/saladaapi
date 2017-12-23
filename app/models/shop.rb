@@ -6,6 +6,7 @@ class Shop < ActiveRecord::Base
   belongs_to :shed
   belongs_to :category
   has_many :products, dependent: :destroy
+  has_many :shop_claims, dependent: :destroy, autosave: true
 
   validates :description, presence: true, length: { minimum: 4, maximum: 50 }
   validates :user, :shed, :category, :number_id, :fixed, :opens, :condition, presence: true
@@ -27,6 +28,13 @@ class Shop < ActiveRecord::Base
   enum location: [ :aisle, :side ]
   enum condition: [ :occupied, :empty, :repairs ]
 
+  before_update :assign_products_to_user, if: :user_id_changed?
+
+  def claimant_id=(claimant_id)
+    claimant = User.find(claimant_id)
+    self.shop_claims.new(user: claimant)
+  end
+
   def cover
     {
       blank: self.image.blank?,
@@ -45,7 +53,15 @@ class Shop < ActiveRecord::Base
     ActionController::Base.helpers.asset_url("missing.png", :digest => false)
   end
 
+  def is_claimable?
+    self.user.admin?
+  end
+
   private
+    def assign_products_to_user
+      self.products.find_each{ |p| p.update(user_id: self.user_id) }
+    end
+
     def user_limit
       errors.add(:user_limit, "Not allowed") if self.new_record? && self.user.shop_limit != :unlimited && self.user.shops.count >= self.user.shop_limit
     end
