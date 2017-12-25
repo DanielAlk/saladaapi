@@ -26,7 +26,9 @@ module Filterize
 			if @filterable[:scopes].present?
 				@filterable[:scopes].keys.each do |key|
 					if (scope = @filterable[:scopes][key]).present?
-						if object.respond_to? key.to_s.pluralize #is enum
+						if object.respond_to?(key.to_s) && scope === true #is scope
+							collection = collection.send(key.to_s)
+						elsif object.respond_to? key.to_s.pluralize #is enum
 							if (scope.try(:length) > 1 rescue false)
 								collection = collection.send(scope.to_s)
 							else
