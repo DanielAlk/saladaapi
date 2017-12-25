@@ -28,6 +28,8 @@ class Shop < ActiveRecord::Base
   enum location: [ :aisle, :side ]
   enum condition: [ :occupied, :empty, :repairs ]
 
+  scope :claimable, -> { where(user_id: User.admin.map{|u| u.id}) }
+
   before_update :assign_products_to_user, if: :user_id_changed?
 
   def claimant_id=(claimant_id)
