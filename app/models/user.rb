@@ -151,6 +151,13 @@ class User < ActiveRecord::Base
     end
   end
 
+  def permissions
+    {
+      create_shop: false,
+      claim_shop: self.seller?
+    }
+  end
+
   def interacted_products_as(interact_as)
     where_clause = 'interactions.user_id' if interact_as == :user
     where_clause = 'interactions.owner_id' if interact_as == :owner
