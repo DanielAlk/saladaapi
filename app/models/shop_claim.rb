@@ -3,6 +3,7 @@ class ShopClaim < ActiveRecord::Base
   belongs_to :shop
 
   validates_uniqueness_of :user, scope: :shop, message: 'Ya reclamaste este puesto'
+  validate :user_can_claim?, on: :create
 
   enum status: [ :in_review, :approved, :denied, :deleted ]
 
@@ -17,7 +18,16 @@ class ShopClaim < ActiveRecord::Base
   end
 
   private
-  	def approve_claim
+    def user_can_claim?
+      unless user.shop_limit == :unlimited
+        statuses = self.class.statuses.map{|k,s| s if [:in_review, :approved].include?(k.to_sym) }.compact
+        unless user.shop_limit > user.shop_claims.where(status: [statuses]).count
+          errors.add(:shop_limit, 'Como usuario free no podés reclamar más de 1 puesto a la vez.')
+        end
+      end
+    end
+
+    def approve_claim
   		shop_claims = self.shop.shop_claims.where.not(id: self.id)
   		shop_claims.deleted.delete_all
   		shop_claims.in_review.update_all(status: self.class.statuses[:denied])
