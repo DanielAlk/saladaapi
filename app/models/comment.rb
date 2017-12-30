@@ -51,26 +51,18 @@ class Comment < ActiveRecord::Base
   private
     def push_notificate
       self.commentable.user.increment!(:badge_number)
-      request_body = {
-        emails: [self.commentable.user.email],
-        notification: {
-          title: root_commentable.title,
-          message: is_root? ? self.user.name + ' hizo una pregunta.' : 'Te han contestado tu pregunta.',
-          payload: {
-            product_id: root_commentable.id,
-            state: is_root? ? 'app.thread' : 'app.comment'
-          },
-          android: {
-            sound: :default
-          },
-          ios: {
-            badge: self.commentable.user.badge_number,
-            sound: :default,
-            content_available: 1
-          }
-        }
+      contents = {
+        user_id: self.commentable.user.id,
+        title: root_commentable.title,
+        message: is_root? ? self.user.name + ' hizo una pregunta.' : 'Te han contestado tu pregunta.',
+        data: {
+          product_id: root_commentable.id,
+          state: is_root? ? 'app.thread' : 'app.comment'
+        },
+        badge_number: self.commentable.user.badge_number,
+        buttons: [ 'Ver' ]
       }
-      PushJob.perform_async(request_body)
+      PushJob.perform_async(contents)
     end
 
   	def mark_as_answer
