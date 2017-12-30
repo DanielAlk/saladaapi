@@ -17,6 +17,7 @@ class Subscription < ActiveRecord::Base
 	before_create :create_mercadopago_subscription, if: :automatic_debit?
 	before_create :create_cash_subscription, if: :cash?
 	after_save :user_handle_subscription, if: :is_new_or_status_changed?
+	after_save :push_notificate, if: :status_changed?, unless: :paused?
 
 	def self.find_mp(mercadopago_subscription_id)
 		request = $mp.get('/v1/subscriptions/' + mercadopago_subscription_id)
@@ -120,6 +121,27 @@ class Subscription < ActiveRecord::Base
 	end
 
 	private
+    def push_notificate
+      self.user.increment!(:badge_number)
+      contents = {
+        user_id: self.user.id,
+        title: self.plan.plan_group.title,
+        message: push_message,
+        badge_number: self.user.badge_number
+      }
+      PushJob.perform_async(contents)
+    end
+
+    def push_message
+    	{
+    		authorized: 'Tu subscripción fue autorizada',
+	    	paused: 'Tu subscripción se puso en pausa',
+	    	finished: 'Tu subscripción ha finalizado',
+	    	cancelled: 'Tu subscripción se ha cancelado',
+	    	failed: 'No se pudo procesar la subscripción'
+    	}[self.status.try(:to_sym)]
+    end
+
 		def inherit_kind
 			self.kind = self.plan.kind
 		end

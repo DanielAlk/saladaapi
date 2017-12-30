@@ -8,6 +8,7 @@ class ShopClaim < ActiveRecord::Base
   enum status: [ :in_review, :approved, :denied, :deleted ]
 
   after_save :approve_claim, if: :approved_and_status_changed?
+  after_save :push_notificate, if: :status_changed?, unless: :deleted?
 
   def destroy
   	if self.denied? && self.shop.user.admin?
@@ -18,6 +19,29 @@ class ShopClaim < ActiveRecord::Base
   end
 
   private
+    def push_notificate
+      self.user.increment!(:badge_number)
+      contents = {
+        user_id: self.user.id,
+        title: 'Puesto ' + self.shop.number_id.to_s + ' - ' + self.shop.shed.title,
+        message: push_message,
+        data: {
+          state: 'app.shop_claims'
+        },
+        badge_number: self.user.badge_number,
+        buttons: [ 'Ver' ]
+      }
+      PushJob.perform_async(contents)
+    end
+
+    def push_message
+      {
+        in_review: 'Tu reclamo está siendo revisado',
+        approved: 'Tu reclamo fue aprobado',
+        denied: 'Tu reclamo fue denegado'
+      }[self.status.try(:to_sym)]
+    end
+
     def user_can_claim?
       unless user.shop_limit == :unlimited
         statuses = self.class.statuses.map{|k,s| s if [:in_review, :approved].include?(k.to_sym) }.compact

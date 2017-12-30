@@ -56,8 +56,10 @@ class Comment < ActiveRecord::Base
         title: root_commentable.title,
         message: is_root? ? self.user.name + ' hizo una pregunta.' : 'Te han contestado tu pregunta.',
         data: {
-          product_id: root_commentable.id,
-          state: is_root? ? 'app.thread' : 'app.comment'
+          state: is_root? ? 'app.thread' : 'app.comment',
+          params: {
+            id: root_commentable.id
+          }
         },
         badge_number: self.commentable.user.badge_number,
         buttons: [ 'Ver' ]

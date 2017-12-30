@@ -5,15 +5,17 @@ class PushJob
   def perform(contents)
   	params = {
   		filters: [
-  			{ field: 'tag', key: 'id', relation: '=', value: contents[:user_id] }
+  			{ field: :tag, key: :id, relation: '=', value: contents[:user_id] },
+        { field: :tag, key: :environment, relation: "=", value: Rails.env }
   		],
   		contents: { en: contents[:message], es: contents[:message] },
   		headings: { en: contents[:title], es: contents[:title] },
   		content_available: true,
-  		data: contents[:data],
-  		ios_badgeType: 'SetTo',
+  		ios_badgeType: :SetTo,
   		ios_badgeCount: contents[:badge_number]
   	}
+
+  	params[:data] = contents[:data] if contents[:data].present?
 
   	if contents[:buttons].present?
   		params[:buttons] = []
