@@ -6,7 +6,6 @@ class User < ActiveRecord::Base
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
   include DeviseTokenAuth::Concerns::User
-  include IonicApi
   include Filterable
 
   has_attached_file :avatar, styles: { medium: "300x300#", small: "140x140#", thumb: "80x80#" }
@@ -30,9 +29,6 @@ class User < ActiveRecord::Base
   enum role: [ :client, :seller, :admin ]
   enum special: [ :free, :premium ]
   enum gender: [ :male, :female ]
-
-  before_create :ionic_create
-  before_destroy :ionic_destroy
 
   def metadata=(metadata)
   	if metadata.respond_to?(:each)
@@ -167,27 +163,4 @@ class User < ActiveRecord::Base
   def token_validation_response
     UserSerializer.new( self, root: false )
   end
-
-  def ionic_create(password = nil)
-    password = password || self.password
-    if self.image?
-      user_data = { app_id: ionic_app_id, name: self.name, email: self.email, password: password, image: self.image }
-    else
-      user_data = { app_id: ionic_app_id, name: self.name, email: self.email, password: password }
-    end
-    if (response = ionic_api :users, :post, user_data).present?
-      self.io_uid = response['data']['uuid']
-      self.image = response['data']['details']['image'] unless self.image?
-    end
-  end
-
-  def ionic_check
-    ionic_api(:users, :get, {}, self.io_uid).present?
-  end
-
-  private
-    def ionic_destroy
-      ionic_api :users, :delete, {}, self.io_uid
-      true #delete regardless of ionic response
-    end
 end

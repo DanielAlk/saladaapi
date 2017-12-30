@@ -2,8 +2,7 @@ class ApplicationController < ActionController::API
   include DeviseTokenAuth::Concerns::SetUserByToken
   
   before_action :configure_permitted_parameters, if: :devise_controller?
-  after_action :create_ionic_user_if_not_created, if: :login_action?
-  before_action -> { sleep 0 }, if: "Rails.env.development?"
+  #before_action -> { sleep 0 }, if: "Rails.env.development?"
 
   respond_to :json
 
@@ -17,19 +16,6 @@ class ApplicationController < ActionController::API
 
   	def login_action?
   		controller_name == 'sessions' && action_name == 'create'
-  	end
-
-  	def create_ionic_user_if_not_created
-      if user_signed_in? && current_user.valid_password?(params[:password])
-  		  unless current_user.io_uid?
-  		  	if (user = User.find_by(email: params[:email])).present?
-  		  		unless user.io_uid?
-  		  			user.ionic_create(params[:password])
-  		  			user.save
-	  	  		end
-	  	  	end
-  		  end
-      end
   	end
 
 end
