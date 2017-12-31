@@ -1,6 +1,4 @@
 Rails.application.routes.draw do
-
-  resources :plan_groups, except: [:new, :edit]
   get 'data/shop'
   get 'data/texts'
   get 'data/terms_and_conditions'
@@ -8,6 +6,8 @@ Rails.application.routes.draw do
   
   post 'notifications/mercadopago'
 
+  resources :ads, except: [:new, :edit]
+  resources :plan_groups, except: [:new, :edit]
   resources :comments, except: [:new, :edit] do
     collection do
       put '/', action: :update_many

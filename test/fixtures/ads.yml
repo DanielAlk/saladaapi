@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: MyString
+  text: MyText
+  actions: MyText
+  cover: 
+  special: 1
+  status: 1
+  kind: 1
+
+two:
+  title: MyString
+  text: MyText
+  actions: MyText
+  cover: 
+  special: 1
+  status: 1
+  kind: 1

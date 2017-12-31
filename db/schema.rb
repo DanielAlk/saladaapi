@@ -11,7 +11,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171221064430) do
+ActiveRecord::Schema.define(version: 20171231121244) do
+
+  create_table "ads", force: :cascade do |t|
+    t.string   "title",              limit: 255
+    t.text     "text",               limit: 65535
+    t.text     "actions",            limit: 65535
+    t.string   "cover_file_name",    limit: 255
+    t.string   "cover_content_type", limit: 255
+    t.integer  "cover_file_size",    limit: 4
+    t.datetime "cover_updated_at"
+    t.integer  "special",            limit: 4,     default: 0
+    t.integer  "status",             limit: 4,     default: 0
+    t.integer  "kind",               limit: 4,     default: 0
+    t.datetime "created_at",                                   null: false
+    t.datetime "updated_at",                                   null: false
+  end
 
   create_table "categories", force: :cascade do |t|
     t.string   "title",      limit: 255
