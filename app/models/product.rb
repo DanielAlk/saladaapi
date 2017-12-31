@@ -78,6 +78,6 @@ class Product < ActiveRecord::Base
     end
 
     def user_limit
-      errors.add(:user_limit, "Not allowed") if self.new_record? && self.user.product_limit != :unlimited && self.user.products.count >= self.user.product_limit
+      errors.add(:user_limit, "Not allowed") if self.new_record? && self.user.present? && self.user.product_limit != :unlimited && self.user.products.count >= self.user.product_limit
     end
 end
