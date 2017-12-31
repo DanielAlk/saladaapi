@@ -1,7 +1,7 @@
 class ProductsController < ApplicationController
   include Filterize
   filterize order: :special_desc, param: :f, scope: :published, scope_if: :not_current_user_scope
-  before_filter :authenticate_user!, except: [:index, :show]
+  before_filter :authenticate_user!, except: [:index, :show], unless: -> { params[:interaction].present? }
   before_filter :authenticate_user!, only: :index, if: -> { params[:interaction].present? }
   before_action :filterize, only: :index, unless: -> { params[:interaction].present? }
   before_action :set_interaction_products, only: :index, if: -> { params[:interaction].present? }
