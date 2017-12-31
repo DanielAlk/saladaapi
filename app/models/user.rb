@@ -111,7 +111,7 @@ class User < ActiveRecord::Base
     if self.avatar.present?
       ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.avatar.url(:medium)
     else
-      self[:image]
+      ActionController::Base.helpers.asset_url("user.png", :digest => false)
     end
   end
 
