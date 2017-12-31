@@ -7,12 +7,17 @@ module Filterable
     def fsearch(search_string)
     	options = filterable_options[:search]
   		return nil if options.blank?
+      strings = search_string.split(' ').map{|s| '%' + s + '%'}
       table_name = self.name.pluralize.downcase
   		sql = ''
+      search_strings = []
   		options.each do |o|
-  			sql += table_name + '.' + o.to_s + ' LIKE :search_string OR '
+        strings.each do |s|
+          search_strings << s
+          sql += table_name + '.' + o.to_s + ' LIKE ? OR '
+        end
   		end
-			self.where(sql[0...-4], search_string: '%' + search_string + '%')
+			self.where(sql[0...-4], *search_strings)
   	end
 
   	def forder(filter)
