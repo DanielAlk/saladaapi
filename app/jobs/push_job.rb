@@ -5,8 +5,7 @@ class PushJob
   def perform(contents)
   	params = {
   		filters: [
-  			{ field: :tag, key: :id, relation: '=', value: contents[:user_id] },
-        { field: :tag, key: :environment, relation: "=", value: Rails.env }
+  			{ field: :tag, key: :id, relation: '=', value: contents[:user_id] }
   		],
   		contents: { en: contents[:message], es: contents[:message] },
   		headings: { en: contents[:title], es: contents[:title] },

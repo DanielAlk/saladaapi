@@ -8,12 +8,22 @@ module OneSignal
   end
 
   private
+    def prepare_params(params)
+      environment_filter = { field: :tag, key: :environment, relation: "=", value: Rails.env }
+      if params[:filters].present?
+        params[:filters] << environment_filter
+      else
+        params[:filters] = [ environment_filter ]
+      end
+      params.to_json
+    end
+
   	def api_request(resource, method, params = {})
   		begin
   			uri = URI.parse('https://onesignal.com/api/v1/' + resource.to_s)
 
   			request = Net::HTTP.class_eval(method.to_s.titleize).new(uri.path)
-  			request.body = params.to_json
+  			request.body = prepare_params(params)
   			request['Content-Type'] = 'application/json'
   			request['Authorization'] = 'Basic ' + ENV['onesignal_api_key']
 
