@@ -45,7 +45,7 @@ class ShopClaim < ActiveRecord::Base
     def user_can_claim?
       unless user.shop_limit == :unlimited
         statuses = self.class.statuses.map{|k,s| s if [:in_review, :approved].include?(k.to_sym) }.compact
-        unless user.shop_limit > user.shop_claims.where(status: [statuses]).count + user.shops.count
+        unless user.shop_limit > user.shop_claims.where(status: statuses).count + user.shops.count
           errors.add(:shop_limit, 'Como usuario free no podés reclamar más puestos.')
         end
       end
