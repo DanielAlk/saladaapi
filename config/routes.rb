@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   get 'data/shop'
   get 'data/texts'
   get 'data/terms_and_conditions'
+  get 'data/profile_buttons'
   
   post 'notifications/mercadopago'
 

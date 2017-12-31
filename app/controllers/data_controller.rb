@@ -3,6 +3,41 @@ class DataController < ApplicationController
   	render json: { locations: Shop.locations, conditions: Shop.conditions, gallery_names: [ 'El Imperio', 'El Indio', 'El Dorado' ] }
   end
 
+  def profile_buttons
+  	if false
+	  	render json: {
+	  		buttons: [
+		  		{
+		  			id: 0,
+		  			text: 'Anunciar en SaladaApp',
+		  			style: 'button-positive',
+		  			external: true,
+		  			href: 'http://google.com'
+		  		},
+		  		{
+		  			id: 1,
+		  			text: 'Solicitar baja',
+		  			style: '',
+		  			external: true,
+		  			href: 'http://google.com.ar'
+		  		},
+		  		{
+		  			id: 2,
+		  			text: 'Otro',
+		  			style: 'button-positive',
+		  			internal: true,
+		  			state: 'app.shop',
+		  			params: { id: 1 }
+		  		}
+		  	]
+		  }
+		else
+			render json: {
+				buttons: []
+			}
+		end
+  end
+
   def texts
   	if user_signed_in?
   		if current_user.client?
