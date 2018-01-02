@@ -1,8 +1,7 @@
 class ProductsController < ApplicationController
   include Filterize
   filterize order: :special_desc, param: :f, scope: :published, scope_if: :not_current_user_scope
-  before_filter :authenticate_user!, except: [:index, :show], if: -> { params[:interaction].blank? }
-  before_filter :authenticate_user!, only: :index, if: -> { params[:interaction].present? }
+  before_filter :authenticate_user!, if: :should_authenticate_user?
   before_action :filterize, only: :index, unless: -> { params[:interaction].present? }
   before_action :set_interaction_products, only: :index, if: -> { params[:interaction].present? }
   before_action :set_product, only: [:show, :update, :destroy]
@@ -10,10 +9,14 @@ class ProductsController < ApplicationController
   # GET /products
   # GET /products.json
   def index
-    response.headers['X-Total-Count'] = @products.map.count.to_s
-    @products = @products.page(params[:page]) if params[:page].present?
-    @products = @products.per(params[:per]) if params[:per].present?
-    render json: @products, interaction: serializer_interaction
+    if @products != nil
+      response.headers['X-Total-Count'] = @products.map.count.to_s
+      @products = @products.page(params[:page]) if params[:page].present?
+      @products = @products.per(params[:per]) if params[:per].present?
+      render json: @products, interaction: serializer_interaction
+    else
+      render json: { errors: ['Invalid parameters.'] }, status: :bad_request
+    end
   end
 
   # GET /products/1
@@ -66,12 +69,16 @@ class ProductsController < ApplicationController
 
   private
 
+    def should_authenticate_user?
+      ![:index, :show].include?(action_name.to_sym) || params[:interaction].present? && action_name.to_sym == :index
+    end
+
     def not_current_user_scope(f)
       current_user.id != f[:scopes][:user].to_i rescue true
     end
 
     def interaction_params
-      JSON.parse(params[:interaction]).try(:symbolize_keys)
+      JSON.parse(params[:interaction]).try(:symbolize_keys) rescue {}
     end
 
     def serializer_interaction
