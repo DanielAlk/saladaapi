@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   get 'data/texts'
   get 'data/terms_and_conditions'
   get 'data/profile_buttons'
+  get 'data/marquesine'
   
   post 'notifications/mercadopago'
 

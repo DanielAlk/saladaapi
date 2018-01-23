@@ -1,4 +1,8 @@
 class DataController < ApplicationController
+	def marquesine
+		render json: Product.where(special: Product.specials[:towering]).limit(4).order("RAND()")
+	end
+
   def shop
   	render json: { locations: Shop.locations, conditions: Shop.conditions, gallery_names: [ 'El Imperio', 'El Indio', 'El Dorado' ] }
   end
