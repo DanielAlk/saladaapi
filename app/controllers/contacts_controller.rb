@@ -30,6 +30,7 @@ class ContactsController < ApplicationController
     @contact = Contact.new(contact_params)
 
     if @contact.save
+      Notifier.contact(@contact).deliver_later
       render json: @contact, status: :created, location: @contact
     else
       render json: @contact.errors, status: :unprocessable_entity
