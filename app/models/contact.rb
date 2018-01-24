@@ -1,7 +1,7 @@
 class Contact < ActiveRecord::Base
 	include Filterable
 	validates :name, :email, :message, :role, presence: true
-	validates :message, length: { minimum: 15 }
+	validates :message, presence: true
 
 	filterable search: [ :name, :email, :message, :tel ]
 
