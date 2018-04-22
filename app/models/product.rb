@@ -68,6 +68,7 @@ class Product < ActiveRecord::Base
     product = JSON.parse(self.to_json).deep_symbolize_keys
     product[:category_title] = (self.category.title rescue nil)
     product[:user_name] = self.user.name
+    product[:shop_description] = (self.shop.description rescue nil)
     product[:cover] = self.cover
 
     if flag == :complete
