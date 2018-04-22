@@ -1,4 +1,5 @@
 class Subscription < ActiveRecord::Base
+	include Filterable
 	belongs_to :plan
 	belongs_to :user
 	has_many :invoices, dependent: :destroy
@@ -33,12 +34,19 @@ class Subscription < ActiveRecord::Base
 		return false
 	end
 
-	def status=(s)
-	  if self.class.statuses[s].present?
-	    self[:status] = self.class.statuses[s]
+	def status=(new_status)
+	  if self.class.statuses[new_status].present?
+	    self[:status] = self.class.statuses[new_status]
 	  else
 	    self[:status] = self.class.statuses[:failed]
 	  end
+	end
+
+	def perform=(new_status)
+		self.status = new_status
+		if status_changed? && automatic_debit?
+			update_mercadopago
+		end
 	end
 
 	def get_from_mercadopago
@@ -101,23 +109,34 @@ class Subscription < ActiveRecord::Base
 
 	def destroy
 		if self.automatic_debit? && !self.cancelled?
-			request = $mp.put('/v1/subscriptions/' + mercadopago_subscription_id, { status: :cancelled })
-			if request['status'].try(:to_i) == 200
-				subscription = request['response'].deep_symbolize_keys
-				self.update_from_mercadopago(subscription)
-				self.save
-			else
-				subscription = self.get_from_mercadopago
-				if subscription.present?
-					self.update_from_mercadopago(subscription)
-					self.save
-				end
-			end
+			self.status = :cancelled
+			self.update_mercadopago
+			self.save
 		elsif self.cash? && !self.cancelled?
 			self.cancelled!
-		else
-			super
 		end
+		
+		super
+	end
+
+	def update_mercadopago
+		request = $mp.put('/v1/subscriptions/' + mercadopago_subscription_id, { status: self.status })
+		if request['status'].try(:to_i) == 200
+			subscription = request['response'].deep_symbolize_keys
+			self.update_from_mercadopago(subscription)
+		else
+			subscription = self.get_from_mercadopago
+			if subscription.present?
+				self.update_from_mercadopago(subscription)
+			end
+		end
+	end
+
+	def to_hash(flag = nil)
+		subscription = JSON.parse(self.to_json).deep_symbolize_keys
+		subscription[:plan] = self.plan.to_hash
+		subscription[:invoices] = self.invoices.map{ |invoice| invoice.to_hash }
+		subscription
 	end
 
 	private
@@ -147,9 +166,10 @@ class Subscription < ActiveRecord::Base
 		end
 
 		def create_cash_subscription
+			self.payment_method_id = 'cash'
 			self.start_date = DateTime.now
 			self.next_payment_date = DateTime.now + 3.days
-			self.status = :paused
+			self.status = :paused unless self.status.present?
 		end
 
 		def is_new_or_status_changed?

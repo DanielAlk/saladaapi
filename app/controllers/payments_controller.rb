@@ -1,12 +1,18 @@
 class PaymentsController < ApplicationController
+  include Filterize
+  filterize order: :created_at_desc, param: :f
+  before_action :authenticate_admin!, only: [:update, :destroy]
   before_action :authenticate_user!
+  before_action :filterize, only: :index
   before_action :set_payment, only: [:show, :edit, :update, :destroy]
 
   # GET /payments.json
   def index
-    @payments = current_user.payments.order(updated_at: :desc).paginate(:page => params[:page], :per_page => 12)
+    response.headers['X-Total-Count'] = @payments.count.to_s
+    @payments = @payments.page(params[:page]) if params[:page].present?
+    @payments = @payments.per(params[:per]) if params[:per].present?
 
-    render json: @payments
+    _render collection: @payments, flag: params[:flag].try(:to_sym)
   end
 
   # GET /payments/1.json
@@ -34,8 +40,8 @@ class PaymentsController < ApplicationController
   # PATCH/PUT /payments/1
   # PATCH/PUT /payments/1.json
   def update
-    if @payment.update(payment_params)
-      render :show, status: :ok, location: @payment
+    if @payment.update(params.permit(:status))
+      head :no_content
     else
       render json: @payment.errors, status: :unprocessable_entity
     end
@@ -44,9 +50,11 @@ class PaymentsController < ApplicationController
   # DELETE /payments/1
   # DELETE /payments/1.json
   def destroy
-    @payment.destroy
-
-    head :no_content
+    if @payment.destroy
+      head :no_content
+    else
+      render json: @payment.errors, status: :unprocessable_entity
+    end
   end
 
   private
@@ -57,6 +65,6 @@ class PaymentsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def payment_params
-      params.permit(:user_id, :payable_id, :payable_type, :promotionable_id, :promotionable_type, :kind, :transaction_amount, :installments, :payment_method_id, :token, :mercadopago_payment, :mercadopago_payment_id, :status, :status_detail, :save_address, :save_card)
+      params.permit(:user_id, :payable_id, :payable_type, :promotionable_id, :promotionable_type, :kind, :transaction_amount, :installments, :payment_method_id, :token, :mercadopago_payment, :mercadopago_payment_id, :save_address, :save_card)
     end
 end

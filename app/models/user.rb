@@ -12,14 +12,16 @@ class User < ActiveRecord::Base
   validates_attachment :avatar, content_type: { content_type: /\Aimage\/.*\Z/ }
 
   has_many :shops, dependent: :destroy
-  has_many :shop_claims, -> { order(created_at: :desc) }, dependent: :destroy
-  has_many :products
-  has_many :comments
+  has_many :shop_claims, -> { order(updated_at: :desc) }, dependent: :destroy
+  has_many :products, dependent: :destroy
+  has_many :comments, dependent: :destroy
   has_many :incoming_comments, foreign_key: :receiver_id, class_name: :Comment, dependent: :destroy
   has_many :incoming_interactions, foreign_key: :owner_id, class_name: :Interaction, dependent: :destroy
   has_many :outgoing_interactions, class_name: :Interaction, dependent: :destroy
-  has_many :invoices
-  has_many :subscriptions
+  has_many :invoices, dependent: :destroy
+  has_many :subscriptions, dependent: :destroy
+  has_many :payments, dependent: :destroy
+  
   serialize :metadata
 
   validates :name, :email, :gender, :birthday, :id_type, :id_number, :locality, :address, :phone_number, :role, presence: true
@@ -36,6 +38,15 @@ class User < ActiveRecord::Base
   	elsif (parsed = JSON.parse(metadata)).present?
   		write_attribute(:metadata, parsed)
   	end
+  end
+
+  def push=(message)
+    PushJob.perform_async({
+      user_id: self.id,
+      title: 'SaladaApp',
+      message: message,
+      buttons: [ 'Ok' ]
+    })
   end
 
   def first_name
@@ -91,7 +102,7 @@ class User < ActiveRecord::Base
   end
 
   def available_plan_groups
-    user_role = User.roles[self.role]
+    user_role = self.admin? ? User.roles[:seller] : User.roles[self.role]
     if self.seller?
       if self.shops.present?
         PlanGroup.where(subscriptable_role: user_role)
@@ -104,7 +115,8 @@ class User < ActiveRecord::Base
   end
 
   def has_plan_groups_available?
-    self.free? && self.subscriptions.cash.paused.count == 0 && PlanGroup.where(subscriptable_role: User.roles[self.role]).count > 0
+    user_role = self.admin? ? User.roles[:seller] : User.roles[self.role]
+    self.free? && self.subscriptions.cash.paused.count == 0 && PlanGroup.where(subscriptable_role: user_role).count > 0
   end
 
   def image
@@ -162,5 +174,64 @@ class User < ActiveRecord::Base
   
   def token_validation_response
     UserSerializer.new( self, root: false )
+  end
+
+  def destroy
+    if admin?
+      errors.add(:can_not_delete, 'No se puede eliminar el usuario admin')
+      false
+    else
+      super
+    end
+  end
+
+  def to_hash(flag = nil)
+    user = JSON.parse(self.to_json).deep_symbolize_keys
+    if self.avatar.present?
+      user[:avatar] = {
+        thumb: ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.avatar.url(:thumb),
+        small: ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.avatar.url(:small),
+        medium: ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.avatar.url(:medium),
+        original: ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.avatar.url(:original)
+      }
+    else
+      user[:avatar] = {}
+      [:thumb, :small, :medium, :original].each do |key|
+        user[:avatar][key] = ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + ActionController::Base.helpers.asset_url("user.png", :digest => false)
+      end
+    end
+    if flag == :complete
+      user[:has_plan_groups_available] = self.has_plan_groups_available?
+
+      user[:shops] = {
+        items: self.shops.order(created_at: :desc).page(1).per(4).map{ |shop| shop.to_hash },
+        total_count: self.shops.count
+      }
+      user[:products] = {
+        items: self.products.order(special: :desc).page(1).per(4).map{ |product| product.to_hash },
+        total_count: self.products.count
+      }
+      user[:shop_claims] = {
+        items: self.shop_claims.order(updated_at: :desc).page(1).per(4).map{ |shop_claim| shop_claim.to_hash },
+        total_count: self.shop_claims.count
+      }
+      user[:questions] = {
+        items: self.comments.question.order(created_at: :desc).page(1).per(4).map{ |comment| comment.to_hash(:for_user) },
+        total_count: self.comments.question.count
+      }
+      user[:answers] = {
+        items: self.comments.answer.order(created_at: :desc).page(1).per(4).map{ |comment| comment.to_hash(:for_user) },
+        total_count: self.comments.answer.count
+      }
+      user[:subscriptions] = {
+        items: self.subscriptions.order(created_at: :desc).page(1).per(4).map{ |subscription| subscription.to_hash },
+        total_count: self.subscriptions.count
+      }
+      user[:payments] = {
+        items: self.payments.order(created_at: :desc).page(1).per(4).map{ |payment| payment.to_hash(:complete) },
+        total_count: self.payments.count
+      }
+    end
+    user
   end
 end

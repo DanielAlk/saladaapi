@@ -2,7 +2,7 @@ class Interaction < ActiveRecord::Base
   belongs_to :owner, class_name: :User
   belongs_to :user
   belongs_to :product
-  belongs_to :last_comment, class_name: :Comment
+  belongs_to :last_comment, class_name: :Comment, dependent: :destroy
   has_many :comments, dependent: :destroy
 
   before_create :save_inherited_values
@@ -23,8 +23,8 @@ class Interaction < ActiveRecord::Base
 
     def change_owner
       save_inherited_values
-      comments.answer.update_all(user_id: owner_id)
-      comments.question.update_all(receiver_id: owner_id)
+      comments.answer.update_all(user_id: self.product.user.id)
+      comments.question.update_all(receiver_id: self.product.user.id)
     end
 
 end

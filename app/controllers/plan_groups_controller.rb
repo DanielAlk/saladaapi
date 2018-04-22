@@ -1,11 +1,22 @@
 class PlanGroupsController < ApplicationController
+  include Filterize
+  filterize order: :id_desc, param: :f
+  before_filter :authenticate_admin!, only: [:index, :show], if: :is_client_panel?
+  before_filter :authenticate_admin!, except: [:index, :show]
   before_filter :authenticate_user!
+  before_action :filterize, only: :index, if: :is_client_panel?
   before_action :set_plan_group, only: [:show, :update, :destroy]
 
   # GET /plan_groups
   # GET /plan_groups.json
   def index
-    @plan_groups = PlanGroup.available_for_user(current_user)
+    if is_client_app?
+      @plan_groups = PlanGroup.available_for_user(current_user)
+    else
+      response.headers['X-Total-Count'] = @plan_groups.count.to_s
+      @plan_groups = @plan_groups.page(params[:page]) if params[:page].present?
+      @plan_groups = @plan_groups.per(params[:per]) if params[:per].present?
+    end
 
     render json: @plan_groups
   end

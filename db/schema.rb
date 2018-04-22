@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171231121244) do
+ActiveRecord::Schema.define(version: 20180414064423) do
 
   create_table "ads", force: :cascade do |t|
     t.string   "title",              limit: 255
@@ -221,6 +221,7 @@ ActiveRecord::Schema.define(version: 20171231121244) do
     t.integer  "shop_id",    limit: 4
     t.datetime "created_at",                       null: false
     t.datetime "updated_at",                       null: false
+    t.integer  "state",      limit: 4, default: 1
   end
 
   add_index "shop_claims", ["shop_id"], name: "index_shop_claims_on_shop_id", using: :btree

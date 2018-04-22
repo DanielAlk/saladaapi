@@ -1,4 +1,5 @@
 class Payment < ActiveRecord::Base
+  include Filterable
   include Rails.application.routes.url_helpers
   include MercadoPagoConcern
   belongs_to :user
@@ -100,6 +101,27 @@ class Payment < ActiveRecord::Base
 
   def friendly_status
     { pending: 'Pendiente', approved: 'Aprobado', authorized: 'Autorizado', in_process: 'En proceso', in_mediation: 'En mediación', rejected: 'Rechazado', cancelled: 'Cancelado', refunded: 'Devuelto', charged_back: 'Contracargado', failed: 'No procesado' }[status.try(:to_sym)]
+  end
+
+  def destroy
+    if debit? && [:in_mediation, :in_process, :authorized].include?(status.try(:to_sym))
+      errors.add(:unallowed, 'No se puede borrar el pago porque está ' + friendly_status.downcase)
+      false
+    else
+      if debit? && pending? && mercadopago_payment_id.present?
+        $mp.cancel_payment(mercadopago_payment_id.try(:to_s))
+      end
+      super
+    end
+  end
+
+  def to_hash(flag = nil)
+    payment = JSON.parse(self.to_json).deep_symbolize_keys
+    payment[:payable] = self.payable.present? ? self.payable.to_hash : nil
+    if flag == :complete
+      payment[:promotionable] = self.promotionable.present? ? self.promotionable.to_hash : nil
+    end
+    payment
   end
 
   private

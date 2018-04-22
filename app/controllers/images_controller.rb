@@ -1,4 +1,5 @@
 class ImagesController < ApplicationController
+  before_filter :authenticate_admin!, except: [:index, :show], if: :is_client_panel?
   before_filter :authenticate_user!, except: [:index, :show]
   before_action :set_image, only: [:show, :update, :destroy]
 
@@ -19,7 +20,15 @@ class ImagesController < ApplicationController
   # POST /images
   # POST /images.json
   def create
-    if params[:images].present?
+    if is_client_panel? # panel calls to products/:product_id/images
+      product = Product.find(params[:product_id])
+      image = product.images.new(image_params)
+      if product.save
+        render json: image, status: :created
+      else
+        render json: product.errors, status: :unprocessable_entity
+      end
+    elsif params[:images].present?
       first_image = params[:images].first[1]
       if first_image[:imageable_type] == 'Product'
         imageable = Product.find(first_image[:imageable_id])
@@ -60,7 +69,7 @@ class ImagesController < ApplicationController
   # PATCH/PUT /images/1.json
   def update
     @image = Image.find(params[:id])
-    if @image.imageable.user != current_user
+    if @image.imageable.user != current_user && !current_user.admin?
       render json: ['You have no authorization for that action'], status: :unauthorized
     elsif @image.update(image_params)
       head :no_content
@@ -72,7 +81,7 @@ class ImagesController < ApplicationController
   # DELETE /images/1
   # DELETE /images/1.json
   def destroy
-    if @image.imageable.user != current_user
+    if @image.imageable.user != current_user && !current_user.admin?
       render json: ['You have no authorization for that action'], status: :unauthorized
     else
       @image.destroy

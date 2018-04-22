@@ -48,6 +48,25 @@ class Comment < ActiveRecord::Base
   	super
   end
 
+  def to_hash(flag = nil)
+    comment = JSON.parse(self.to_json).deep_symbolize_keys
+    if flag == :complete
+      comment[:user] = self.user.to_hash
+    end
+    if flag == :for_user
+      comment[:product] = question? ? self.commentable.to_hash : self.commentable.commentable.to_hash
+    end
+    if [:complete, :for_user].include?(flag)
+      if question? && answered?
+        comment[:answer] = self.answer.try(:to_hash)
+      elsif answer?
+        comment[:question] = self.commentable.try(:to_hash)
+      end
+    end
+
+    comment
+  end
+
   private
     def push_notificate
       self.commentable.user.increment!(:badge_number)

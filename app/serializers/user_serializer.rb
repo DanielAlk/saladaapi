@@ -1,5 +1,5 @@
 class UserSerializer < ActiveModel::Serializer
-  attributes :id, :name
+  attributes :id, :name, :admin
   attribute :email, if: :medium
   attribute :role, if: :medium
   attribute :badge_number, if: :complete
@@ -28,14 +28,22 @@ class UserSerializer < ActiveModel::Serializer
   attribute :unread_answers_count, if: :complete
   attribute :has_plan_groups_available, if: :complete
   attribute :permissions, if: :complete
-  has_many :shop_claims, if: :complete
+  attribute :shop_claims, if: :complete
 
   def has_plan_groups_available
     object.has_plan_groups_available?
   end
 
+  def shop_claims
+    object.shop_claims.visible
+  end
+
   def role
     object.admin? ? :seller : object.role
+  end
+
+  def admin
+    object.admin?
   end
 
   def medium

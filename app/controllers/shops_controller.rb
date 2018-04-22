@@ -2,6 +2,7 @@ class ShopsController < ApplicationController
   include Filterize
   filterize order: :created_at_desc, param: :f
   before_action :filterize, only: :index
+  before_filter :authenticate_admin!, if: :is_client_panel?
   before_filter :authenticate_user!, except: [:index, :show]
   before_action :set_shop, only: [:show, :update, :destroy]
   before_action :set_shops, only: [:update_many, :destroy_many]
@@ -17,13 +18,16 @@ class ShopsController < ApplicationController
       response.headers["X-offset"] = @shops.offset_value.to_s
       response.headers["X-limit"] = @shops.limit_value.to_s
     end
-    render json: @shops
+
+    _render collection: @shops
   end
 
   # GET /shops/1
   # GET /shops/1.json
   def show
-    if user_signed_in? && current_user == @shop.user
+    if is_client_panel?
+      _render member: @shop, flag: :complete
+    elsif user_signed_in? && current_user == @shop.user
       render json: @shop, owner: true
     else
       render json: @shop, complete: true
@@ -47,7 +51,7 @@ class ShopsController < ApplicationController
   # PATCH/PUT /shops/1.json
   def update
     @shop = Shop.find(params[:id])
-    if @shop.user != current_user
+    if @shop.user != current_user && !is_client_panel?
       render json: ['Unable to update shop'], status: :unauthorized
     elsif @shop.update(shop_params)
       head :no_content
@@ -83,7 +87,8 @@ class ShopsController < ApplicationController
   # DELETE /shops/1
   # DELETE /shops/1.json
   def destroy
-    if @shop.user == current_user
+    if @shop.user == current_user || is_client_panel?
+      @shop.shop_claims.delete_all
       @shop.destroy
       head :no_content
     else

@@ -1,4 +1,5 @@
 class Ad < ActiveRecord::Base
+	include Filterable
 	has_attached_file :cover, styles: { medium: "640x300#", small: "297x257#", thumb: "127x127#" }, default_url: lambda { |a| "#{a.instance.cover_default_url}" }
 	validates_attachment :cover, content_type: { content_type: /\Aimage\/.*\Z/ }
 
@@ -6,6 +7,14 @@ class Ad < ActiveRecord::Base
 	enum special: [ :standard ]
 	enum kind: [ :announcement ]
 	serialize :actions
+
+	def actions=(data)
+		if data.is_a? String
+			self.actions = JSON.parse(data)
+		else
+			super
+		end
+	end
 
 	def cover_url
 		{

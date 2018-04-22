@@ -49,6 +49,10 @@ class Invoice < ActiveRecord::Base
 		self.next_payment_attempt = invoice[:next_payment_attempt]
 	end
 
+	def to_hash(flag = nil)
+		invoice = JSON.parse(self.to_json).deep_symbolize_keys
+	end
+
 	private
 		def referenciate
 			self.user = subscription.user

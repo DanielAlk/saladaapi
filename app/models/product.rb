@@ -13,7 +13,9 @@ class Product < ActiveRecord::Base
   validates :user, :category, :shop, presence: true
   validates :stock, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 99999 }
   validates :price, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 999999.99 }
+  validate :validate_status, on: :update, if: :status_changed?
   validate :user_limit
+  validate :image_limit
 
   after_destroy :disassociate_payments
   before_update :assign_interactions_to_user, if: :user_id_changed?
@@ -36,7 +38,15 @@ class Product < ActiveRecord::Base
   end
 
   def cover
-  	self.images.try(:first).try(:url)
+    if images.present?
+      self.images.try(:first).try(:url)
+    else
+      rtn = {}
+      [:thumb, :small, :medium, :original].each do |key|
+        rtn[key] = ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + ActionController::Base.helpers.asset_url("missing-#{key}.jpg", :digest => false)
+      end
+      rtn
+    end
   end
 
   def handle_payment(payment)
@@ -54,12 +64,39 @@ class Product < ActiveRecord::Base
     payments.where(status: statuses).map{ |payment| payment.payable }.uniq
   end
 
+  def to_hash(flag = nil)
+    product = JSON.parse(self.to_json).deep_symbolize_keys
+    product[:category_title] = (self.category.title rescue nil)
+    product[:user_name] = self.user.name
+    product[:cover] = self.cover
+
+    if flag == :complete
+      product[:user] = self.user.to_hash
+      product[:shop] = self.shop
+      product[:category] = self.category
+      product[:images] = self.images.map{ |image| image.to_hash }
+      product[:image_limit] = self.user.product_image_limit
+      product[:promotions] = self.promotions
+      product[:payments] = {
+        items: self.payments.order(updated_at: :desc).page(1).per(4).map{ |payment| payment.to_hash },
+        total_count: self.payments.count
+      }
+      product[:comments] = {
+        items: self.comments.order(created_at: :desc).page(1).per(4).map{ |comment| comment.to_hash(:complete) },
+        total_count: self.comments.count
+      }
+    end
+    product
+  end
+
   private
     def disassociate_not_matching_payments
       payments.each do |payment|
         if payment.payable.name.try(:to_sym) != self.special.try(:to_sym)
-          payment.promotionable = nil
-          payment.save
+          unless [:in_mediation, :in_process, :pending, :authorized].include?(payment.status.try(:to_sym))
+            payment.promotionable = nil
+            payment.save
+          end
         end
       end
     end
@@ -77,7 +114,19 @@ class Product < ActiveRecord::Base
       end
     end
 
+    def validate_status
+      unless draft? || images.present?
+        errors.add(:status_error, "No se puede cambiar el estado de un producto sin imágenes")
+      end
+    end
+
     def user_limit
       errors.add(:user_limit, "Not allowed") if self.new_record? && self.user.present? && self.user.product_limit != :unlimited && self.user.products.count >= self.user.product_limit
+    end
+
+    def image_limit
+      if self.images.size > self.user.product_image_limit
+        errors.add(:image_limit, "El usuario ha alcanzado su limite de imágenes en este producto")
+      end
     end
 end

@@ -1,19 +1,31 @@
 class SubscriptionsController < ApplicationController
+  include Filterize
+  filterize order: :created_at_desc, param: :f
+  before_filter :authenticate_admin!, if: :is_client_panel?
   before_filter :authenticate_user!
+  before_action :filterize, only: :index, if: :is_client_panel?
   before_action :set_subscription, only: [:show, :update, :destroy]
 
   # GET /subscriptions
   # GET /subscriptions.json
   def index
-    if params[:user_id].present?
-      t = Subscription.arel_table
-      s = Subscription.statuses
-      @subscriptions = Subscription.where(user_id: params[:user_id]).where(t[:status].eq(s[:authorized]).or(t[:status].eq(s[:paused])))
-    else
-      @subscriptions = Subscription.all
-    end
+    if is_client_app?
+      if params[:user_id].present?
+        t = Subscription.arel_table
+        s = Subscription.statuses
+        @subscriptions = Subscription.where(user_id: params[:user_id]).where(t[:status].eq(s[:authorized]).or(t[:status].eq(s[:paused])))
+      else
+        @subscriptions = Subscription.all
+      end
 
-    render json: @subscriptions
+      render json: @subscriptions
+    else
+      response.headers['X-Total-Count'] = @subscriptions.count.to_s
+      @subscriptions = @subscriptions.page(params[:page]) if params[:page].present?
+      @subscriptions = @subscriptions.per(params[:per]) if params[:per].present?
+
+      _render collection: @subscriptions, flag: params[:flag].try(:to_sym)
+    end
   end
 
   # GET /subscriptions/1
@@ -61,6 +73,6 @@ class SubscriptionsController < ApplicationController
     end
 
     def subscription_params
-      params.permit(:mercadopago_subscription_id, :mercadopago_plan_id, :plan_id, :user_id, :kind, :payer, :payment_method_id, :next_payment_date, :token, :application_fee, :status, :description, :start_date, :end_date, :metadata, :charges_detail, :setup_fee, :mercadopago_subscription)
+      params.permit(:perform, :mercadopago_subscription_id, :mercadopago_plan_id, :plan_id, :user_id, :kind, :payer, :payment_method_id, :next_payment_date, :token, :application_fee, :status, :description, :start_date, :end_date, :metadata, :charges_detail, :setup_fee, :mercadopago_subscription)
     end
 end

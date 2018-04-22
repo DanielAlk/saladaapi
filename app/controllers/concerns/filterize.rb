@@ -26,11 +26,16 @@ module Filterize
 			if @filterable[:scopes].present?
 				@filterable[:scopes].keys.each do |key|
 					if (scope = @filterable[:scopes][key]).present?
-						if object.respond_to?(key.to_s) && scope === true #is scope
+						if key.try(:to_sym) == :id
+							collection = collection.where(id: scope)
+						elsif object.respond_to?(key.to_s) && scope === true #is scope
 							collection = collection.send(key.to_s)
 						elsif object.respond_to? key.to_s.pluralize #is enum
-							if (scope.try(:length) > 1 rescue false)
+							if scope.is_a?(String)
 								collection = collection.send(scope.to_s)
+							elsif scope.is_a?(Array)
+								scopeIndexes = scope.map{ |s| object.send(key.to_s.pluralize)[s.try(:to_s)] }
+								collection = collection.where(key.to_s => scopeIndexes)
 							else
 								collection = collection.send(object.send(key.to_s.pluralize).key(scope.to_i))
 							end
@@ -39,6 +44,13 @@ module Filterize
 						else
 							collection = collection.where(key => scope)
 						end
+					end
+				end
+			end
+			if @filterable[:methods].present?
+				@filterable[:methods].keys.each do |key|
+					if object.respond_to? key
+						collection = collection.send(key, @filterable[:methods][key])
 					end
 				end
 			end
@@ -63,6 +75,6 @@ module Filterize
 				collection = collection.where.not(exclude)
 			end
 		end
-		instance_variable_set('@' + object.name.pluralize.downcase, collection)
+		instance_variable_set('@' + object.name.pluralize.underscore, collection)
 	end
 end

@@ -1,8 +1,9 @@
 class CategoriesController < ApplicationController
   include Filterize
   filterize order: :title_asc, param: :f
+  before_filter :authenticate_admin!, except: [:index, :show]
   before_action :filterize, only: :index
-  before_action :set_category, only: [:show, :update, :destroy]
+  before_action :set_category, only: [:show, :update, :destroy, :assign_to_shops, :assign_to_products]
   before_action :set_categories, only: [:update_many, :destroy_many]
 
   # GET /categories
@@ -52,9 +53,11 @@ class CategoriesController < ApplicationController
   # DELETE /categories/1
   # DELETE /categories/1.json
   def destroy
-    @category.destroy
-
-    head :no_content
+    if @category.destroy
+      head :no_content
+    else
+      render json: @category.errors, status: :unprocessable_entity
+    end
   end
   
   # PATCH/PUT /categories
@@ -63,7 +66,7 @@ class CategoriesController < ApplicationController
     if @categories.update_all(category_params)
       render json: @categories, status: :ok, location: categories_url
     else
-      render json: @categories.errors, status: :unprocessable_entity
+      render json: @categories.map{ |category| category.errors }, status: :unprocessable_entity
     end
   end
 
@@ -72,8 +75,26 @@ class CategoriesController < ApplicationController
     if (@categories.destroy_all rescue false)
       head :no_content
     else
-      render json: @categories.errors, status: :unprocessable_entity
+      render json: @categories.map{ |category| category.errors }, status: :unprocessable_entity
     end
+  end
+
+  # PUT /categories/1/assign_to_shops.json
+  def assign_to_shops
+    shops = Shop.where(category_id: nil)
+    if (shops.present?)
+      shops.update_all(category_id: @category.id)
+    end
+    _render collection: shops
+  end
+
+  # PUT /categories/1/assign_to_products.json
+  def assign_to_products
+    products = Product.where(category_id: nil)
+    if (products.present?)
+      products.update_all(category_id: @category.id)
+    end
+    _render collection: products
   end
 
   private

@@ -1,10 +1,12 @@
 class ProductsController < ApplicationController
   include Filterize
   filterize order: :special_desc, param: :f, scope: :published, scope_if: :not_current_user_scope
+  before_filter :authenticate_admin!, if: :is_client_panel?
   before_filter :authenticate_user!, if: :should_authenticate_user?
   before_action :filterize, only: :index, unless: -> { params[:interaction].present? }
   before_action :set_interaction_products, only: :index, if: -> { params[:interaction].present? }
   before_action :set_product, only: [:show, :update, :destroy]
+  before_action :set_products, only: [:update_many, :destroy_many]
 
   # GET /products
   # GET /products.json
@@ -13,7 +15,8 @@ class ProductsController < ApplicationController
       response.headers['X-Total-Count'] = @products.map.count.to_s
       @products = @products.page(params[:page]) if params[:page].present?
       @products = @products.per(params[:per]) if params[:per].present?
-      render json: @products, interaction: serializer_interaction
+
+      _render({ collection: @products }, { interaction: serializer_interaction })
     else
       render json: { errors: ['Invalid parameters.'] }, status: :bad_request
     end
@@ -22,7 +25,9 @@ class ProductsController < ApplicationController
   # GET /products/1
   # GET /products/1.json
   def show
-    if @product.published? || user_signed_in? && @product.user == current_user
+    if is_client_panel?
+      _render member: @product, flag: :complete
+    elsif @product.published? || user_signed_in? && @product.user == current_user
       render json: @product, complete: true
     else
       render json: ['Product not found'], status: :not_found
@@ -33,7 +38,7 @@ class ProductsController < ApplicationController
   # POST /products.json
   def create
     @product = Product.new(product_params)
-    @product.user = current_user
+    @product.user = current_user unless is_client_panel?
 
     if @product.save
       render json: @product, status: :created, location: @product
@@ -47,7 +52,7 @@ class ProductsController < ApplicationController
   def update
     @product = Product.find(params[:id])
 
-    if @product.user != current_user
+    if @product.user != current_user && !current_user.admin?
       render json: ['Unable to update product'], status: :unauthorized
     elsif @product.update(product_params)
       head :no_content
@@ -59,11 +64,30 @@ class ProductsController < ApplicationController
   # DELETE /products/1
   # DELETE /products/1.json
   def destroy
-    if @product.user == current_user
+    if @product.user == current_user || is_client_panel?
       @product.destroy
       head :no_content
     else
       render json: ['Unable to delete product'], status: :unauthorized
+    end
+  end
+  
+  # PATCH/PUT /products
+  # PATCH/PUT /products.json
+  def update_many
+    if @products.update_all(product_params)
+      render json: @products, status: :ok, location: products_url
+    else
+      render json: @products.errors, status: :unprocessable_entity
+    end
+  end
+
+  # DELETE /products.json
+  def destroy_many
+    if (@products.destroy_all rescue false)
+      head :no_content
+    else
+      render json: @products.errors, status: :unprocessable_entity
     end
   end
 
@@ -74,7 +98,11 @@ class ProductsController < ApplicationController
     end
 
     def not_current_user_scope(f)
-      current_user.id != f[:scopes][:user].to_i rescue true
+      if (current_user.admin? rescue false)
+        false
+      else
+        current_user.id != f[:scopes][:user].to_i rescue true
+      end
     end
 
     def interaction_params
@@ -101,6 +129,10 @@ class ProductsController < ApplicationController
 
     def set_product
       @product = Product.find(params[:id])
+    end
+
+    def set_products
+      @products = Product.where(id: params[:ids])
     end
 
     def product_params

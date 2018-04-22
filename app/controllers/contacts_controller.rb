@@ -1,6 +1,7 @@
 class ContactsController < ApplicationController
   include Filterize
   filterize order: :created_at_desc, param: :f
+  before_filter :authenticate_admin!, except: :create
   before_action :filterize, only: :index
   before_action :set_contact, only: [:show, :update, :destroy]
   before_action :set_contacts, only: [:update_many, :destroy_many]
@@ -10,11 +11,8 @@ class ContactsController < ApplicationController
   def index
     response.headers['X-Total-Count'] = @contacts.count.to_s
     @contacts = @contacts.page(params[:page]) if params[:page].present?
-    if params[:page].present?
-      response.headers["X-total"] = @contacts.total_count.to_s
-      response.headers["X-offset"] = @contacts.offset_value.to_s
-      response.headers["X-limit"] = @contacts.limit_value.to_s
-    end
+    @contacts = @contacts.per(params[:per]) if params[:per].present?
+    
     render json: @contacts
   end
 

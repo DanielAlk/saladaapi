@@ -48,4 +48,10 @@ class Plan < ActiveRecord::Base
 			end
 		end
 	end
+
+	def to_hash(flag = nil)
+		plan = JSON.parse(self.to_json).deep_symbolize_keys
+		plan[:plan_group] = self.plan_group.to_hash
+		plan
+	end
 end

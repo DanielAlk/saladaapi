@@ -1,11 +1,21 @@
 class AdsController < ApplicationController
-  before_filter :authenticate_user!, except: [:index, :show]
+  include Filterize
+  filterize order: :created_at_desc, param: :f
+  before_filter :authenticate_admin!, except: [:index, :show]
+  before_action :filterize, only: :index, if: :is_client_panel?
   before_action :set_ad, only: [:show, :update, :destroy]
+  before_action :set_ads, only: [:update_many, :destroy_many]
 
   # GET /ads
   # GET /ads.json
   def index
-    @ads = Ad.limit(2).order("RAND()")
+    if is_client_app?
+      @ads = Ad.active.limit(2).order("RAND()")
+    else
+      response.headers['X-Total-Count'] = @ads.count.to_s
+      @ads = @ads.page(params[:page]) if params[:page].present?
+      @ads = @ads.per(params[:per]) if params[:per].present?
+    end
 
     render json: @ads
   end
@@ -47,11 +57,33 @@ class AdsController < ApplicationController
 
     head :no_content
   end
+  
+  # PATCH/PUT /ads.json
+  def update_many
+    if @ads.update_all(ad_params)
+      render json: @ads, status: :ok, location: ads_url
+    else
+      render json: @ads.map{ |ad| ad.errors }, status: :unprocessable_entity
+    end
+  end
+
+  # DELETE /ads.json
+  def destroy_many
+    if (@ads.destroy_all rescue false)
+      head :no_content
+    else
+      render json: @ads.map{ |ad| ad.errors }, status: :unprocessable_entity
+    end
+  end
 
   private
 
     def set_ad
       @ad = Ad.find(params[:id])
+    end
+
+    def set_ads
+      @ads = Ad.where(id: params[:ids])
     end
 
     def ad_params

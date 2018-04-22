@@ -1,7 +1,8 @@
 class CommentsController < ApplicationController
   include Filterize
-  before_filter :authenticate_user!, except: [:index, :show]
   filterize order: :created_at_desc, param: :f
+  before_filter :authenticate_admin!, if: :is_client_panel?
+  before_filter :authenticate_user!, except: [:index, :show]
   before_action :filterize, only: :index
   before_action :set_comment, only: [:show, :update, :destroy]
 
@@ -10,8 +11,9 @@ class CommentsController < ApplicationController
   def index
     response.headers['X-Total-Count'] = @comments.count.to_s
     @comments = @comments.page(params[:page]) if params[:page].present?
-    @comments = @comments.per(params[:per_page]) if params[:per_page].present?
-    render json: @comments
+    @comments = @comments.per(params[:per]) if params[:per].present?
+
+    _render collection: @comments, flag: params[:flag].try(:to_sym)
   end
 
   # GET /comments/1
@@ -58,7 +60,7 @@ class CommentsController < ApplicationController
   # DELETE /comments/1
   # DELETE /comments/1.json
   def destroy
-    if @comment.commentable.user == current_user
+    if current_user.admin? || @comment.commentable.user == current_user
       @comment.destroy
       head :no_content
     else

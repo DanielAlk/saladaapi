@@ -16,6 +16,12 @@ class Image < ActiveRecord::Base
 		}
 	end
 
+	def to_hash
+		image = JSON.parse(self.to_json).deep_symbolize_keys
+		image[:url] = self.url
+		image
+	end
+
 	private
 		def check_product_images
 			if self.imageable_type == 'Product' && self.imageable.images.count == 1

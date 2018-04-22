@@ -3,7 +3,7 @@ class Contact < ActiveRecord::Base
 	validates :name, :email, :message, :role, presence: true
 	validates :message, presence: true
 
-	filterable search: [ :name, :email, :message, :tel ]
+	filterable search: [ :name, :email ]
 
 	enum role: [ :client, :seller ]
 	enum subject: [ :contact ]

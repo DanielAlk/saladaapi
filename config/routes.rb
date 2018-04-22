@@ -7,7 +7,12 @@ Rails.application.routes.draw do
   
   post 'notifications/mercadopago'
 
-  resources :ads, except: [:new, :edit]
+  resources :ads, except: [:new, :edit] do
+    collection do
+      put '/many', action: :update_many
+      delete '/many', action: :destroy_many
+    end
+  end
   resources :plan_groups, except: [:new, :edit]
   resources :comments, except: [:new, :edit] do
     collection do
@@ -20,6 +25,11 @@ Rails.application.routes.draw do
     member do
       get 'cards', action: :cards
     end
+    collection do
+      post 'push', action: :push
+      put '/many', action: :update_many
+      delete '/many', action: :destroy_many
+    end
   end
   resources :invoices, except: [:new, :edit]
   resources :subscriptions, except: [:new, :edit]
@@ -27,9 +37,20 @@ Rails.application.routes.draw do
   resources :promotions, except: [:new, :edit]
   resources :products, except: [:new, :edit] do
     resources :promotions, only: [:index, :destroy]
+    resources :images, only: [:create, :update, :destroy]
+    collection do
+      put '/many', action: :update_many
+      delete '/many', action: :destroy_many
+    end
   end
   resources :images, except: [:new, :edit]
   resources :sheds, except: [:new, :edit]
+  resources :shop_claims, except: [:new, :edit] do
+    collection do
+      put '/many', action: :update_many
+      delete '/many', action: :destroy_many
+    end
+  end
   resources :shops, except: [:new, :edit] do
     collection do
       put '/many', action: :update_many
@@ -44,6 +65,10 @@ Rails.application.routes.draw do
     collection do
       put '/many', action: :update_many
       delete '/many', action: :destroy_many
+    end
+    member do
+      put 'assign_to_shops', action: :assign_to_shops
+      put 'assign_to_products', action: :assign_to_products
     end
   end
   resources :contacts, except: [:new, :edit] do
