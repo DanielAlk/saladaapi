@@ -2,9 +2,10 @@ class SubscriptionsController < ApplicationController
   include Filterize
   filterize order: :created_at_desc, param: :f
   before_filter :authenticate_admin!, if: :is_client_panel?
-  before_filter :authenticate_user!
+  before_filter :authenticate_user!, if: :is_client_app?
   before_action :filterize, only: :index, if: :is_client_panel?
   before_action :set_subscription, only: [:show, :update, :destroy]
+  before_action :set_subscriptions, only: [:update_many, :destroy_many]
 
   # GET /subscriptions
   # GET /subscriptions.json
@@ -31,7 +32,7 @@ class SubscriptionsController < ApplicationController
   # GET /subscriptions/1
   # GET /subscriptions/1.json
   def show
-    render json: @subscription
+    _render member: @subscription, flag: :complete
   end
 
   # POST /subscriptions
@@ -65,11 +66,33 @@ class SubscriptionsController < ApplicationController
 
     head :no_content
   end
+  
+  # PATCH/PUT /subscriptions.json
+  def update_many
+    if @subscriptions.update_all(subscription_params)
+      render json: @subscriptions, status: :ok, location: subscriptions_url
+    else
+      render json: @subscriptions.map{ |subscription| subscription.errors }, status: :unprocessable_entity
+    end
+  end
+
+  # DELETE /subscriptions.json
+  def destroy_many
+    if (@subscriptions.destroy_all rescue false)
+      head :no_content
+    else
+      render json: @subscriptions.map{ |subscription| subscription.errors }, status: :unprocessable_entity
+    end
+  end
 
   private
 
     def set_subscription
       @subscription = Subscription.find(params[:id])
+    end
+
+    def set_subscriptions
+      @subscriptions = Subscription.where(id: params[:ids])
     end
 
     def subscription_params

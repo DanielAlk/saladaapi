@@ -111,8 +111,8 @@ class Subscription < ActiveRecord::Base
 		if self.automatic_debit? && !self.cancelled?
 			self.status = :cancelled
 			self.update_mercadopago
-			self.save
-		elsif self.cash? && !self.cancelled?
+			self.save if self.user.present?
+		elsif self.cash? && !self.cancelled? && self.user.present?
 			self.cancelled!
 		end
 		
@@ -136,6 +136,9 @@ class Subscription < ActiveRecord::Base
 		subscription = JSON.parse(self.to_json).deep_symbolize_keys
 		subscription[:plan] = self.plan.to_hash
 		subscription[:invoices] = self.invoices.map{ |invoice| invoice.to_hash }
+		if flag == :complete
+			subscription[:user] = (self.user.to_hash rescue nil)
+		end
 		subscription
 	end
 

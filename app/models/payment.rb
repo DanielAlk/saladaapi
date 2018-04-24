@@ -118,8 +118,11 @@ class Payment < ActiveRecord::Base
   def to_hash(flag = nil)
     payment = JSON.parse(self.to_json).deep_symbolize_keys
     payment[:payable] = self.payable.present? ? self.payable.to_hash : nil
-    if flag == :complete
+    if [:complete, :extended].include?(flag)
       payment[:promotionable] = self.promotionable.present? ? self.promotionable.to_hash : nil
+    end
+    if flag == :extended
+      payment[:user_name] = self.user.name
     end
     payment
   end

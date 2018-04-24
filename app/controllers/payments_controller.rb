@@ -1,10 +1,11 @@
 class PaymentsController < ApplicationController
   include Filterize
   filterize order: :created_at_desc, param: :f
-  before_action :authenticate_admin!, only: [:update, :destroy]
-  before_action :authenticate_user!
+  before_action :authenticate_admin!, if: :is_client_panel?
+  before_action :authenticate_user!, if: :is_client_app?
   before_action :filterize, only: :index
   before_action :set_payment, only: [:show, :edit, :update, :destroy]
+  before_action :set_payments, only: [:update_many, :destroy_many]
 
   # GET /payments.json
   def index
@@ -17,10 +18,10 @@ class PaymentsController < ApplicationController
 
   # GET /payments/1.json
   def show
-    if @payment.user != current_user
+    if @payment.user != current_user && !current_user.admin?
       raise ActionController::RoutingError.new("No route matches [GET] \"#{request.path}\"")
     else
-      render json: @payment
+      _render member: @payment, flag: :extended
     end
   end
 
@@ -56,11 +57,33 @@ class PaymentsController < ApplicationController
       render json: @payment.errors, status: :unprocessable_entity
     end
   end
+  
+  # PATCH/PUT /payments.json
+  def update_many
+    if @payments.update_all(payment_params)
+      render json: @payments, status: :ok, location: payments_url
+    else
+      render json: @payments.map{ |payment| payment.errors }, status: :unprocessable_entity
+    end
+  end
+
+  # DELETE /payments.json
+  def destroy_many
+    if (@payments.destroy_all rescue false)
+      head :no_content
+    else
+      render json: @payments.map{ |payment| payment.errors }, status: :unprocessable_entity
+    end
+  end
 
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_payment
       @payment = Payment.find(params[:id])
+    end
+
+    def set_payments
+      @payments = Payment.where(id: params[:ids])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

@@ -19,7 +19,12 @@ Rails.application.routes.draw do
       put '/', action: :update_many
     end
   end
-  resources :payments, except: [:new, :edit]
+  resources :payments, except: [:new, :edit] do
+    collection do
+      put '/many', action: :update_many
+      delete '/many', action: :destroy_many
+    end
+  end
   resources :users, except: [:new, :edit] do
     resources :subscriptions, only: [:index, :destroy]
     member do
@@ -32,7 +37,12 @@ Rails.application.routes.draw do
     end
   end
   resources :invoices, except: [:new, :edit]
-  resources :subscriptions, except: [:new, :edit]
+  resources :subscriptions, except: [:new, :edit] do
+    collection do
+      put '/many', action: :update_many
+      delete '/many', action: :destroy_many
+    end
+  end
   resources :plans, except: [:new, :edit]
   resources :promotions, except: [:new, :edit]
   resources :products, except: [:new, :edit] do

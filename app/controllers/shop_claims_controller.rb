@@ -56,10 +56,10 @@ class ShopClaimsController < ApplicationController
   
   # PATCH/PUT /shop_claims.json
   def update_many
-    if @shop_claims.update_all(category_params)
+    if @shop_claims.update_all(shop_claim_params)
       render json: @shop_claims, status: :ok, location: shop_claims_url
     else
-      render json: @shop_claims.map{ |category| category.errors }, status: :unprocessable_entity
+      render json: @shop_claims.map{ |shop_claim| shop_claim.errors }, status: :unprocessable_entity
     end
   end
 
@@ -68,7 +68,7 @@ class ShopClaimsController < ApplicationController
     if (@shop_claims.destroy_all rescue false)
       head :no_content
     else
-      render json: @shop_claims.map{ |category| category.errors }, status: :unprocessable_entity
+      render json: @shop_claims.map{ |shop_claim| shop_claim.errors }, status: :unprocessable_entity
     end
   end
 
