@@ -19,7 +19,11 @@ class ContactsController < ApplicationController
   # GET /contacts/1
   # GET /contacts/1.json
   def show
-    render json: @contact
+    if is_client_panel?
+      render json: @contact, complete: :true
+    else
+      render json: @contact
+    end
   end
 
   # POST /contacts
