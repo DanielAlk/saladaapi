@@ -7,6 +7,11 @@ class PlanGroup < ActiveRecord::Base
 
 	filterable search: [ :title ]
 
+	validates :title, presence: true, length: { minimum: 4, maximum: 50 }
+	validates :starting_price, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 999999.99 }
+
+	before_save :set_starting_price
+
 	def self.available_for_user(user)
 		user.available_plan_groups
 	end
@@ -18,5 +23,10 @@ class PlanGroup < ActiveRecord::Base
 	def to_hash(flag = nil)
 		JSON.parse(self.to_json).deep_symbolize_keys
 	end
+
+	private
+		def set_starting_price
+			self.starting_price = self.plans.map{ |plan| plan.price }.min
+		end
 
 end

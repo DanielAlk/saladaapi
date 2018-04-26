@@ -44,10 +44,25 @@ class PlanGroupsController < ApplicationController
   def update
     @plan_group = PlanGroup.find(params[:id])
 
-    if @plan_group.update(plan_group_params)
-      head :no_content
+    errors = {};
+
+    if params[:plans].present? && params[:plans].count > 0
+      params[:plans].each do |plan|
+        @plan = Plan.find(plan[:id])
+        unless @plan.update(price: plan[:price])
+          errors.merge!(@plan.errors)
+        end
+      end
+    end
+
+    if errors.present? && errors.count > 0
+      render json: errors, status: :unprocessable_entity
     else
-      render json: @plan_group.errors, status: :unprocessable_entity
+      if @plan_group.update(plan_group_params)
+        head :no_content
+      else
+        render json: @plan_group.errors, status: :unprocessable_entity
+      end
     end
   end
 

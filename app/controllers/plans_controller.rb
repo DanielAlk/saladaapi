@@ -1,4 +1,5 @@
 class PlansController < ApplicationController
+  before_filter :authenticate_admin!, except: [:index, :show]
   before_action :set_plan, only: [:show, :update, :destroy]
 
   # GET /plans
