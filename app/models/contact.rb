@@ -6,8 +6,17 @@ class Contact < ActiveRecord::Base
 	filterable search: [ :name, :email ]
 
 	enum role: [ :client, :seller ]
-	enum subject: [ :contact ]
+	enum subject: [ :contact, :app_contact ]
 
 	scope :read, -> { where(read: true) }
 	scope :unread, -> { where(read: false) }
+
+	before_save :set_subject_if_user_is_present
+
+	private
+		def set_subject_if_user_is_present
+			if User.select(:id).where(email: self.email).present?
+				self.subject = :app_contact
+			end
+		end
 end
