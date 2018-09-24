@@ -69,7 +69,7 @@ class DataController < ApplicationController
   	render json: {
   		terms_and_conditions: '
   			<h1>Términos y condiciones de uso del Sitio</h1>
-				<h2>Versión vigente 31/7/2017</h2>
+				<h2>Versión vigente 24/9/2018</h2>
 				<p>Este contrato describe los términos y condiciones generales (los "Términos y Condiciones Generales") aplicables al uso de los servicios ofrecidos por el sitio “SALADA APP”. Cualquier persona (en adelante "Usuario" o en plural "Usuarios") que desee acceder y/o usar el sitio o los Servicios podrá hacerlo sujetándose a los Términos y Condiciones Generales respectivos, junto con todas las demás políticas y principios que rigen para Salada App y que son incorporados al presente.</p>
 				<p>CUALQUIER PERSONA QUE NO ACEPTE ESTOS TÉRMINOS Y CONDICIONES GENERALES, LOS CUALES TIENEN UN CARÁCTER OBLIGATORIO Y VINCULANTE, DEBERÁ ABSTENERSE DE UTILIZAR EL SITIO Y/O LOS SERVICIOS.</p>
 				<p>El Usuario debe leer, entender y aceptar todas las condiciones establecidas en los Términos y Condiciones Generales y en las Políticas de Privacidad así como en los demás documentos incorporados a los mismos por referencia, previo a su registración como Usuario de Salada App, optando de forma expresa por recibir los mismos y toda otra información por medios digitales.</p>
