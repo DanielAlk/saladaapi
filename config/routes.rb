@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   get 'data/shop'
   get 'data/texts'
   get 'data/terms_and_conditions'
+  get 'data/privacy_policy'
   get 'data/profile_buttons'
   get 'data/marquesine'
   
