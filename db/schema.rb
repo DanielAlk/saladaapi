@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180414064423) do
+ActiveRecord::Schema.define(version: 20180927030957) do
 
   create_table "ads", force: :cascade do |t|
     t.string   "title",              limit: 255
@@ -178,6 +178,19 @@ ActiveRecord::Schema.define(version: 20180414064423) do
   end
 
   add_index "plans", ["mercadopago_plan_id"], name: "index_plans_on_mercadopago_plan_id", using: :btree
+
+  create_table "posts", force: :cascade do |t|
+    t.string   "title",              limit: 255
+    t.string   "subtitle",           limit: 255
+    t.text     "text",               limit: 65535
+    t.string   "cover_file_name",    limit: 255
+    t.string   "cover_content_type", limit: 255
+    t.integer  "cover_file_size",    limit: 4
+    t.datetime "cover_updated_at"
+    t.integer  "status",             limit: 4,     default: 0
+    t.datetime "created_at",                                   null: false
+    t.datetime "updated_at",                                   null: false
+  end
 
   create_table "products", force: :cascade do |t|
     t.integer  "user_id",     limit: 4
