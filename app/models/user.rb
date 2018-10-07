@@ -24,7 +24,7 @@ class User < ActiveRecord::Base
   
   serialize :metadata
 
-  validates :name, :email, :gender, :birthday, :id_type, :id_number, :locality, :address, :phone_number, :role, presence: true
+  validates :name, :email, :role, presence: true
 
   filterable search: [:name, :email]
 
