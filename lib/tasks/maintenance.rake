@@ -24,7 +24,7 @@ namespace :maintenance do
   				id = member.id.to_s
   				(id.length...9).each{ id = '0' + id }
   				id = id[0...3] + '/' + id[3...6] + '/' + id[6...9]
-  				
+
   				current_dir = directory + '/' + id + '/'
   				if File.directory?(current_dir) && (styles = dir_entries(current_dir)).try(:include?, 'original')
 						styles.each do |style|
@@ -32,9 +32,11 @@ namespace :maintenance do
 							path =  style_dir + file_name
 							if File.exists?(path)
 								new_name = model_name.downcase + '_' + property.sub('_file_name', '') + File.extname(path)
-								#File.rename(path, style_dir + new_name)
-								#member[property] = new_name
-								#member.save
+								File.rename(path, style_dir + new_name)
+								if member[property] != new_name
+									member[property] = new_name
+									member.save
+								end
 								puts 'CHANGE FOR: ' + model_name
 								puts 'PRODUCT ID: ' + member.imageable.id.to_s if model_name.downcase.to_sym == :image
 								puts 'FROM:' + path
