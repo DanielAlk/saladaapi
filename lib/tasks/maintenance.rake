@@ -3,11 +3,11 @@ namespace :maintenance do
   task attachments: :environment do
   	@property_names = { ad: :cover_file_name, image: :item_file_name, post: :cover_file_name, shop: :image_file_name, user: :avatar_file_name }
   	@directories = {
-			ad:  ENV['public_folder_path'] + 'system/ads/covers/000/',
-			image:  ENV['public_folder_path'] + 'system/images/items/000/',
-			post:  ENV['public_folder_path'] + 'system/posts/covers/000/',
-			shop:  ENV['public_folder_path'] + 'system/shops/images/000/',
-			user:  ENV['public_folder_path'] + 'system/users/avatars/000/'
+			ad:  ENV['public_folder_path'] + 'system/ads/covers/',
+			image:  ENV['public_folder_path'] + 'system/images/items/',
+			post:  ENV['public_folder_path'] + 'system/posts/covers/',
+			shop:  ENV['public_folder_path'] + 'system/shops/images/',
+			user:  ENV['public_folder_path'] + 'system/users/avatars/'
   	}
 
   	def dir_entries(directory)
@@ -21,27 +21,29 @@ namespace :maintenance do
   			directory = @directories[model_name.downcase.to_sym]
   			file_name = member[property]
   			if file_name.present? && file_name[reg_exp].present?
-  				dir_entries(directory).each do |dir|
-  					current_dir = directory + dir + '/' + member.id.to_s + '/'
-  					if File.directory?(current_dir) && (styles = dir_entries(current_dir)).try(:include?, 'original')
-  						styles.each do |style|
-  							current_dir = current_dir + style + '/'
-  							path =  current_dir + file_name
-  							if File.exists?(path)
-  								new_name = model_name.downcase + '_' + property.sub('_file_name', '') + File.extname(path)
-  								File.rename(path, current_dir + new_name)
-  								member[property] = new_name
-  								member.save
-  								puts 'CHANGE FOR: ' + model_name
-  								puts 'PRODUCT ID: ' + member.imageable.id.to_s if model_name.downcase.to_sym == :image
-  								puts 'FROM:' + path
-  								puts 'TO:' + current_dir + new_name
-  								puts 'PROPERTY: ' + new_name
-  								puts '_______________________'
-  								puts ''
-  							end
-  						end
-  					end
+  				id = member.id.to_s
+  				(id.length...9).each{ id = '0' + id }
+  				id = id[0...3] + '/' + id[3...6] + '/' + id[6...9]
+  				
+  				current_dir = directory + '/' + id + '/'
+  				if File.directory?(current_dir) && (styles = dir_entries(current_dir)).try(:include?, 'original')
+						styles.each do |style|
+							style_dir = current_dir + style + '/'
+							path =  style_dir + file_name
+							if File.exists?(path)
+								new_name = model_name.downcase + '_' + property.sub('_file_name', '') + File.extname(path)
+								#File.rename(path, style_dir + new_name)
+								#member[property] = new_name
+								#member.save
+								puts 'CHANGE FOR: ' + model_name
+								puts 'PRODUCT ID: ' + member.imageable.id.to_s if model_name.downcase.to_sym == :image
+								puts 'FROM:' + path
+								puts 'TO:' + style_dir + new_name
+								puts 'PROPERTY: ' + new_name
+								puts '_______________________'
+								puts ''
+							end
+						end
   				end
   			end
   		end
