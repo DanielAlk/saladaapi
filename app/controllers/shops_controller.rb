@@ -1,6 +1,6 @@
 class ShopsController < ApplicationController
   include Filterize
-  filterize order: :created_at_desc, param: :f
+  filterize order: :created_at_desc, param: :f, scope: :not_created_by_user, scope_if: :not_scope_created_by_user_param
   before_action :filterize, only: :index
   before_filter :authenticate_admin!, if: :is_client_panel?
   before_filter :authenticate_user!, except: [:index, :show]
@@ -123,6 +123,10 @@ class ShopsController < ApplicationController
 
     def set_shops
       @shops = Shop.where(id: params[:ids])
+    end
+
+    def not_scope_created_by_user_param(f)
+      JSON.parse(params[:f]).deep_symbolize_keys[:scopes][:status].to_sym != :created_by_user rescue true
     end
 
     def shop_params

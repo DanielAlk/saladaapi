@@ -8,8 +8,9 @@ class Shop < ActiveRecord::Base
   has_many :products, dependent: :destroy
   has_many :shop_claims, dependent: :destroy, autosave: true
 
-  validates :description, presence: true, length: { minimum: 4, maximum: 50 }
-  validates :user, :shed, :category, :number_id, :fixed, :opens, :condition, presence: true
+  validates :description, presence: true, length: { minimum: 4, maximum: 50 }, unless: :created_by_user?
+  validates :category, :fixed, :opens, :condition, presence: true, unless: :created_by_user?
+  validates :user, :shed, :number_id, presence: true
   validate :user_limit
 
   filterable scopes: [ :status ]
@@ -24,12 +25,14 @@ class Shop < ActiveRecord::Base
     }
   }
 
-  enum status: [ :draft, :published, :paused ]
+  enum status: [ :draft, :published, :paused, :created_by_user ]
   enum location: [ :aisle, :side ]
   enum condition: [ :occupied, :empty, :repairs ]
 
-  scope :claimable, -> { where(user_id: User.admin.map{|u| u.id}) }
+  scope :claimable, -> { not_created_by_user.where(user_id: User.admin.map{|u| u.id}) }
+  scope :not_created_by_user, -> { where.not(status: Shop.statuses[:created_by_user]) }
 
+  before_validation :set_status
   before_update :assign_products_to_user, if: :user_id_changed?
   before_destroy :destroy_shop_claims
 
@@ -103,6 +106,10 @@ class Shop < ActiveRecord::Base
 
     def assign_products_to_user
       self.products.find_each{ |p| p.update(user_id: self.user_id) }
+    end
+
+    def set_status
+      self.status = :created_by_user unless self.user.admin?
     end
 
     def user_limit

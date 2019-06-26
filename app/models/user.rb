@@ -204,8 +204,12 @@ class User < ActiveRecord::Base
       user[:has_plan_groups_available] = self.has_plan_groups_available?
 
       user[:shops] = {
-        items: self.shops.order(created_at: :desc).page(1).per(4).map{ |shop| shop.to_hash },
-        total_count: self.shops.count
+        items: self.shops.not_created_by_user.order(created_at: :desc).page(1).per(4).map{ |shop| shop.to_hash },
+        total_count: self.shops.not_created_by_user.count
+      }
+      user[:location_shops] = {
+        items: self.shops.created_by_user.order(created_at: :desc).page(1).per(4).map{ |shop| shop.to_hash },
+        total_count: self.shops.created_by_user.count
       }
       user[:products] = {
         items: self.products.order(special: :desc).page(1).per(4).map{ |product| product.to_hash },
