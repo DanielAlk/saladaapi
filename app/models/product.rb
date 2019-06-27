@@ -20,6 +20,7 @@ class Product < ActiveRecord::Base
   after_destroy :disassociate_payments
   before_update :assign_interactions_to_user, if: :user_id_changed?
   before_save :disassociate_not_matching_payments, if: :special_changed?
+  after_update :destroy_created_by_user_shop, if: :shop_id_changed?
 
   filterable scopes: [ :status, :special ]
   filterable search: [ :title, :price, :description ]
@@ -69,6 +70,7 @@ class Product < ActiveRecord::Base
     product[:category_title] = (self.category.title rescue nil)
     product[:user_name] = self.user.name
     product[:shop_description] = (self.shop.description rescue nil)
+    product[:shop_created_by_user] = (self.shop.created_by_user? rescue nil)
     product[:cover] = self.cover
 
     if flag == :complete
@@ -112,6 +114,13 @@ class Product < ActiveRecord::Base
     def assign_interactions_to_user
       self.interactions.find_each do |interaction|
         interaction.update(owner_id: self.user_id)
+      end
+    end
+
+    def destroy_created_by_user_shop
+      previous_shop = Shop.find(self.shop_id_was)
+      if previous_shop.created_by_user? && previous_shop.products.count == 0
+        previous_shop.destroy
       end
     end
 

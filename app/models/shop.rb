@@ -34,6 +34,7 @@ class Shop < ActiveRecord::Base
 
   before_validation :set_status
   before_update :assign_products_to_user, if: :user_id_changed?
+  before_update :inherit_created_by_user_shop_products, if: :user_id_changed?
   before_destroy :destroy_shop_claims
 
   def claimant_id=(claimant_id)
@@ -108,11 +109,20 @@ class Shop < ActiveRecord::Base
       self.products.find_each{ |p| p.update(user_id: self.user_id) }
     end
 
+    def inherit_created_by_user_shop_products
+      if self.user.shops.created_by_user.count > 0
+        self.user.shops.created_by_user.first.products.each do |product|
+          product.shop = self
+          product.save
+        end
+      end
+    end
+
     def set_status
-      self.status = :created_by_user unless self.user.admin?
+      self.status = :created_by_user if self.new_record? && !self.user.admin?
     end
 
     def user_limit
-      errors.add(:user_limit, "Not allowed") if self.new_record? && self.user.shop_limit != :unlimited && self.user.shops.count >= self.user.shop_limit
+      errors.add(:user_limit, "Not allowed") if self.new_record? && self.user.shop_limit != :unlimited && self.user.shops.not_created_by_user.count >= self.user.shop_limit
     end
 end
