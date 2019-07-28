@@ -145,9 +145,9 @@ class User < ActiveRecord::Base
 
   def product_image_limit
     if self.free?
-      1
-    elsif self.premium?
       5
+    elsif self.premium?
+      10
     end
   end
 
