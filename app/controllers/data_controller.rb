@@ -4,7 +4,7 @@ class DataController < ApplicationController
 	end
 
   def shop
-  	render json: { locations: Shop.locations, conditions: Shop.conditions, gallery_names: [ 'El Imperio', 'El Indio', 'El Dorado' ] }
+  	render json: { locations: Shop.locations, conditions: Shop.conditions, gallery_names: [ 'Factory', 'Colores', 'Quinincha', 'El Imperio', 'María Concepción', 'Quivincha', 'Valencia', 'Gale', 'Felipe', 'El Trébol', 'La Unión', 'JR', 'Trinidad', 'El Árbol', 'Angie', 'M.F.G. Factory S.A.', 'Coty', '27 de Mayo', 'Milagros y Janina', 'Amalia', 'Tilcarita', 'San Jorge' ] }
   end
 
   def profile_buttons
