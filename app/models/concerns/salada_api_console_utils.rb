@@ -1,4 +1,4 @@
-module InteractionConcern
+module SaladaApiConsoleUtils
 	extend ActiveSupport::Concern
 
 	#created this to use in terminal (reails c)
@@ -21,4 +21,19 @@ module InteractionConcern
 	    end
 	  end
 	end
+
+	def shop_fix_attachment(shop)
+		keys = shop.image.styles.keys + [:original]
+		new_name = 'cover' + File.extname(shop.image.path)
+		
+		keys.each do |key|
+			path = shop.image.path(key)
+			new_path = File.join(File.dirname(path), new_name)
+			File.rename(path, new_path)
+		end
+		
+		shop.image_file_name = new_name
+		shop.save
+	end
+
 end
