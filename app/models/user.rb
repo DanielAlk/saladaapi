@@ -32,6 +32,8 @@ class User < ActiveRecord::Base
   enum special: [ :free, :premium ]
   enum gender: [ :male, :female ]
 
+  before_update :manage_roles, if: :role_changed?
+
   def metadata=(metadata)
   	if metadata.respond_to?(:each)
   		write_attribute(:metadata, metadata)
@@ -187,6 +189,7 @@ class User < ActiveRecord::Base
 
   def to_hash(flag = nil)
     user = JSON.parse(self.to_json).deep_symbolize_keys
+    user[:current_sign_in_at] = self.current_sign_in_at
     if self.avatar.present?
       user[:avatar] = {
         thumb: ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.avatar.url(:thumb),
@@ -238,4 +241,15 @@ class User < ActiveRecord::Base
     end
     user
   end
+
+  private
+    def manage_roles
+      if self.admin? || self.role_was.to_sym == :admin
+        self.role = self.role_was
+      elsif self.role_was.to_sym == :seller
+        self.shop_claims.destroy_all
+        self.shops.destroy_all
+        self.products.destroy_all
+      end
+    end
 end
