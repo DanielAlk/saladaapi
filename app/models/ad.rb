@@ -7,7 +7,7 @@ class Ad < ActiveRecord::Base
 
 	enum status: [ :active, :paused ]
 	enum special: [ :standard ]
-	enum kind: [ :announcement ]
+	enum kind: [ :announcement, :external ]
 	serialize :actions
 
 	def actions=(data)

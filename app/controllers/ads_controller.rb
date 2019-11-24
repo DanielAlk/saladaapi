@@ -10,7 +10,11 @@ class AdsController < ApplicationController
   # GET /ads.json
   def index
     if is_client_app?
-      @ads = Ad.active.limit(2).order("RAND()")
+      if params[:external].present?
+        @ads = Ad.external.active.limit(3).order("RAND()")
+      else
+        @ads = Ad.announcement.active.limit(2).order("RAND()")
+      end
     else
       response.headers['X-Total-Count'] = @ads.count.to_s
       @ads = @ads.page(params[:page]) if params[:page].present?
