@@ -11,9 +11,9 @@ class AdsController < ApplicationController
   def index
     if is_client_app?
       if params[:external].present?
-        @ads = Ad.external.active.limit(3).order("RAND()")
+        @ads = Ad.external.active.limit(1).order("RAND()")
       else
-        @ads = Ad.announcement.active.limit(2).order("RAND()")
+        @ads = Ad.announcement.active.limit(3).order("RAND()")
       end
     else
       response.headers['X-Total-Count'] = @ads.count.to_s

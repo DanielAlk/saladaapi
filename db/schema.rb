@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190924033252) do
+ActiveRecord::Schema.define(version: 20191224052903) do
 
   create_table "ads", force: :cascade do |t|
     t.string   "title",              limit: 255
@@ -203,17 +203,18 @@ ActiveRecord::Schema.define(version: 20190924033252) do
   end
 
   create_table "products", force: :cascade do |t|
-    t.integer  "user_id",     limit: 4
-    t.integer  "category_id", limit: 4
-    t.integer  "shop_id",     limit: 4
-    t.string   "title",       limit: 255
-    t.integer  "stock",       limit: 4
-    t.decimal  "price",                     precision: 8, scale: 2
-    t.text     "description", limit: 65535
-    t.integer  "special",     limit: 4,                             default: 0
-    t.integer  "status",      limit: 4,                             default: 0
-    t.datetime "created_at",                                                    null: false
-    t.datetime "updated_at",                                                    null: false
+    t.integer  "user_id",      limit: 4
+    t.integer  "category_id",  limit: 4
+    t.integer  "shop_id",      limit: 4
+    t.string   "title",        limit: 255
+    t.integer  "stock",        limit: 4
+    t.decimal  "price",                      precision: 8, scale: 2
+    t.text     "description",  limit: 65535
+    t.integer  "special",      limit: 4,                             default: 0
+    t.integer  "status",       limit: 4,                             default: 0
+    t.datetime "created_at",                                                     null: false
+    t.datetime "updated_at",                                                     null: false
+    t.date     "available_at"
   end
 
   add_index "products", ["category_id"], name: "index_products_on_category_id", using: :btree
