@@ -109,6 +109,14 @@ namespace :maintenance do
 		ilegal_products.each do |p|
 			p.available_at = nil
 			p.save
+
+			puts "CHANGED PRODUCT"
+			puts "ID: #{p.id.to_s}"
+			puts "TITLE: #{p.title}"
+			puts "USER ID: #{p.user.id.to_s}"
+			puts "USER NAME: #{p.user.name}"
+			puts '_______________________'
+			puts ''
 		end
 
 		puts '_____________________________'
