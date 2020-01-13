@@ -1,5 +1,6 @@
 namespace :maintenance do
-  desc "TODO"
+	desc 'Maintenance tasks'
+
   task attachments: :environment do
   	@property_names = { ad: :cover_file_name, image: :item_file_name, post: :cover_file_name, shop: :image_file_name, user: :avatar_file_name }
   	@directories = {
@@ -90,6 +91,31 @@ namespace :maintenance do
 		puts '_____________________________'
 		puts ''
 		change_invalid_names(User.all, User.name)
+	end
+
+	task products: :environment do
+		puts '_____________________________'
+		puts ''
+		puts 'MANTAIN PRODUCTS'
+		puts 'Use this script to check for products violating premium/free rules'
+		puts 'This may happen due to updates changing the rules'
+		puts '_____________________________'
+		puts ''
+
+		free_sellers = User.free.seller
+		free_sellers_ids = free_sellers.map { |s| s.id }
+		ilegal_products = Product.where(:user_id => free_sellers_ids).where.not(:available_at => nil)
+		ilegal_products_count = ilegal_products.count
+		ilegal_products.each do |p|
+			p.available_at = nil
+			p.save
+		end
+
+		puts '_____________________________'
+		puts ''
+		puts "Fixed #{ilegal_products_count.to_s} ilegal products"
+		puts '_____________________________'
+		puts ''
 	end
 
 end
