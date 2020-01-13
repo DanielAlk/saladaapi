@@ -11,7 +11,7 @@ class AdsController < ApplicationController
   def index
     if is_client_app?
       if params[:external].present?
-        @ads = Ad.external.active.limit(1).order("RAND()")
+        @ads = Ad.external.active.limit(params[:limit] || 1).order("RAND()")
       else
         @ads = Ad.announcement.active.limit(3).order("RAND()")
       end
