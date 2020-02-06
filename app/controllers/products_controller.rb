@@ -14,7 +14,7 @@ class ProductsController < ApplicationController
     if @products != nil
       response.headers['X-Total-Count'] = @products.map.count.to_s
 
-      @products = @products.order(created_at: :desc)
+      @products = @products.order(updated_at: :desc)
       @products = @products.page(params[:page]) if params[:page].present?
       @products = @products.per(params[:per]) if params[:per].present?
 
