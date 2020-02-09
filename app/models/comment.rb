@@ -54,7 +54,7 @@ class Comment < ActiveRecord::Base
       comment[:user] = self.user.to_hash
     end
     if flag == :for_user
-      comment[:product] = question? ? self.commentable.to_hash : self.commentable.commentable.to_hash
+      comment[:product] = question? ? self.commentable.try(:to_hash) : self.commentable.try(:commentable).try(:to_hash)
     end
     if [:complete, :for_user].include?(flag)
       if question? && answered?
