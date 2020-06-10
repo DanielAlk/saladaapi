@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: 
+  product: 
+  text: 
+  stars: 
+  is_visible: false
+
+two:
+  user: 
+  product: 
+  text: 
+  stars: 
+  is_visible: false

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200609234651) do
+ActiveRecord::Schema.define(version: 20200610052235) do
 
   create_table "ads", force: :cascade do |t|
     t.string   "title",              limit: 255
@@ -236,6 +236,16 @@ ActiveRecord::Schema.define(version: 20200609234651) do
     t.integer  "duration_type", limit: 4,                             default: 0
     t.datetime "created_at",                                                      null: false
     t.datetime "updated_at",                                                      null: false
+  end
+
+  create_table "reviews", force: :cascade do |t|
+    t.integer  "user_id",    limit: 4
+    t.integer  "product_id", limit: 4
+    t.text     "text",       limit: 65535
+    t.integer  "stars",      limit: 4
+    t.boolean  "is_visible"
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
   end
 
   create_table "sheds", force: :cascade do |t|
