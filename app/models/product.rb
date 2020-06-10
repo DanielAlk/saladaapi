@@ -12,7 +12,11 @@ class Product < ActiveRecord::Base
   validates :description, presence: true, length: { minimum: 6, maximum: 280 }
   validates :user, :category, :shop, presence: true
   validates :stock, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 99999 }
+  validates :wholesaler_amount, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 99999 }
+  validates :shipping_amount, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 99999 }
   validates :price, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 999999.99 }
+  validates :retailer_price, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 999999.99 }, if: :is_retailer
+  validates :shipping_price, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 999999.99 }
   validate :validate_status, on: :update, if: :status_changed?
   validate :user_limit
   validate :image_limit
