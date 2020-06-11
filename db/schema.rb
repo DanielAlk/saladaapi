@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200610052235) do
+ActiveRecord::Schema.define(version: 20200611033228) do
 
   create_table "ads", force: :cascade do |t|
     t.string   "title",              limit: 255
@@ -283,12 +283,14 @@ ActiveRecord::Schema.define(version: 20200610052235) do
     t.string   "image_content_type", limit: 255
     t.integer  "image_file_size",    limit: 4
     t.datetime "image_updated_at"
-    t.integer  "status",             limit: 4,   default: 0
-    t.datetime "created_at",                                 null: false
-    t.datetime "updated_at",                                 null: false
+    t.integer  "status",             limit: 4,                            default: 0
+    t.datetime "created_at",                                                          null: false
+    t.datetime "updated_at",                                                          null: false
     t.integer  "location_floor",     limit: 4
     t.integer  "location_row",       limit: 4
     t.string   "gallery_name",       limit: 255
+    t.decimal  "latitude",                       precision: 12, scale: 9
+    t.decimal  "longitude",                      precision: 12, scale: 9
   end
 
   add_index "shops", ["category_id"], name: "index_shops_on_category_id", using: :btree
