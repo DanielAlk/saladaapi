@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200703062104) do
+ActiveRecord::Schema.define(version: 20200703225413) do
 
   create_table "ads", force: :cascade do |t|
     t.string   "title",              limit: 255
@@ -222,7 +222,7 @@ ActiveRecord::Schema.define(version: 20200703062104) do
     t.decimal  "retailer_price",                  precision: 8, scale: 2
     t.decimal  "shipping_price",                  precision: 8, scale: 2
     t.string   "video_id",          limit: 255
-    t.integer  "rating",            limit: 4
+    t.decimal  "rating",                          precision: 2, scale: 1
     t.boolean  "provider_product",                                        default: false
   end
 

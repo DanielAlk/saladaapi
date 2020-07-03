@@ -21,7 +21,7 @@ class Review < ActiveRecord::Base
   private
     def update_product_rating
       reviewsStars = product.reviews.map{ |review| review.stars }
-      product.rating = (reviewsStars.inject(0){ |sum,x| sum + x } / reviewsStars.count.to_f).round
+      product.rating = (reviewsStars.inject(0){ |sum,x| sum + x } / reviewsStars.count.to_f)
       product.save
     end
 end

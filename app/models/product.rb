@@ -14,7 +14,7 @@ class Product < ActiveRecord::Base
   validates :video_id, length: { minimum: 6, maximum: 20 }, allow_blank: true
   validates :user, :category, presence: true
   validates :shop, presence: true, unless: :is_provider_user?
-  validates :rating, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 5 }, allow_blank: true
+  validates :rating, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 5 }, allow_blank: true
   validates :stock, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 99999 }
   validates :wholesaler_amount, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 99999 }, allow_blank: true
   validates :shipping_amount, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 99999 }, allow_blank: true
