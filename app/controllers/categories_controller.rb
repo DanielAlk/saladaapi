@@ -34,7 +34,21 @@ class CategoriesController < ApplicationController
     if @category.save
       render json: @category, status: :created, location: @category
     else
-      render json: @category.errors, status: :unprocessable_entity
+      if @category.errors.messages.count == 1 && @category.errors.messages.keys.include?(:title)
+        category = Category.find_by(title: @category.title)
+        if (category.present?)
+          category.user_role = :all_roles
+          if category.save
+            render json: category, status: :created, location: category
+          else
+            render json: category.errors, status: :unprocessable_entity
+          end
+        else
+          render json: @category.errors, status: :unprocessable_entity
+        end
+      else
+        render json: @category.errors, status: :unprocessable_entity
+      end
     end
   end
 
@@ -108,6 +122,6 @@ class CategoriesController < ApplicationController
     end
 
     def category_params
-      params.permit(:title, :ancestry)
+      params.permit(:title, :ancestry, :user_role)
     end
 end

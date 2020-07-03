@@ -1,3 +1,3 @@
 class CategorySerializer < ActiveModel::Serializer
-  attributes :id, :title, :ancestry, :created_at, :updated_at
+  attributes :id, :title, :ancestry, :user_role, :created_at, :updated_at
 end

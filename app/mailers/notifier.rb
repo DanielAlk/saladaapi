@@ -15,7 +15,7 @@ class Notifier < ApplicationMailer
   		body += '<strong>Nombre:</strong> ' + object.name.to_s + '<br>'
   		body += '<strong>Email:</strong> ' + object.email.to_s + '<br>'
   		body += '<strong>Telefono:</strong> ' + object.tel.to_s + '<br>'
-  		body += '<strong>Tipo:</strong> ' + ({ seller: 'Comerciante', client: 'Visitante' }[object.role.try(:to_sym)] || object.role.to_s) + '<br>'
+  		body += '<strong>Tipo:</strong> ' + ({ seller: 'Comerciante', client: 'Visitante', provider: 'Proveedor' }[object.role.try(:to_sym)] || object.role.to_s) + '<br>'
   		body += '<strong>Mensaje:</strong> ' + object.message.to_s
   		body += '</p>'
   		body

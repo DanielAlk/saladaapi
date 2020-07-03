@@ -28,7 +28,7 @@ class User < ActiveRecord::Base
 
   filterable search: [:name, :email]
 
-  enum role: [ :client, :seller, :admin ]
+  enum role: [ :client, :seller, :admin, :provider ]
   enum special: [ :free, :premium ]
   enum gender: [ :male, :female ]
 
@@ -249,6 +249,8 @@ class User < ActiveRecord::Base
       elsif self.role_was.to_sym == :seller
         self.shop_claims.destroy_all
         self.shops.destroy_all
+        self.products.destroy_all
+      elsif self.role_was.to_sym == :provider
         self.products.destroy_all
       end
     end

@@ -5,7 +5,7 @@ class Contact < ActiveRecord::Base
 
 	filterable search: [ :name, :email ]
 
-	enum role: [ :client, :seller ]
+	enum role: [ :client, :seller, :provider ]
 	enum subject: [ :contact, :app_contact ]
 
 	scope :read, -> { where(read: true) }

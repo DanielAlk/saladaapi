@@ -56,6 +56,12 @@ class DataController < ApplicationController
   			elsif current_user.premium?
   				greeting = 'La cuenta permanecerá abierta 96 por horas, lapso durante el cual se deberá abonar el plan seleccionado en efectivo, un cobrador se acercará al puesto por usted designado a retirar el pago.<br><br>De no realizarse el mismo pasadas dichas 96 horas, la cuenta será dada de baja.'
   			end
+			elsif current_user.provider?
+  			if current_user.free?
+  				greeting = 'Ya puedes empezar a utilizar SaladaApp. Recordá que los usuarios premium tienen beneficios especiales, considerá abonar la suscripción para empezar a aprovechar los beneficios.'
+  			elsif current_user.premium?
+  				greeting = 'La cuenta permanecerá abierta 96 por horas, lapso durante el cual se deberá abonar el plan seleccionado en efectivo, un cobrador se acercará al puesto por usted designado a retirar el pago.<br><br>De no realizarse el mismo pasadas dichas 96 horas, la cuenta será dada de baja.'
+  			end
 			end
   	else
   		greeting = '';

@@ -9,6 +9,11 @@ class Category < ActiveRecord::Base
 
 	filterable search: [:title]
 
+	enum user_role: [ :seller, :provider, :all_roles ]
+
+	scope :for_sellers, -> { where(user_role: Category.user_roles.select{ |r| r.to_sym != :provider }.map{ |r| r[1] }) }
+	scope :for_providers, -> { where(user_role: Category.user_roles.select{ |r| r.to_sym != :seller }.map{ |r| r[1] }) }
+
 	before_destroy :disassociate_shops_and_products
 
 	private

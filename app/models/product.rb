@@ -11,20 +11,22 @@ class Product < ActiveRecord::Base
 
   validates :title, presence: true, length: { minimum: 4, maximum: 50 }
   validates :description, presence: true, length: { minimum: 6, maximum: 280 }
-  validates :video_id, length: { minimum: 6, maximum: 20 }
-  validates :user, :category, :shop, presence: true
-  validates :rating, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 5 }
+  validates :video_id, length: { minimum: 6, maximum: 20 }, allow_blank: true
+  validates :user, :category, presence: true
+  validates :shop, presence: true, unless: :is_provider_user?
+  validates :rating, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 5 }, allow_blank: true
   validates :stock, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 99999 }
-  validates :wholesaler_amount, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 99999 }
-  validates :shipping_amount, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 99999 }
+  validates :wholesaler_amount, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 99999 }, allow_blank: true
+  validates :shipping_amount, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 99999 }, allow_blank: true
   validates :price, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 999999.99 }
   validates :retailer_price, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 999999.99 }, if: :is_retailer
-  validates :shipping_price, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 999999.99 }
+  validates :shipping_price, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 999999.99 }, allow_blank: true
   validate :validate_status, on: :update, if: :status_changed?
   validate :user_limit
   validate :image_limit
 
   after_destroy :disassociate_payments
+  before_create :set_provider_product
   before_update :assign_interactions_to_user, if: :user_id_changed?
   before_save :disassociate_not_matching_payments, if: :special_changed?
   after_update :destroy_created_by_user_shop, if: :shop_id_changed?
@@ -149,5 +151,13 @@ class Product < ActiveRecord::Base
       if self.images.size > self.user.product_image_limit
         errors.add(:image_limit, "El usuario ha alcanzado su limite de imágenes en este producto")
       end
+    end
+
+    def set_provider_product
+      self.provider_product = is_provider_user?
+    end
+
+    def is_provider_user?
+      user.provider?
     end
 end

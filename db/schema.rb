@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200703031147) do
+ActiveRecord::Schema.define(version: 20200703062104) do
 
   create_table "ads", force: :cascade do |t|
     t.string   "title",              limit: 255
@@ -41,8 +41,9 @@ ActiveRecord::Schema.define(version: 20200703031147) do
   create_table "categories", force: :cascade do |t|
     t.string   "title",      limit: 255
     t.string   "ancestry",   limit: 255
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.datetime "created_at",                         null: false
+    t.datetime "updated_at",                         null: false
+    t.integer  "user_role",  limit: 4,   default: 0
   end
 
   add_index "categories", ["ancestry"], name: "index_categories_on_ancestry", using: :btree
@@ -222,6 +223,7 @@ ActiveRecord::Schema.define(version: 20200703031147) do
     t.decimal  "shipping_price",                  precision: 8, scale: 2
     t.string   "video_id",          limit: 255
     t.integer  "rating",            limit: 4
+    t.boolean  "provider_product",                                        default: false
   end
 
   add_index "products", ["category_id"], name: "index_products_on_category_id", using: :btree
