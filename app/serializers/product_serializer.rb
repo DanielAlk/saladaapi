@@ -1,5 +1,5 @@
 class ProductSerializer < ActiveModel::Serializer
-  attributes :id, :user_id, :title, :stock, :price, :description, :cover, :status, :special, :is_retailer, :wholesaler_amount, :shipping_amount, :retailer_price, :shipping_price, :available_at
+  attributes :id, :user_id, :title, :stock, :price, :description, :cover, :status, :special, :is_retailer, :wholesaler_amount, :shipping_amount, :retailer_price, :shipping_price, :video_id, :available_at
   attribute :unanswered_questions_count, if: -> { instance_options[:interaction] == :owner }
   attribute :unread_answers_count, if: -> { instance_options[:interaction] == :user }
   attribute :interaction_updated_at, if: -> { instance_options[:interaction].present? }
