@@ -7,11 +7,13 @@ class Product < ActiveRecord::Base
   has_many :comments, as: :commentable, dependent: :destroy
   has_many :interactions, dependent: :destroy
   has_many :payments, as: :promotionable
+  has_many :reviews
 
   validates :title, presence: true, length: { minimum: 4, maximum: 50 }
   validates :description, presence: true, length: { minimum: 6, maximum: 280 }
   validates :video_id, length: { minimum: 6, maximum: 20 }
   validates :user, :category, :shop, presence: true
+  validates :rating, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 5 }
   validates :stock, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 99999 }
   validates :wholesaler_amount, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 99999 }
   validates :shipping_amount, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 99999 }
@@ -92,6 +94,10 @@ class Product < ActiveRecord::Base
       product[:comments] = {
         items: self.comments.order(created_at: :desc).page(1).per(4).map{ |comment| comment.to_hash(:complete) },
         total_count: self.comments.count
+      }
+      product[:reviews] = {
+        items: self.reviews.order(created_at: :desc).page(1).per(4).map{ |review| review.to_hash(:complete) },
+        total_count: self.reviews.count
       }
     end
     product

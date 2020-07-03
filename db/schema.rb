@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200703023551) do
+ActiveRecord::Schema.define(version: 20200703031147) do
 
   create_table "ads", force: :cascade do |t|
     t.string   "title",              limit: 255
@@ -221,6 +221,7 @@ ActiveRecord::Schema.define(version: 20200703023551) do
     t.decimal  "retailer_price",                  precision: 8, scale: 2
     t.decimal  "shipping_price",                  precision: 8, scale: 2
     t.string   "video_id",          limit: 255
+    t.integer  "rating",            limit: 4
   end
 
   add_index "products", ["category_id"], name: "index_products_on_category_id", using: :btree

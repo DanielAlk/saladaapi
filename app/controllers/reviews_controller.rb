@@ -14,7 +14,7 @@ class ReviewsController < ApplicationController
     @reviews = @reviews.page(params[:page]) if params[:page].present?
     @reviews = @reviews.per(params[:per]) if params[:per].present?
 
-    render json: @reviews
+    _render collection: @reviews, flag: params[:flag].try(:to_sym)
   end
 
   # GET /reviews/1
