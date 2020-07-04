@@ -33,6 +33,7 @@ class Shop < ActiveRecord::Base
 
   scope :claimable, -> { not_created_by_user.where(user_id: User.admin.map{|u| u.id}) }
   scope :not_created_by_user, -> { where.not(status: Shop.statuses[:created_by_user]) }
+  scope :owned_by_premium, -> { where(user_id: User.premium.select(:id).map{ |u| u.id }) }
 
   before_validation :set_status
   before_update :assign_products_to_user, if: :user_id_changed?
