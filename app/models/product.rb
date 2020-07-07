@@ -155,9 +155,10 @@ class Product < ActiveRecord::Base
 
     def set_provider_product
       self.provider_product = is_provider_user?
+      return
     end
 
     def is_provider_user?
-      user.provider?
+      self.user.provider?
     end
 end

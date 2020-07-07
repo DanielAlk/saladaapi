@@ -11,8 +11,8 @@ class Shop < ActiveRecord::Base
   validates :description, presence: true, length: { minimum: 4, maximum: 50 }, unless: :created_by_user?
   validates :category, :fixed, :opens, :condition, presence: true, unless: :created_by_user?
   validates :user, :shed, :number_id, presence: true
-  validates :latitude, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 999.999999999 }
-  validates :longitude, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 999.999999999 }
+  validates :latitude, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 999.999999999 }, allow_blank: true
+  validates :longitude, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 999.999999999 }, allow_blank: true
   validate :user_limit
 
   filterable scopes: [ :status ]
