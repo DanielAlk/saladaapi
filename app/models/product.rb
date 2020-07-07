@@ -43,6 +43,8 @@ class Product < ActiveRecord::Base
   enum status: [ :draft, :published, :paused, :in_review ]
   enum special: [ :standard, :salient, :important, :towering ]
 
+  scope :owned_by_premium, -> { where(user_id: User.premium.select(:id).map{ |u| u.id }) }
+
   def comments_count
     self.comments.count
   end
