@@ -67,7 +67,7 @@ class ShopsController < ApplicationController
     if @shop.user == current_user
       render json: ['You can\'t claim a shop you already own'], status: :forbidden
     elsif @shop.save
-      head :no_content
+      render json: @shop, status: :created, location: @shop
     else
       render json: @shop.errors, status: :unprocessable_entity
     end
