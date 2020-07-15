@@ -168,6 +168,16 @@ class User < ActiveRecord::Base
     }
   end
 
+  def can_claim?
+    unless self.shop_limit == :unlimited
+      statuses = ShopClaim.statuses.map{|k,s| s if [:in_review, :approved].include?(k.to_sym) }.compact
+      unless self.shop_limit > self.shop_claims.where(status: statuses).count + self.shops.not_created_by_user.count
+        return false
+      end
+    end
+    return true
+  end
+
   def interacted_products_as(interact_as)
     where_clause = 'interactions.user_id' if interact_as == :user
     where_clause = 'interactions.owner_id' if interact_as == :owner
