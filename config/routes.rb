@@ -81,6 +81,7 @@ Rails.application.routes.draw do
       delete '/many', action: :destroy_many
     end
     member do
+      post '/create_and_claim', action: :create_and_claim
       post '/claim', action: :claim
       delete '/claim/:shop_claim_id', action: :destroy_claim
     end
