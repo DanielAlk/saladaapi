@@ -77,11 +77,11 @@ Rails.application.routes.draw do
   end
   resources :shops, except: [:new, :edit] do
     collection do
+      post '/create_and_claim', action: :create_and_claim
       put '/many', action: :update_many
       delete '/many', action: :destroy_many
     end
     member do
-      post '/create_and_claim', action: :create_and_claim
       post '/claim', action: :claim
       delete '/claim/:shop_claim_id', action: :destroy_claim
     end
