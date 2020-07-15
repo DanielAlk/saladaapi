@@ -52,13 +52,20 @@ class ShopsController < ApplicationController
   def create_and_claim
     @shop = Shop.new(shop_params)
     @shop.user = User.admin.first
+    
+    @shop_claim = ShopClaim.new(user: current_user)
+    
+    unless @shop_claim.user_clam_claim?
+      render json: @shop_claim.errors, status: :unprocessable_entity
+      return
+    end
 
     if @shop.save
-      shop_claim = ShopClaim.new(shop: @shop, user: current_user)
-      if shop_claim.save
+      @shop_claim.shop = @shop
+      if @shop_claim.save
         render json: @shop, status: :created, location: @shop
       else
-        render json: shop_claim.errors, status: :unprocessable_entity
+        render json: @shop_claim.errors, status: :unprocessable_entity
       end
     else
       render json: @shop.errors, status: :unprocessable_entity

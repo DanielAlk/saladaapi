@@ -26,6 +26,15 @@ class ShopClaim < ActiveRecord::Base
   	end
   end
 
+  def user_can_claim?
+    unless user.shop_limit == :unlimited
+      statuses = self.class.statuses.map{|k,s| s if [:in_review, :approved].include?(k.to_sym) }.compact
+      unless user.shop_limit > user.shop_claims.where(status: statuses).count + user.shops.not_created_by_user.count
+        errors.add(:shop_limit, 'Como usuario free no podés reclamar más puestos.')
+      end
+    end
+  end
+
   def to_hash(flag = nil)
     shop_claim = JSON.parse(self.to_json).deep_symbolize_keys
     shop_claim[:shop] = self.shop.to_hash
@@ -57,15 +66,6 @@ class ShopClaim < ActiveRecord::Base
         approved: 'Tu reclamo fue aprobado',
         denied: 'Tu reclamo fue denegado'
       }[self.status.try(:to_sym)]
-    end
-
-    def user_can_claim?
-      unless user.shop_limit == :unlimited
-        statuses = self.class.statuses.map{|k,s| s if [:in_review, :approved].include?(k.to_sym) }.compact
-        unless user.shop_limit > user.shop_claims.where(status: statuses).count + user.shops.not_created_by_user.count
-          errors.add(:shop_limit, 'Como usuario free no podés reclamar más puestos.')
-        end
-      end
     end
 
     def is_shop_claimable?
