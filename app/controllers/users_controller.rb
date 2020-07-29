@@ -56,6 +56,9 @@ class UsersController < ApplicationController
   # PATCH/PUT /users/1.json
   def update
     @user = User.find(params[:id])
+    if current_user.admin? && params[:password].present?
+      @user.password = params[:password]
+    end
     if @user != current_user && !current_user.admin?
       render json: ['Not authorized for that action'], status: :unauthorized
     elsif @user.update(user_params)
