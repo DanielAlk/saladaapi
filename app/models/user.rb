@@ -34,6 +34,7 @@ class User < ActiveRecord::Base
   enum gender: [ :male, :female ]
 
   before_update :manage_roles, if: :role_changed?
+  before_update :manage_phone_numbers, if: :phone_numbers_limit_changed?
 
   def metadata=(metadata)
   	if metadata.respond_to?(:each)
@@ -263,6 +264,16 @@ class User < ActiveRecord::Base
         self.products.destroy_all
       elsif self.role_was.to_sym == :provider
         self.products.destroy_all
+      end
+    end
+
+    def manage_phone_numbers
+      overflow = self.user_phone_numbers.count - self.phone_numbers_limit
+      if overflow > 0
+        overflow_entities = self.user_phone_numbers.take(overflow)
+        overflow_entities.each do |entity|
+          entity.destroy
+        end
       end
     end
 end
