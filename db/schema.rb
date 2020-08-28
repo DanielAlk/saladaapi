@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200703225413) do
+ActiveRecord::Schema.define(version: 20200828015546) do
 
   create_table "ads", force: :cascade do |t|
     t.string   "title",              limit: 255
@@ -326,6 +326,13 @@ ActiveRecord::Schema.define(version: 20200703225413) do
 
   add_index "subscriptions", ["mercadopago_subscription_id"], name: "index_subscriptions_on_mercadopago_subscription_id", using: :btree
 
+  create_table "user_phone_numbers", force: :cascade do |t|
+    t.integer  "user_id",      limit: 4
+    t.string   "phone_number", limit: 255
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+  end
+
   create_table "users", force: :cascade do |t|
     t.string   "provider",               limit: 255,   default: "email", null: false
     t.string   "uid",                    limit: 255,   default: "",      null: false
@@ -362,6 +369,7 @@ ActiveRecord::Schema.define(version: 20200703225413) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "special",                limit: 4,     default: 0
+    t.integer  "phone_numbers_limit",    limit: 4,     default: 0
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree

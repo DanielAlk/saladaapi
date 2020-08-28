@@ -7,9 +7,15 @@ Rails.application.routes.draw do
   get 'data/marquesine'
   
   post 'notifications/mercadopago'
-
+  
   resources :app_configs, except: [:new, :edit]
   resources :posts, except: [:new, :edit] do
+    collection do
+      put '/many', action: :update_many
+      delete '/many', action: :destroy_many
+    end
+  end
+  resources :user_phone_numbers, except: [:new, :edit] do
     collection do
       put '/many', action: :update_many
       delete '/many', action: :destroy_many

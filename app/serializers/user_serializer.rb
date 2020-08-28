@@ -29,6 +29,7 @@ class UserSerializer < ActiveModel::Serializer
   attribute :has_plan_groups_available, if: :complete
   attribute :permissions, if: :complete
   attribute :shop_claims, if: :complete
+  attribute :user_phone_numbers, if: :complete
 
   def has_plan_groups_available
     object.has_plan_groups_available?

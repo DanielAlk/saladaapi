@@ -21,6 +21,7 @@ class User < ActiveRecord::Base
   has_many :invoices, dependent: :destroy
   has_many :subscriptions, dependent: :destroy
   has_many :payments, dependent: :destroy
+  has_many :user_phone_numbers, dependent: :destroy
   
   serialize :metadata
 
