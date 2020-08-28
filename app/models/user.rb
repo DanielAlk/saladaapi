@@ -26,6 +26,8 @@ class User < ActiveRecord::Base
   serialize :metadata
 
   validates :name, :email, :role, presence: true
+  validates :phone_numbers_limit, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 10 }
+  validate :phone_numbers_limit_validation, if: :phone_numbers_limit_changed?
 
   filterable search: [:name, :email]
 
@@ -35,6 +37,8 @@ class User < ActiveRecord::Base
 
   before_update :manage_roles, if: :role_changed?
   before_update :manage_phone_numbers, if: :phone_numbers_limit_changed?
+
+  scope :available_for_phone_numbers, -> { where.not(phone_numbers_limit: 0) }
 
   def metadata=(metadata)
   	if metadata.respond_to?(:each)
@@ -250,6 +254,10 @@ class User < ActiveRecord::Base
         items: self.payments.order(created_at: :desc).page(1).per(4).map{ |payment| payment.to_hash(:complete) },
         total_count: self.payments.count
       }
+      user[:user_phone_numbers] = {
+        items: self.user_phone_numbers.order(created_at: :desc).page(1).per(4).map{ |upn| upn.to_hash },
+        total_count: self.user_phone_numbers.count
+      }
     end
     user
   end
@@ -264,6 +272,12 @@ class User < ActiveRecord::Base
         self.products.destroy_all
       elsif self.role_was.to_sym == :provider
         self.products.destroy_all
+      end
+    end
+
+    def phone_numbers_limit_validation
+      unless self.admin? || self.seller? || self.provider?
+        errors.add(:phone_numbers_limit, "El tipo de usuario no puede tener teléfonos")
       end
     end
 

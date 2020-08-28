@@ -23,6 +23,7 @@ class UserSerializer < ActiveModel::Serializer
   attribute :uid, if: :complete
   attribute :product_limit, if: :complete
   attribute :product_image_limit, if: :complete
+  attribute :phone_numbers_limit, if: :complete
   attribute :shop_limit, if: :complete
   attribute :unanswered_questions_count, if: :complete
   attribute :unread_answers_count, if: :complete

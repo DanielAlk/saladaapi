@@ -1,6 +1,6 @@
 class UserPhoneNumbersController < ApplicationController
   include Filterize
-  filterize param: :f
+  filterize order: :created_at_desc, param: :f
   before_filter :authenticate_admin!, if: :is_client_panel?
   before_filter :authenticate_user!
   before_action :filterize, only: :index
