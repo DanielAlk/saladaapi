@@ -8,8 +8,8 @@ module Filterable
     	options = filterable_options[:search]
   		return nil if options.blank?
       strings = search_string.split(' ').map{|s| '%' + s + '%'}
-      table_name = self.name.pluralize.downcase
-  		sql = ''
+			table_name = self.name.pluralize.gsub(/(.)([A-Z])/, '\1_\2').downcase # CamelCase to snake_case
+			sql = ''
       search_strings = []
   		options.each do |o|
         strings.each do |s|
