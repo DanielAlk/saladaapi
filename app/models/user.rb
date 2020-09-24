@@ -29,7 +29,7 @@ class User < ActiveRecord::Base
   validates :phone_numbers_limit, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 10 }
   validate :phone_numbers_limit_validation, if: :phone_numbers_limit_changed?
 
-  filterable search: [:name, :email]
+  filterable search: [:name, :email, :phone_number]
 
   enum role: [ :client, :seller, :admin, :provider ]
   enum special: [ :free, :premium ]
