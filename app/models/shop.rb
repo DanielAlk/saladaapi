@@ -17,7 +17,7 @@ class Shop < ActiveRecord::Base
 
   filterable scopes: [ :status ]
   filterable search: [ :description, :number_id ]
-  filterable order: [ :category, :shed, :user ]
+  filterable order: [ :category, :shed, :user, :product_count ]
   filterable labels: {
     order: {
       status: 'status', category: 'categoría', shed: 'galpón'
@@ -85,6 +85,7 @@ class Shop < ActiveRecord::Base
     shop = JSON.parse(self.to_json).deep_symbolize_keys
     shop[:cover] = self.cover
     shop[:user_name] = self.user.name
+    shop[:user_special] = self.user.special
     shop[:shed_title] = self.shed_title
     shop[:category_title] = (self.category.title rescue nil)
     if flag == :complete

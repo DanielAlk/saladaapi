@@ -30,6 +30,7 @@ class Product < ActiveRecord::Base
   before_update :assign_interactions_to_user, if: :user_id_changed?
   before_save :disassociate_not_matching_payments, if: :special_changed?
   after_update :destroy_created_by_user_shop, if: :shop_id_changed?
+  after_save :update_shop_product_count, if: :shop_id_changed?
 
   filterable scopes: [ :status, :special ]
   filterable search: [ :title, :price, :description ]
@@ -136,6 +137,14 @@ class Product < ActiveRecord::Base
       previous_shop = Shop.find(self.shop_id_was)
       if previous_shop.created_by_user? && previous_shop.products.count == 0
         previous_shop.destroy
+      end
+    end
+
+    def update_shop_product_count
+      self.shop.update(product_count: self.shop.products.count) if self.shop.present?
+      if self.shop_id_changed? && self.shop_id_was.present?
+        previous_shop = Shop.find(self.shop_id_was)
+        previous_shop.update(product_count: previous_shop.products.count) if previous_shop.present?
       end
     end
 

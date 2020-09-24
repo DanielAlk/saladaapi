@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200828015546) do
+ActiveRecord::Schema.define(version: 20200924033851) do
 
   create_table "ads", force: :cascade do |t|
     t.string   "title",              limit: 255
@@ -295,6 +295,7 @@ ActiveRecord::Schema.define(version: 20200828015546) do
     t.string   "gallery_name",       limit: 255
     t.decimal  "latitude",                       precision: 12, scale: 9
     t.decimal  "longitude",                      precision: 12, scale: 9
+    t.integer  "product_count",      limit: 4,                            default: 0
   end
 
   add_index "shops", ["category_id"], name: "index_shops_on_category_id", using: :btree
