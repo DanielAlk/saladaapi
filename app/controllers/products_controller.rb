@@ -32,7 +32,7 @@ class ProductsController < ApplicationController
     elsif @product.published? || user_signed_in? && @product.user == current_user
       render json: @product, complete: true
     else
-      render json: ['Product not found'], status: :not_found
+      raise ActiveRecord::RecordNotFound, "Couldn't find Product with 'id'=#{params[:id]}"
     end
   end
 

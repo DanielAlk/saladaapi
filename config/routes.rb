@@ -109,6 +109,8 @@ Rails.application.routes.draw do
     end
   end
   mount_devise_token_auth_for 'User', at: 'auth'
+  
+  match '*not_found', :to => 'application#routing_error', via: :all
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

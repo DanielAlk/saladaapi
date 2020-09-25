@@ -1,11 +1,23 @@
 class ApplicationController < ActionController::API
   include DeviseTokenAuth::Concerns::SetUserByToken
+  rescue_from ActiveRecord::RecordNotFound, with: :record_not_found_rescue
   
   before_action :configure_permitted_parameters, if: :devise_controller?
-  #before_action -> { sleep 2 }, if: "Rails.env.development?"
-  #before_action -> { return render json: { errors: ["bla"] }, status: 401 }
-
+  
   respond_to :json
+
+  def record_not_found_rescue(exception)
+    logger.info("#{exception.class}: " + exception.message)
+    if Rails.env.production?
+      render json: { status: 'not found', message: exception.to_s }, status: :not_found
+    else
+      render json: { status: 'not found', message: exception.to_s, backtrace: exception.backtrace }, status: :not_found
+    end
+  end
+
+  def routing_error(error = 'Routing error', status = :not_found, exception=nil)
+    render json: { status: 'not found', message: 'Not found' }, status: :not_found
+  end
 
   protected
 
