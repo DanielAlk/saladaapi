@@ -78,7 +78,13 @@ class ShopClaim < ActiveRecord::Base
   		shop_claims = self.shop.shop_claims.where.not(id: self.id)
   		shop_claims.deleted.delete_all
   		shop_claims.in_review.update_all(status: self.class.statuses[:denied])
-  		self.shop.update(user_id: self.user_id)
+      self.shop.update(user_id: self.user_id)
+      # if user has 'created_by_user' shop with products the shop will be deleted when after_update product.shop_id
+      # but if the 'created_by_user' shop doesnt have products is deleted here
+      # the 'unless' check for products is reduntant but just leave it there
+      if (self.user.shops.created_by_user.present?)
+        self.user.shops.created_by_user.first.destroy unless self.user.shops.created_by_user.first.products.present?
+      end
   	end
 
     def revert_claim

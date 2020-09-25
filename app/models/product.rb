@@ -143,7 +143,7 @@ class Product < ActiveRecord::Base
     def update_shop_product_count
       self.shop.update(product_count: self.shop.products.count) if self.shop.present?
       if self.shop_id_changed? && self.shop_id_was.present?
-        previous_shop = Shop.find(self.shop_id_was)
+        previous_shop = Shop.find(self.shop_id_was) rescue false
         previous_shop.update(product_count: previous_shop.products.count) if previous_shop.present?
       end
     end
