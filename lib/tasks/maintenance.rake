@@ -126,11 +126,15 @@ namespace :maintenance do
 		puts ''
 	end
 
-	task shop_product_count: :environment do
+	task shops: :environment do
 		puts '_____________________________'
 		puts ''
 		puts 'MANTAIN SHOPS'
-		puts 'Use this script to populate product_count column in shops'
+		puts 'Use this script to mantain shops'
+		puts '_____________________________'
+		puts ''
+		puts 'SHOPS: PRODUCT COUNT'
+		puts 'populate product_count column in shops'
 		puts '_____________________________'
 		puts ''
 		Shop.all.each do |shop|
