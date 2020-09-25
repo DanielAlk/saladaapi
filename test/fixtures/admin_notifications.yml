@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  kind: 1
+  alertable_id: 
+  alertable_type: Alertable
+  metadata: MyText
+  status: 1
+
+two:
+  kind: 1
+  alertable_id: 
+  alertable_type: Alertable
+  metadata: MyText
+  status: 1

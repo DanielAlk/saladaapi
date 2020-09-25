@@ -11,7 +11,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200924033851) do
+ActiveRecord::Schema.define(version: 20200924070411) do
+
+  create_table "admin_notifications", force: :cascade do |t|
+    t.integer  "kind",           limit: 4,     default: 0
+    t.integer  "alertable_id",   limit: 4
+    t.string   "alertable_type", limit: 255
+    t.text     "metadata",       limit: 65535
+    t.integer  "status",         limit: 4,     default: 0
+    t.datetime "created_at",                               null: false
+    t.datetime "updated_at",                               null: false
+  end
+
+  add_index "admin_notifications", ["alertable_type", "alertable_id"], name: "index_admin_notifications_on_alertable_type_and_alertable_id", using: :btree
 
   create_table "ads", force: :cascade do |t|
     t.string   "title",              limit: 255

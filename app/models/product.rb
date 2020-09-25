@@ -155,7 +155,10 @@ class Product < ActiveRecord::Base
     end
 
     def user_limit
-      errors.add(:user_limit, "Not allowed") if self.new_record? && self.user.present? && self.user.product_limit != :unlimited && self.user.products.count >= self.user.product_limit
+      if self.new_record? && self.user.present? && self.user.product_limit != :unlimited && self.user.products.count >= self.user.product_limit
+        AdminNotificationJob.perform_async(kind: :user_product_limit, alertable: self.user, metadata: { shop_id: self.shop_id })
+        errors.add(:user_limit, "Not allowed")
+      end
     end
 
     def image_limit

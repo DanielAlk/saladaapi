@@ -9,6 +9,12 @@ Rails.application.routes.draw do
   post 'notifications/mercadopago'
   
   resources :app_configs, except: [:new, :edit]
+  resources :admin_notifications, except: [:new, :edit] do
+    collection do
+      put '/many', action: :update_many
+      delete '/many', action: :destroy_many
+    end
+  end
   resources :posts, except: [:new, :edit] do
     collection do
       put '/many', action: :update_many
