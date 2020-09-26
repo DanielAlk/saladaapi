@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200924070411) do
+ActiveRecord::Schema.define(version: 20200926064416) do
 
   create_table "admin_notifications", force: :cascade do |t|
     t.integer  "kind",           limit: 4,     default: 0
@@ -308,6 +308,8 @@ ActiveRecord::Schema.define(version: 20200924070411) do
     t.decimal  "latitude",                       precision: 12, scale: 9
     t.decimal  "longitude",                      precision: 12, scale: 9
     t.integer  "product_count",      limit: 4,                            default: 0
+    t.string   "payment_methods",    limit: 255
+    t.string   "shipping_company",   limit: 255
   end
 
   add_index "shops", ["category_id"], name: "index_shops_on_category_id", using: :btree
