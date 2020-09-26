@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200926064416) do
+ActiveRecord::Schema.define(version: 20200926070956) do
 
   create_table "admin_notifications", force: :cascade do |t|
     t.integer  "kind",           limit: 4,     default: 0
@@ -213,6 +213,7 @@ ActiveRecord::Schema.define(version: 20200926064416) do
     t.integer  "status",             limit: 4,     default: 0
     t.datetime "created_at",                                   null: false
     t.datetime "updated_at",                                   null: false
+    t.string   "video_id",           limit: 255
   end
 
   create_table "products", force: :cascade do |t|
