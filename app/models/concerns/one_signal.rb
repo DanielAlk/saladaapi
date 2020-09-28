@@ -25,14 +25,22 @@ module OneSignal
   			request = Net::HTTP.class_eval(method.to_s.titleize).new(uri.path)
   			request.body = prepare_params(params)
   			request['Content-Type'] = 'application/json'
-  			request['Authorization'] = 'Basic ' + ENV['onesignal_api_key']
-
+				request['Authorization'] = 'Basic ' + ENV['onesignal_api_key']
+				
+				
   			response = Net::HTTP.start(uri.host, uri.port, use_ssl: true) do |http|
   				http.request(request)
   			end
-
+				
+				SuckerPunch.logger.info("")
+				SuckerPunch.logger.info("Request ONE SIGNAL PUSH NOTIFICATION")
+				SuckerPunch.logger.info(request&.body)
+				SuckerPunch.logger.info("Response ONE SIGNAL PUSH NOTIFICATION")
+				SuckerPunch.logger.info(response&.body)
+				SuckerPunch.logger.info("")
+				
   			if response.is_a?(Net::HTTPSuccess) && response.try(:body).present?
-  				JSON.parse(response.body.to_s)
+  				response.body
   			else
   				false
   			end

@@ -32,12 +32,13 @@ class UsersController < ApplicationController
 
   # POST /users/push
   def push
-    push_params = params.permit(:title, :message)
-    PushJob.perform_async({
-      title: push_params[:title],
-      message: push_params[:message]
-    })
-    head :no_content
+    begin
+      push_params = params.permit(:title, :role, :url)
+      push_params[:message] = params.require(:message) && params[:message]
+      render json: PushJob.new.perform(push_params), status: :created
+    rescue => exception
+      render json: exception, status: :unprocessable_entity
+    end
   end
 
   # POST /users

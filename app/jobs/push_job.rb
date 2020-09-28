@@ -15,6 +15,13 @@ class PushJob
       ]
     end
 
+    if contents[:role].present?
+      params[:filters] = [
+        { field: :tag, key: :role, relation: '=', value: contents[:role] }
+      ]
+    end
+
+    params[:url] = contents[:url] if contents[:url].present?
   	params[:data] = contents[:data] if contents[:data].present?
 
     if contents[:badge_number].present?
@@ -27,8 +34,8 @@ class PushJob
   		contents[:buttons].each_with_index do |text, index|
   			params[:buttons] << { id: index.to_s, text: text }
   		end
-  	end
-
+    end
+    
   	create_notification params
   end
 end
