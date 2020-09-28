@@ -82,8 +82,8 @@ class ShopClaim < ActiveRecord::Base
       # if user has 'created_by_user' shop with products the shop will be deleted when after_update product.shop_id
       # but if the 'created_by_user' shop doesnt have products is deleted here
       # the 'unless' check for products is reduntant but just leave it there
-      if (self.user.shops.created_by_user.present?)
-        self.user.shops.created_by_user.first.destroy unless self.user.shops.created_by_user.first.products.present?
+      if self.user.shops.created_by_user&.first&.present? && !self.user.shops.created_by_user.first.products.present?
+        self.user.shops.created_by_user.first.destroy 
       end
   	end
 
