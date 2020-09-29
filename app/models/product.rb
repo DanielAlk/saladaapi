@@ -134,8 +134,8 @@ class Product < ActiveRecord::Base
     end
 
     def destroy_created_by_user_shop
-      previous_shop = Shop.find(self.shop_id_was)
-      if previous_shop.created_by_user? && previous_shop.products.count == 0
+      previous_shop = Shop.find(self.shop_id_was) rescue false
+      if previous_shop.present? && previous_shop.created_by_user? && previous_shop.products.count == 0
         previous_shop.destroy
       end
     end
