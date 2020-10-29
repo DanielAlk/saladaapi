@@ -11,6 +11,9 @@ class User < ActiveRecord::Base
   has_attached_file :avatar, styles: { medium: "300x300#", small: "140x140#", thumb: "80x80#" }
   validates_attachment :avatar, content_type: { content_type: /\Aimage\/.*\Z/ }
 
+  has_attached_file :id_image, styles: { medium: "300x300", small: "140x140", thumb: "80x80#" }
+  validates_attachment :id_image, content_type: { content_type: /\Aimage\/.*\Z/ }
+
   has_many :shops, dependent: :destroy
   has_many :shop_claims, -> { order(updated_at: :desc) }, dependent: :destroy
   has_many :products, dependent: :destroy
@@ -134,6 +137,14 @@ class User < ActiveRecord::Base
       ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + ActionController::Base.helpers.asset_url("user.png", :digest => false)
     end
   end
+  
+  def id_image_path
+    if self.id_image.present?
+      ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.id_image.url(:medium)
+    else
+      ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + ActionController::Base.helpers.asset_url("missing-medium.jpg", :digest => false)
+    end
+  end
 
   def unanswered_questions_count
     self.incoming_comments.question.unanswered.count
@@ -219,6 +230,21 @@ class User < ActiveRecord::Base
         user[:avatar][key] = ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + ActionController::Base.helpers.asset_url("user.png", :digest => false)
       end
     end
+
+    if self.id_image.present?
+      user[:id_image] = {
+        thumb: ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.id_image.url(:thumb),
+        small: ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.id_image.url(:small),
+        medium: ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.id_image.url(:medium),
+        original: ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + self.id_image.url(:original)
+      }
+    else
+      user[:id_image] = {}
+      [:thumb, :small, :medium, :original].each do |key|
+        user[:id_image][key] = ENV['webapp_protocol'] + '://' + ENV['webapp_domain'] + ActionController::Base.helpers.asset_url("missing-#{key.to_s}.jpg", :digest => false)
+      end
+    end
+
     if flag == :complete
       user[:has_plan_groups_available] = self.has_plan_groups_available?
 

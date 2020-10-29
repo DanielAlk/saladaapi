@@ -8,6 +8,11 @@ class UserSerializer < ActiveModel::Serializer
   attribute :avatar_file_name, if: :complete
   attribute :avatar_file_size, if: :complete
   attribute :avatar_updated_at, if: :complete
+  attribute :id_image_content_type, if: :complete
+  attribute :id_image_file_name, if: :complete
+  attribute :id_image_file_size, if: :complete
+  attribute :id_image_updated_at, if: :complete
+  attribute :id_image_path, if: :complete
   attribute :birthday, if: :complete
   attribute :gender, if: :complete
   attribute :id_number, if: :complete

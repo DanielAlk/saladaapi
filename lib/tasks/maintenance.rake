@@ -15,11 +15,11 @@ namespace :maintenance do
   		return Dir.entries(directory).select{ |d| d != '.' && d != '..' }
   	end
 
-  	def change_invalid_names(collection, model_name)
+  	def change_invalid_names(collection, model_name, model_property = nil, image_directory = nil)
   		reg_exp = /[^A-Za-z0-9.\_\-]/
   		collection.select do |member|
-  			property = @property_names[model_name.downcase.to_sym].to_s
-  			directory = @directories[model_name.downcase.to_sym]
+  			property = model_property || @property_names[model_name.downcase.to_sym].to_s
+  			directory = image_directory || @directories[model_name.downcase.to_sym]
   			file_name = member[property]
   			if file_name.present? && file_name[reg_exp].present?
   				id = member.id.to_s
@@ -88,9 +88,17 @@ namespace :maintenance do
 		puts '_____________________________'
 		puts ''
 		puts 'Finally Users'
+		puts 'Starting with avatars'
 		puts '_____________________________'
 		puts ''
 		change_invalid_names(User.all, User.name)
+		
+		puts '_____________________________'
+		puts ''
+		puts 'Now User id_images'
+		puts '_____________________________'
+		puts ''
+		change_invalid_names(User.all, User.name, 'id_image_file_name', ENV['public_folder_path'] + 'system/users/id_images/')
 	end
 
 	task products: :environment do

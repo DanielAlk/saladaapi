@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20201029195916) do
+ActiveRecord::Schema.define(version: 20201029204344) do
 
   create_table "admin_notifications", force: :cascade do |t|
     t.integer  "kind",           limit: 4,     default: 0
@@ -403,6 +403,10 @@ ActiveRecord::Schema.define(version: 20201029195916) do
     t.datetime "updated_at"
     t.integer  "special",                limit: 4,     default: 0
     t.integer  "phone_numbers_limit",    limit: 4,     default: 0
+    t.string   "id_image_file_name",     limit: 255
+    t.string   "id_image_content_type",  limit: 255
+    t.integer  "id_image_file_size",     limit: 4
+    t.datetime "id_image_updated_at"
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree
