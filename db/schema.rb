@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20201029204344) do
+ActiveRecord::Schema.define(version: 20201230023826) do
 
   create_table "admin_notifications", force: :cascade do |t|
     t.integer  "kind",           limit: 4,     default: 0
@@ -247,6 +247,7 @@ ActiveRecord::Schema.define(version: 20201029204344) do
     t.string   "video_id",          limit: 255
     t.decimal  "rating",                          precision: 2, scale: 1
     t.boolean  "provider_product",                                        default: false
+    t.integer  "minimum_amount",    limit: 4
   end
 
   add_index "products", ["category_id"], name: "index_products_on_category_id", using: :btree
