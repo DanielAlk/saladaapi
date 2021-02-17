@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20201230023826) do
+ActiveRecord::Schema.define(version: 20210217041640) do
 
   create_table "admin_notifications", force: :cascade do |t|
     t.integer  "kind",           limit: 4,     default: 0
@@ -226,6 +226,16 @@ ActiveRecord::Schema.define(version: 20201230023826) do
     t.string   "video_id",           limit: 255
   end
 
+  create_table "product_buy_clicks", force: :cascade do |t|
+    t.integer  "user_id",    limit: 4
+    t.integer  "product_id", limit: 4
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
+  end
+
+  add_index "product_buy_clicks", ["product_id"], name: "index_product_buy_clicks_on_product_id", using: :btree
+  add_index "product_buy_clicks", ["user_id"], name: "index_product_buy_clicks_on_user_id", using: :btree
+
   create_table "products", force: :cascade do |t|
     t.integer  "user_id",           limit: 4
     t.integer  "category_id",       limit: 4
@@ -424,6 +434,8 @@ ActiveRecord::Schema.define(version: 20201230023826) do
   add_foreign_key "interactions", "users"
   add_foreign_key "interactions", "users", column: "owner_id"
   add_foreign_key "payments", "users"
+  add_foreign_key "product_buy_clicks", "products"
+  add_foreign_key "product_buy_clicks", "users"
   add_foreign_key "products", "categories"
   add_foreign_key "products", "shops"
   add_foreign_key "products", "users"
