@@ -35,11 +35,25 @@ module Filterable
 	  	options = filterable_options[:range]
 	  	property = property.to_sym
 	  	results = self.where(nil)
-  		arguments = {}
-  		arguments[property] = min.to_i..max.to_i if min.present? && max.present?
-	  	arguments[property] = min.to_i..(1.0 / 0.0) if min.present? && max.blank?
-	  	arguments[property] = 0..max.to_i if min.blank? && max.present?
-	  	results.where(arguments)
+			if property == :created_at || property == :updated_at
+				property = "DATE(" + property.to_s + ")"
+				min = Date.parse(min) if min.present?
+				max = Date.parse(max) if max.present?
+
+				if min.present? && max.present?
+					results.where(property + " >= ? AND " + property + " <= ?", min, max)
+				elsif min.present? && max.blank?
+					results.where(property + " >= ?", min)
+				elsif min.blank? && max.present?
+					results.where(property + " <= ?", max)
+				end
+			else
+				arguments = {}
+				arguments[property] = min.to_i..max.to_i if min.present? && max.present?
+				arguments[property] = min.to_i..(1.0 / 0.0) if min.present? && max.blank?
+				arguments[property] = 0..max.to_i if min.blank? && max.present?
+	  		results.where(arguments)
+			end
 	  end
 
     private
