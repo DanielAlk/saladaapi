@@ -40,6 +40,7 @@ class User < ActiveRecord::Base
 
   before_update :manage_roles, if: :role_changed?
   before_update :manage_phone_numbers, if: :phone_numbers_limit_changed?
+  before_update :manage_special, if: :special_changed?
 
   scope :available_for_phone_numbers, -> { where.not(phone_numbers_limit: 0) }
 
@@ -313,6 +314,27 @@ class User < ActiveRecord::Base
         overflow_entities = self.user_phone_numbers.take(overflow)
         overflow_entities.each do |entity|
           entity.destroy
+        end
+      end
+    end
+
+    def manage_special
+      if self.special_changed? && self.special_was.to_sym == :premium && self.special.to_sym == :free
+        if self.shops.present?
+          if self.shops.count > 1
+            shop_to_keep = self.shops.sort_by{ |s| s.products.count }.last
+            shops_to_destroy = self.shops.select{ |s| s.id != shop_to_keep.id }
+            shops_to_destroy.each{ |s| s.destroy }
+          end
+          if self.products.count > 3
+            product_ids_to_keep = self.products.sort_by(&:id).reverse.take(3).map(&:id)
+            products_to_destroy = self.products.select{ |p| !product_ids_to_keep.include?(p.id) }
+            products_to_destroy.each{ |p| p.destroy }
+          end
+          self.products.each do |p|
+            p.special = :standard
+            p.save
+          end
         end
       end
     end
