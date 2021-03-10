@@ -322,7 +322,11 @@ class User < ActiveRecord::Base
       if self.special_changed? && self.special_was.to_sym == :premium && self.special.to_sym == :free
         if self.shops.present?
           if self.shops.count > 1
-            shop_to_keep = self.shops.sort_by{ |s| s.products.count }.last
+            last_product = self.products.sort_by(&:id).last
+            shop_to_keep = last_product.try(:shop)
+            if shop_to_keep.blank? || shop_to_keep.products.count < 3
+              shop_to_keep = self.shops.sort_by{ |s| s.products.count }.last
+            end
             shops_to_destroy = self.shops.select{ |s| s.id != shop_to_keep.id }
             shops_to_destroy.each{ |s| s.destroy }
           end
