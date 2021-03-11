@@ -335,6 +335,7 @@ class User < ActiveRecord::Base
             products_to_destroy = self.products.select{ |p| !product_ids_to_keep.include?(p.id) }
             products_to_destroy.each{ |p| p.destroy }
           end
+          self.reload
           self.products.each do |p|
             p.special = :standard
             p.save
