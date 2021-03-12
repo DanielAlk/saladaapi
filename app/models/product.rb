@@ -8,6 +8,7 @@ class Product < ActiveRecord::Base
   has_many :interactions, dependent: :destroy
   has_many :payments, as: :promotionable
   has_many :reviews, dependent: :destroy
+  has_many :product_buy_clicks, dependent: :destroy
 
   validates :title, presence: true, length: { minimum: 4, maximum: 50 }
   validates :description, presence: true, length: { minimum: 6, maximum: 280 }
