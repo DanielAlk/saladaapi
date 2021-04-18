@@ -81,6 +81,11 @@ class Shop < ActiveRecord::Base
     self.user.admin?
   end
 
+  def decrement_product_count
+    self.product_count -= 1
+    self.save
+  end
+
   def to_hash(flag = nil)
     shop = JSON.parse(self.to_json).deep_symbolize_keys
     shop[:cover] = self.cover

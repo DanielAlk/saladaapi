@@ -29,6 +29,7 @@ class Product < ActiveRecord::Base
   validate :image_limit
 
   after_destroy :disassociate_payments
+  before_destroy :decrement_shop_product_count
   before_create :set_provider_product
   before_update :assign_interactions_to_user, if: :user_id_changed?
   before_save :disassociate_not_matching_payments, if: :special_changed?
@@ -128,6 +129,10 @@ class Product < ActiveRecord::Base
         payment.promotionable = nil
         payment.save
       end
+    end
+
+    def decrement_shop_product_count
+      self.shop.decrement_product_count
     end
 
     def assign_interactions_to_user
