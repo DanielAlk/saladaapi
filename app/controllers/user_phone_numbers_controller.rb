@@ -27,6 +27,7 @@ class UserPhoneNumbersController < ApplicationController
   # POST /user_phone_numbers.json
   def create
     @user_phone_number = UserPhoneNumber.new(user_phone_number_params)
+    @user_phone_number.force_user_limit = is_client_panel?
     @user_phone_number.user = current_user unless is_client_panel?
 
     if @user_phone_number.save

@@ -44,6 +44,7 @@ class User < ActiveRecord::Base
   before_update :manage_special, if: :special_changed?
 
   scope :available_for_phone_numbers, -> { where.not(phone_numbers_limit: 0) }
+  scope :available_for_phone_numbers_panel, -> { where.not(role: User.roles[:client]) }
 
   def metadata=(metadata)
   	if metadata.respond_to?(:each)
