@@ -331,14 +331,16 @@ class User < ActiveRecord::Base
             shops_to_destroy = self.shops.select{ |s| s.id != shop_to_keep.id }
             shops_to_destroy.each{ |s| s.destroy }
           end
-          products_to_keep = self.products.sort_by(&:id).reverse.take(3)
-          if self.products.count > 3
-            products_to_destroy = self.products.select{ |p| !products_to_keep.map(&:id).include?(p.id) }
-            products_to_destroy.each{ |p| p.destroy }
-          end
-          products_to_keep.each do |p|
-            p.special = :standard
-            p.save
+          if self.products.count > 0
+            products_to_keep = self.products.sort_by(&:id).reverse.take(3)
+            if self.products.count > 3
+              products_to_destroy = self.products.select{ |p| !products_to_keep.map(&:id).include?(p.id) }
+              products_to_destroy.each{ |p| p.destroy }
+            end
+            products_to_keep.each do |p|
+              p.special = :standard
+              p.save
+            end
           end
         end
       end
