@@ -132,7 +132,7 @@ class Product < ActiveRecord::Base
     end
 
     def decrement_shop_product_count
-      self.shop.decrement_product_count
+      self.shop.decrement!(:product_count)
     end
 
     def assign_interactions_to_user
