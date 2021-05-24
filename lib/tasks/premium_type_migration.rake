@@ -20,9 +20,9 @@ namespace :premium_type_migration do
 	task script_providers: :environment do
 		plan_group_description = PlanGroup.find(2).description
 		
-		wholesaler_plan = PlanGroup.create(name: 'wholesaler_cash', title: 'Pack Mayorista Proveedor Contado', description: plan_group_description, kind: PlanGroup.kinds[:cash], subscriptable_role: User.roles[:provider], starting_price: 199.99, premium_type: 1)
-		fairsaler_plan = PlanGroup.create(name: 'fairsaler_cash', title: 'Pack Feriante Proveedor Contado', description: plan_group_description, kind: PlanGroup.kinds[:cash], subscriptable_role: User.roles[:provider], starting_price: 199.99, premium_type: 2)
-		premium_plan = PlanGroup.create(name: 'premium_cash', title: 'Pack Premium Proveedor Contado', description: plan_group_description, kind: PlanGroup.kinds[:cash], subscriptable_role: User.roles[:provider], starting_price: 199.99, premium_type: 3)
+		wholesaler_plan = PlanGroup.create(name: 'wholesaler_provider_cash', title: 'Pack Mayorista Proveedor Contado', description: plan_group_description, kind: PlanGroup.kinds[:cash], subscriptable_role: User.roles[:provider], starting_price: 199.99, premium_type: 1)
+		fairsaler_plan = PlanGroup.create(name: 'fairsaler_provider_cash', title: 'Pack Feriante Proveedor Contado', description: plan_group_description, kind: PlanGroup.kinds[:cash], subscriptable_role: User.roles[:provider], starting_price: 199.99, premium_type: 2)
+		premium_plan = PlanGroup.create(name: 'premium_provider_cash', title: 'Pack Premium Proveedor Contado', description: plan_group_description, kind: PlanGroup.kinds[:cash], subscriptable_role: User.roles[:provider], starting_price: 199.99, premium_type: 3)
 		
 		PlanGroup.where(starting_price: nil).update_all(starting_price: 199.99)
 		
