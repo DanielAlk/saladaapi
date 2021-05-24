@@ -25,6 +25,7 @@ class UserSerializer < ActiveModel::Serializer
   attribute :phone_number, if: :complete
   attribute :provider, if: :complete
   attribute :special, if: :complete
+  attribute :premium_type, if: :complete
   attribute :uid, if: :complete
   attribute :product_limit, if: :complete
   attribute :product_image_limit, if: :complete

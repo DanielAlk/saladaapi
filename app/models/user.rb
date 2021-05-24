@@ -37,6 +37,7 @@ class User < ActiveRecord::Base
 
   enum role: [ :client, :seller, :admin, :provider ]
   enum special: [ :free, :premium ]
+  enum premium_type: [ :freesaler, :wholesaler, :fairsaler, :shedsaler ]
   enum gender: [ :male, :female ]
 
   before_update :manage_roles, if: :role_changed?
@@ -111,21 +112,19 @@ class User < ActiveRecord::Base
   end
 
   def handle_subscription(subscription)
-    self.premium! if subscription.authorized?
-    self.free! if subscription.cancelled? || subscription.finished?
+    if subscription.authorized?
+      self.premium_type = subscription.plan.plan_group.premium_type
+      self.premium!
+    end
+    if subscription.cancelled? || subscription.finished?
+      self.premium_type = :freesaler
+      self.free!
+    end
   end
 
   def available_plan_groups
     user_role = self.admin? ? User.roles[:seller] : User.roles[self.role]
-    if self.seller?
-      if self.shops.present?
-        PlanGroup.where(subscriptable_role: user_role)
-      else
-        PlanGroup.where(subscriptable_role: user_role, kind: PlanGroup.kinds[:automatic_debit])
-      end
-    else
-      PlanGroup.where(subscriptable_role: user_role)
-    end
+    PlanGroup.where(subscriptable_role: user_role)
   end
 
   def has_plan_groups_available?
@@ -169,7 +168,7 @@ class User < ActiveRecord::Base
     if self.free?
       5
     elsif self.premium?
-      10
+      15
     end
   end
 

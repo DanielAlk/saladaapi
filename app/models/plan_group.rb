@@ -4,6 +4,7 @@ class PlanGroup < ActiveRecord::Base
 
 	enum kind: Plan.kinds
 	enum subscriptable_role: User.roles
+	enum premium_type: User.premium_types
 
 	filterable search: [ :title ]
 

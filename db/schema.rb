@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20210428003144) do
+ActiveRecord::Schema.define(version: 20210524034302) do
 
   create_table "admin_notifications", force: :cascade do |t|
     t.integer  "kind",           limit: 4,     default: 0
@@ -189,6 +189,7 @@ ActiveRecord::Schema.define(version: 20210428003144) do
     t.decimal  "starting_price",                   precision: 8, scale: 2
     t.datetime "created_at",                                                           null: false
     t.datetime "updated_at",                                                           null: false
+    t.integer  "premium_type",       limit: 4,                             default: 0
   end
 
   create_table "plans", force: :cascade do |t|
@@ -419,6 +420,7 @@ ActiveRecord::Schema.define(version: 20210428003144) do
     t.string   "id_image_content_type",  limit: 255
     t.integer  "id_image_file_size",     limit: 4
     t.datetime "id_image_updated_at"
+    t.integer  "premium_type",           limit: 4,     default: 0
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree
