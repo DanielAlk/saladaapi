@@ -26,11 +26,11 @@ namespace :premium_type_migration do
 		
 		PlanGroup.where(starting_price: nil).update_all(starting_price: 199.99)
 		
-		Plan.create(plan_group: wholesaler_plan, name: 'wholesaler_cash_monthly_provider', title: 'Mensual', kind: Plan.kinds[:cash], price: 199.99, frequency: 1, frequency_type: Plan.frequency_types[:months], description: 'Monthly wholesaler provider package')
-		Plan.create(plan_group: wholesaler_plan, name: 'wholesaler_cash_yearly_provider', title: 'Anual', kind: Plan.kinds[:cash], price: 1999.99, frequency: 12, frequency_type: Plan.frequency_types[:months], description: 'Yearly wholesaler provider package')
-		Plan.create(plan_group: fairsaler_plan, name: 'fairsaler_cash_monthly_provider', title: 'Mensual', kind: Plan.kinds[:cash], price: 199.99, frequency: 1, frequency_type: Plan.frequency_types[:months], description: 'Monthly fairsaler provider package')
-		Plan.create(plan_group: fairsaler_plan, name: 'fairsaler_cash_yearly_provider', title: 'Anual', kind: Plan.kinds[:cash], price: 1999.99, frequency: 12, frequency_type: Plan.frequency_types[:months], description: 'Yearly fairsaler provider package')
-		Plan.create(plan_group: premium_plan, name: 'premium_cash_monthly_provider', title: 'Mensual', kind: Plan.kinds[:cash], price: 199.99, frequency: 1, frequency_type: Plan.frequency_types[:months], description: 'Monthly premium provider package')
-		Plan.create(plan_group: premium_plan, name: 'premium_cash_yearly_provider', title: 'Anual', kind: Plan.kinds[:cash], price: 1999.99, frequency: 12, frequency_type: Plan.frequency_types[:months], description: 'Yearly premium provider package')
+		Plan.create(plan_group: wholesaler_plan, name: 'wholesaler_provider_cash_monthly', title: 'Mensual', kind: Plan.kinds[:cash], price: 199.99, frequency: 1, frequency_type: Plan.frequency_types[:months], description: 'Monthly wholesaler provider package')
+		Plan.create(plan_group: wholesaler_plan, name: 'wholesaler_provider_cash_yearly', title: 'Anual', kind: Plan.kinds[:cash], price: 1999.99, frequency: 12, frequency_type: Plan.frequency_types[:months], description: 'Yearly wholesaler provider package')
+		Plan.create(plan_group: fairsaler_plan, name: 'fairsaler_provider_cash_monthly', title: 'Mensual', kind: Plan.kinds[:cash], price: 199.99, frequency: 1, frequency_type: Plan.frequency_types[:months], description: 'Monthly fairsaler provider package')
+		Plan.create(plan_group: fairsaler_plan, name: 'fairsaler_provider_cash_yearly', title: 'Anual', kind: Plan.kinds[:cash], price: 1999.99, frequency: 12, frequency_type: Plan.frequency_types[:months], description: 'Yearly fairsaler provider package')
+		Plan.create(plan_group: premium_plan, name: 'premium_provider_cash_monthly', title: 'Mensual', kind: Plan.kinds[:cash], price: 199.99, frequency: 1, frequency_type: Plan.frequency_types[:months], description: 'Monthly premium provider package')
+		Plan.create(plan_group: premium_plan, name: 'premium_provider_cash_yearly', title: 'Anual', kind: Plan.kinds[:cash], price: 1999.99, frequency: 12, frequency_type: Plan.frequency_types[:months], description: 'Yearly premium provider package')
 	end
 end
