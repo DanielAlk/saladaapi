@@ -15,6 +15,7 @@ class Plan < ActiveRecord::Base
 	validates :price, presence: true, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 999999.99 }
 
 	before_update :update_mercadopago_plan, if: :automatic_debit?
+	after_save :save_plan_group
 
 	def self.create_mercadopago_plans
 		self.all.each do |plan|
@@ -78,4 +79,11 @@ class Plan < ActiveRecord::Base
 		plan[:plan_group] = self.plan_group.to_hash
 		plan
 	end
+
+	private
+	
+		def save_plan_group
+			plan_group.save
+		end
+
 end

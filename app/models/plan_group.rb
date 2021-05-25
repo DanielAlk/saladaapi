@@ -9,7 +9,7 @@ class PlanGroup < ActiveRecord::Base
 	filterable search: [ :title ]
 
 	validates :title, presence: true, length: { minimum: 4, maximum: 50 }
-	validates :starting_price, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 999999.99 }
+	validates :starting_price, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 999999.99 }, allow_blank: true
 
 	before_save :set_starting_price
 
@@ -27,7 +27,10 @@ class PlanGroup < ActiveRecord::Base
 
 	private
 		def set_starting_price
-			self.starting_price = self.plans.map{ |plan| plan.price }.min
+			self_plans = Plan.where(plan_group: self)
+			if self_plans.present?
+				self.starting_price = self_plans.map{ |plan| plan.price }.min
+			end
 		end
 
 end
