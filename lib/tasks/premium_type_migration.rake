@@ -6,7 +6,7 @@ namespace :premium_type_migration do
 
 		# set all existing premium users to shedsalers
 
-		User.where(special: User.specials[:premium]).where(premium_type: User.premium_types[:freesaler]).update_all(premium_type: User.premium_types[:shedsaler])
+		User.where(special: User.specials[:premium]).where(premium_type: User.premium_types[:freesaler]).update_all(premium_type: User.premium_types[:fairsaler])
 
 		# create seller plans (existing premium GroupPlans are updated to shedsalers)
 
