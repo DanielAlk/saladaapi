@@ -160,9 +160,10 @@ class User < ActiveRecord::Base
     if self.free?
       5
     elsif self.premium?
-      40 if self.wholesaler?
-      20 if self.fairsaler?
-      :unlimited if self.shedsaler?
+      return 40 if self.wholesaler?
+      return 20 if self.fairsaler?
+      return :unlimited if self.shedsaler?
+      return 5
     end
   end
 
