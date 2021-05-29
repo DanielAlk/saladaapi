@@ -124,7 +124,11 @@ class User < ActiveRecord::Base
 
   def available_plan_groups
     user_role = self.admin? ? User.roles[:seller] : User.roles[self.role]
-    PlanGroup.where(subscriptable_role: user_role)
+    if self.premium? && self.subscriptions.authorized.count > 0
+      PlanGroup.where(subscriptable_role: user_role).where.not(id: self.subscriptions.authorized.first.plan.plan_group.id)
+    else
+      PlanGroup.where(subscriptable_role: user_role)
+    end
   end
 
   def has_plan_groups_available?

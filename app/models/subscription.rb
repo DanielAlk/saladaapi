@@ -17,7 +17,7 @@ class Subscription < ActiveRecord::Base
 	before_create :inherit_kind
 	before_create :create_mercadopago_subscription, if: :automatic_debit?
 	before_create :create_cash_subscription, if: :cash?
-	after_save :user_handle_subscription, if: :is_new_or_status_changed?
+	after_save :user_handle_subscription, if: :is_new_or_status_or_plan_id_changed?
 	after_save :push_notificate, if: :status_changed?, unless: :paused?
 
 	def self.find_mp(mercadopago_subscription_id)
@@ -175,7 +175,7 @@ class Subscription < ActiveRecord::Base
 			self.status = :paused unless self.status.present?
 		end
 
-		def is_new_or_status_changed?
-			new_record? || status_changed?
+		def is_new_or_status_or_plan_id_changed?
+			new_record? || status_changed? || plan_id_changed?
 		end
 end
