@@ -28,7 +28,7 @@ class Shop < ActiveRecord::Base
   }
 
   enum status: [ :draft, :published, :paused, :created_by_user ]
-  enum location: [ :aisle, :side ]
+  enum location: [ :salada, :flores ]
   enum condition: [ :occupied, :empty, :repairs ]
 
   scope :claimable, -> { not_created_by_user.where(user_id: User.admin.map{|u| u.id}) }
