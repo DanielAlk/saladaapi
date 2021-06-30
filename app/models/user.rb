@@ -39,6 +39,7 @@ class User < ActiveRecord::Base
   enum special: [ :free, :premium ]
   enum premium_type: [ :freesaler, :wholesaler, :fairsaler, :shedsaler ]
   enum gender: [ :male, :female ]
+  enum location: [ :salada, :flores ]
 
   before_update :manage_roles, if: :role_changed?
   before_update :manage_phone_numbers, if: :phone_numbers_limit_changed?

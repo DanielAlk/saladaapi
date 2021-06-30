@@ -2,6 +2,7 @@ class UserSerializer < ActiveModel::Serializer
   attributes :id, :name, :admin
   attribute :email, if: :medium
   attribute :role, if: :medium
+  attribute :location, if: :medium
   attribute :badge_number, if: :complete
   attribute :address, if: :complete
   attribute :avatar_content_type, if: :complete
