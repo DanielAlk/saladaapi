@@ -44,6 +44,7 @@ class User < ActiveRecord::Base
   before_update :manage_roles, if: :role_changed?
   before_update :manage_phone_numbers, if: :phone_numbers_limit_changed?
   before_update :manage_special, if: :special_changed?
+  before_update :manage_location, if: :location_changed?
 
   scope :available_for_phone_numbers, -> { where.not(phone_numbers_limit: 0) }
   scope :available_for_phone_numbers_panel, -> { where.not(role: User.roles[:client]) }
@@ -299,6 +300,14 @@ class User < ActiveRecord::Base
   end
 
   private
+    def manage_location
+      if self.free?
+        self.shops.each do |shop|
+          shop.destroy
+        end
+      end
+    end
+
     def manage_roles
       if self.admin? || self.role_was.to_sym == :admin
         self.role = self.role_was

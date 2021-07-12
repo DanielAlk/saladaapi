@@ -10,7 +10,8 @@ class Shop < ActiveRecord::Base
 
   validates :description, presence: true, length: { minimum: 4, maximum: 50 }, unless: :created_by_user?
   validates :category, :fixed, :opens, :condition, presence: true, unless: :created_by_user?
-  validates :user, :shed, :number_id, presence: true
+  validates :user, :number_id, presence: true
+  validates :shed, presence: true, if: :salada?
   validates :latitude, numericality: { greater_than_or_equal_to: -999.999999999, less_than_or_equal_to: 999.999999999 }, allow_blank: true
   validates :longitude, numericality: { greater_than_or_equal_to: -999.999999999, less_than_or_equal_to: 999.999999999 }, allow_blank: true
   validate :user_limit
@@ -36,6 +37,7 @@ class Shop < ActiveRecord::Base
   scope :owned_by_premium, -> { where(user_id: User.premium.select(:id).map{ |u| u.id }) }
 
   before_validation :set_status
+  before_create :assign_location
   before_update :assign_products_to_user, if: :user_id_changed?
   before_update :inherit_created_by_user_shop_products, if: :user_id_changed?
   before_destroy :destroy_shop_claims
@@ -106,6 +108,12 @@ class Shop < ActiveRecord::Base
   end
 
   private
+    def assign_location
+      if self.location.blank?
+        self.location = self.user.location
+      end
+    end
+    
     def destroy_shop_claims
       self.shop_claims.delete_all
     end
