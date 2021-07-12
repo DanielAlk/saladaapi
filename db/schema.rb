@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20210630222626) do
+ActiveRecord::Schema.define(version: 20210711235152) do
 
   create_table "admin_notifications", force: :cascade do |t|
     t.integer  "kind",           limit: 4,     default: 0
@@ -422,6 +422,7 @@ ActiveRecord::Schema.define(version: 20210630222626) do
     t.datetime "id_image_updated_at"
     t.integer  "premium_type",           limit: 4,     default: 0
     t.integer  "location",               limit: 4,     default: 0
+    t.boolean  "is_retailer",                          default: false
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree

@@ -3,6 +3,7 @@ class UserSerializer < ActiveModel::Serializer
   attribute :email, if: :medium
   attribute :role, if: :medium
   attribute :location, if: :medium
+  attribute :is_retailer, if: :medium
   attribute :badge_number, if: :complete
   attribute :address, if: :complete
   attribute :avatar_content_type, if: :complete
