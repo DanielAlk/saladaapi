@@ -89,7 +89,7 @@ class Shop < ActiveRecord::Base
     shop[:user_name] = self.user.name
     shop[:user_special] = self.user.special
     shop[:user_role] = self.user.role
-    shop[:shed_title] = self.shed_title
+    shop[:shed_title] = (self.shed_title rescue nil)
     shop[:category_title] = (self.category.title rescue nil)
     if flag == :complete
       shop[:user] = self.user.to_hash
