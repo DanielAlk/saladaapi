@@ -68,7 +68,7 @@ class Shop < ActiveRecord::Base
   end
 
   def shed_title
-    self.shed.title
+    self.shed.title rescue nil
   end
 
   def image_default_url(style = nil)
@@ -89,7 +89,7 @@ class Shop < ActiveRecord::Base
     shop[:user_name] = self.user.name
     shop[:user_special] = self.user.special
     shop[:user_role] = self.user.role
-    shop[:shed_title] = (self.shed_title rescue nil)
+    shop[:shed_title] = self.shed_title
     shop[:category_title] = (self.category.title rescue nil)
     if flag == :complete
       shop[:user] = self.user.to_hash
