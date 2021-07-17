@@ -68,7 +68,7 @@ class Shop < ActiveRecord::Base
   end
 
   def shed_title
-    self.shed.title rescue nil
+    self.shed.title rescue ''
   end
 
   def image_default_url(style = nil)

@@ -40,7 +40,7 @@ class ShopClaim < ActiveRecord::Base
       self.user.increment!(:badge_number)
       contents = {
         user_id: self.user.id,
-        title: 'Puesto ' + self.shop.number_id.to_s + ' - ' + self.shop.shed.title,
+        title: 'Puesto ' + self.shop.number_id.to_s + ' - ' + self.shop.shed_title,
         message: push_message,
         data: {
           state: 'app.shop_claims'
