@@ -154,9 +154,9 @@ class ShopsController < ApplicationController
 
     def shop_params
       if (params[:image].to_s.start_with?('/system') rescue false) || (params[:image].to_s.start_with?('/assets') rescue false)
-        params.permit(:user_id, :shed_id, :category_id, :description, :location, :location_detail, :location_floor, :location_row, :gallery_name, :number_id, :letter_id, :fixed, :opens, :condition, :status, :rating, :latitude, :longitude, :payment_methods, :shipping_company, :location_string)
+        params.permit(:user_id, :shed_id, :category_id, :description, :location, :location_detail, :location_floor, :location_row, :gallery_name, :number_id, :letter_id, :fixed, :opens, :condition, :status, :rating, :latitude, :longitude, :payment_methods, :shipping_company, :location_string, :expires_at)
       else
-        params.permit(:user_id, :shed_id, :category_id, :description, :location, :location_detail, :location_floor, :location_row, :gallery_name, :number_id, :letter_id, :fixed, :opens, :condition, :status, :rating, :latitude, :longitude, :payment_methods, :shipping_company, :location_string, :image, :image_file_name)
+        params.permit(:user_id, :shed_id, :category_id, :description, :location, :location_detail, :location_floor, :location_row, :gallery_name, :number_id, :letter_id, :fixed, :opens, :condition, :status, :rating, :latitude, :longitude, :payment_methods, :shipping_company, :location_string, :expires_at, :image, :image_file_name)
       end
     end
 end

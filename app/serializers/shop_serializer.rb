@@ -1,5 +1,5 @@
 class ShopSerializer < ActiveModel::Serializer
-  attributes :id, :description, :location, :location_detail, :location_floor, :location_row, :gallery_name, :number_id, :letter_id, :fixed, :opens, :condition, :status, :rating, :latitude, :longitude, :image, :cover, :shed_title, :user_id, :shed_id, :category_id, :user_name, :product_count, :payment_methods, :shipping_company, :location_string
+  attributes :id, :description, :location, :location_detail, :location_floor, :location_row, :gallery_name, :number_id, :letter_id, :fixed, :opens, :condition, :status, :rating, :latitude, :longitude, :image, :cover, :shed_title, :user_id, :shed_id, :category_id, :user_name, :product_count, :payment_methods, :shipping_company, :location_string, :expires_at
   attribute :is_claimable, if: -> { instance_options[:complete] }
   has_one :user, if: -> { instance_options[:complete] || instance_options[:owner] }
   has_one :shed
