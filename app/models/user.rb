@@ -163,13 +163,12 @@ class User < ActiveRecord::Base
   end
 
   def product_limit
-    if self.free?
+    if self.free? || self.freesaler?
       5
     elsif self.premium?
       return 80 if self.wholesaler?
       return 40 if self.fairsaler?
-      return :unlimited if self.shedsaler?
-      return 5
+      return :unlimited
     end
   end
 
@@ -182,7 +181,7 @@ class User < ActiveRecord::Base
   end
 
   def shop_limit
-    if self.free?
+    if self.free? || self.freesaler?
       1
     elsif self.premium?
       return 3 if self.wholesaler?
