@@ -166,8 +166,8 @@ class User < ActiveRecord::Base
     if self.free?
       5
     elsif self.premium?
-      return 40 if self.wholesaler?
-      return 20 if self.fairsaler?
+      return 80 if self.wholesaler?
+      return 40 if self.fairsaler?
       return :unlimited if self.shedsaler?
       return 5
     end
@@ -185,7 +185,9 @@ class User < ActiveRecord::Base
     if self.free?
       1
     elsif self.premium?
-      :unlimited
+      return 3 if self.wholesaler?
+      return 2 if self.fairsaler?
+      return :unlimited
     end
   end
 

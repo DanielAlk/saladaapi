@@ -165,7 +165,7 @@ class Product < ActiveRecord::Base
     def user_limit
       if self.new_record? && self.user.present? && self.user.product_limit != :unlimited && self.user.products.count >= self.user.product_limit
         AdminNotificationJob.perform_async(kind: :user_product_limit, alertable: self.user, metadata: { shop_id: self.shop_id })
-        errors.add(:user_limit, "Not allowed")
+        errors.add(:user_limit, "El usuario ha alcanzado su limite de productos")
       end
     end
 
