@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::API
   include DeviseTokenAuth::Concerns::SetUserByToken
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found_rescue
+  rescue_from ArgumentError, with: :argument_error_rescue
   
   before_action :configure_permitted_parameters, if: :devise_controller?
   
@@ -17,6 +18,15 @@ class ApplicationController < ActionController::API
 
   def routing_error(error = 'Routing error', status = :not_found, exception=nil)
     render json: { status: 'not found', message: 'Not found' }, status: :not_found
+  end
+
+  def argument_error_rescue(exception)
+    logger.error("#{exception.class}: " + exception.message)
+    if Rails.env.production?
+      render json: { status: 'unprocessable entity', message: exception.to_s }, status: :unprocessable_entity
+    else
+      render json: { status: 'unprocessable entity', message: exception.to_s, backtrace: exception.backtrace }, status: :unprocessable_entity
+    end
   end
 
   protected
