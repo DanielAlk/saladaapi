@@ -9,7 +9,8 @@ class Shop < ActiveRecord::Base
   has_many :shop_claims, dependent: :destroy, autosave: true
 
   validates :description, presence: true, length: { minimum: 4, maximum: 50 }, unless: :created_by_user?
-  validates :category, :fixed, :opens, :condition, presence: true, unless: :created_by_user?
+  validates :category, :opens, :condition, presence: true, unless: :created_by_user?
+  validates_inclusion_of :fixed, in: [true, false]
   validates :user, :number_id, presence: true
   validates :shed, presence: true, if: :salada?
   validates :latitude, numericality: { greater_than_or_equal_to: -999.999999999, less_than_or_equal_to: 999.999999999 }, allow_blank: true
