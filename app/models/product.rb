@@ -26,7 +26,6 @@ class Product < ActiveRecord::Base
   validates :minimum_amount, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 99999 }, allow_blank: true
   validate :validate_status, on: :update, if: :status_changed?
   validate :user_limit
-  validate :shop_limit
   validate :image_limit
 
   after_destroy :disassociate_payments
@@ -167,13 +166,6 @@ class Product < ActiveRecord::Base
       if self.new_record? && self.user.present? && self.user.product_limit != :unlimited && self.user.products.count >= self.user.product_limit
         AdminNotificationJob.perform_async(kind: :user_product_limit, alertable: self.user, metadata: { shop_id: self.shop_id })
         errors.add(:user_limit, "El usuario ha alcanzado su limite de productos")
-      end
-    end
-    
-    def shop_limit
-      if self.new_record? && self.shop.present? && self.shop.product_limit != :unlimited && self.shop.products.count >= self.shop.product_limit
-        AdminNotificationJob.perform_async(kind: :user_product_limit, alertable: self.user, metadata: { shop_id: self.shop_id })
-        errors.add(:user_limit, "El puesto ha alcanzado su limite de productos")
       end
     end
 

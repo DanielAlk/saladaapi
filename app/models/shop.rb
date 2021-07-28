@@ -83,22 +83,6 @@ class Shop < ActiveRecord::Base
   def is_claimable?
     self.user.admin?
   end
-  
-  def product_limit
-    if self.user.free? || self.user.freesaler?
-      5
-    elsif self.user.premium?
-      per_shop_limit = self.user.product_limit / 2 rescue :unlimited
-      
-      if self.user.wholesaler?
-        first_shop = self.user.shops.order(created_at: :asc).first
-        return per_shop_limit if first_shop.blank? || self == first_shop
-        return per_shop_limit / 2
-      end
-
-      return per_shop_limit
-    end
-  end
 
   def to_hash(flag = nil)
     shop = JSON.parse(self.to_json).deep_symbolize_keys
