@@ -54,7 +54,7 @@ class ShopsController < ApplicationController
     @shop.user = User.admin.first
 
     unless current_user.can_claim?
-      render json: { shop_limit: ['Como usuario free no podés reclamar más puestos.'] }, status: :unprocessable_entity
+      render json: { shop_limit: ['No podés reclamar más puestos.'] }, status: :unprocessable_entity
       return
     end
 

@@ -200,7 +200,10 @@ class User < ActiveRecord::Base
   def can_claim?
     unless self.shop_limit == :unlimited
       statuses = ShopClaim.statuses.map{|k,s| s if [:in_review, :approved].include?(k.to_sym) }.compact
-      unless self.shop_limit > self.shop_claims.where(status: statuses).count + self.shops.not_created_by_user.count
+      user_shops = self.shops.not_created_by_user
+      user_shop_ids = user_shops.map{ |s| s.id }
+
+      unless self.shop_limit > self.shop_claims.where(status: statuses).where.not(shop_id: user_shop_ids).count + user_shops.count
         return false
       end
     end
