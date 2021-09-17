@@ -20,8 +20,12 @@ class Product < ActiveRecord::Base
   validates :stock, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 99999 }
   validates :wholesaler_amount, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 99999 }, allow_blank: true
   validates :shipping_amount, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 99999 }, allow_blank: true
+  validates :package_amount, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 99999 }, allow_blank: true
+  validates :associate_amount, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 99999 }, allow_blank: true
   validates :price, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 999999.99 }
   validates :retailer_price, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 999999.99 }, if: :is_retailer
+  validates :package_price, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 999999.99 }, if: :is_package
+  validates :associate_price, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 999999.99 }, if: :is_associate
   validates :shipping_price, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 999999.99 }, allow_blank: true
   validates :minimum_amount, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 99999 }, allow_blank: true
   validate :validate_status, on: :update, if: :status_changed?
