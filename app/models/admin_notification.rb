@@ -9,7 +9,7 @@ class AdminNotification < ActiveRecord::Base
 
   def to_hash(flag = nil)
     admin_notification = JSON.parse(self.to_json).deep_symbolize_keys
-    admin_notification[:alertable] = self.alertable.to_hash
+    admin_notification[:alertable] = self.alertable.try(:to_hash)
     admin_notification
   end
 end
